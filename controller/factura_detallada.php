@@ -2,7 +2,7 @@
 /*
  * This file is part of FacturaSctipts
  * Copyright (C) 2014  Valentín González    valengon@hotmail.com
- * Copyright (C) 2014  Carlos Garcia Gomez  neorazorx@gmail.com
+ * Copyright (C) 2014-2015  Carlos Garcia Gomez  neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -188,13 +188,18 @@ class factura_detallada extends fs_controller {
       $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
 
       /// Definimos todos los datos del PIE de la factura
-      // Lineas de IVA
+      /// Lineas de IVA
       $lineas_iva = $this->factura->get_lineas_iva();
-      if (count($lineas_iva) > 3) {
+      if( count($lineas_iva) > 3 )
+      {
          $pdf_doc->fdf_lineasiva = $lineas_iva;
-      } else {
+      }
+      else
+      {
+         $filaiva = array();
          $i = 0;
-         foreach ($lineas_iva as $li) {
+         foreach($lineas_iva as $li)
+         {
             $i++;
             $filaiva[$i][0] = ($li->iva) ? 'IVA' . $li->iva : '';
             $filaiva[$i][1] = ($li->neto) ? $this->ckeckEuro($li->neto) : '';
@@ -202,12 +207,17 @@ class factura_detallada extends fs_controller {
             $filaiva[$i][3] = ($li->totaliva) ? $this->ckeckEuro($li->totaliva) : '';
             $filaiva[$i][4] = ($li->recargo) ? $li->recargo . "%" : '';
             $filaiva[$i][5] = ($li->totalrecargo) ? $this->ckeckEuro($li->totalrecargo) : '';
-            // $filaiva[$i][6] = ($li->irpf)?$li->irpf . "%":''; //// POR CREARRRRRR
-            // $filaiva[$i][7] = ($li->totalirpf)?$this->ckeckEuro($li->totalirpf):''; //// POR CREARRRRRR
             $filaiva[$i][6] = ''; //// POR CREARRRRRR
             $filaiva[$i][7] = ''; //// POR CREARRRRRR
             $filaiva[$i][8] = ($li->totallinea) ? $this->ckeckEuro($li->totallinea) : '';
          }
+         
+         if($filaiva)
+         {
+            $filaiva[1][6] = $this->factura->irpf.' %';
+            $filaiva[1][7] = $this->ckeckEuro($this->factura->totalirpf);
+         }
+         
          $pdf_doc->fdf_lineasiva = $filaiva;
       }
 
