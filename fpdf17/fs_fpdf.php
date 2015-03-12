@@ -708,9 +708,9 @@ class PDF_MC_Table extends FPDF
                 // Comentar o eliminar las siguientes 5 lineas para NO mostrar el error.
                 $this->SetFont( "Arial", "B", 10);
                 $this->SetXY( $r1, $y1 + 8 );
-                $this->Cell(8,4, "ERROR: Localizadas ".count($datos)." lineas de IVA... ", 0, '', "L");
+                $this->Cell(8,4, "ERROR: Localizadas ".count($datos)." lineas de ".FS_IVA."... ", 0, '', "L");
                 $this->SetXY( $r1, $y1 + 12 );
-                $this->Cell(8,4, chr(161).chr(161).chr(161)." Esta plantilla SOLO puede detallar TRES lineas de IVA !!!", 0, '', "L");	                
+                $this->Cell(8,4, chr(161).chr(161).chr(161)." Esta plantilla SOLO puede detallar TRES lineas de ".FS_IVA." !!!", 0, '', "L");	                
             } else {
                 for ($i=1; $i <= count($datos); $i++)
                 {
@@ -781,11 +781,11 @@ class PDF_MC_Table extends FPDF
         $this->SetXY( $r1, $y1);
         $this->Cell(26,4, "NETO", 0, '', "C");
         $this->SetX( $r1+26 );
-        $this->Cell(25,4, "IVA", 0, '', "C");
+        $this->Cell(25,4, FS_IVA, 0, '', "C");
         $this->SetX( $r1+51 );
         $this->Cell(25,4, "REC. EQUIV.", 0, '', "C");
         $this->SetX( $r1+76 );
-        $this->Cell(25,4, "IRPF", 0, '', "C");
+        $this->Cell(25,4, FS_IRPF, 0, '', "C");
         $this->SetX( $r1+101 );
         $this->Cell(24,4, "IMPORTES", 0, '', "C");
 

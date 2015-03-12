@@ -143,13 +143,13 @@ class factura_detallada extends fs_controller {
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
       $pdf_doc->fdf_codcliente = $this->factura->codcliente;
-      $pdf_doc->fdf_observaciones = utf8_decode(str_replace(array('“', '”', '"', '&quot;', '&#39;'), array("'", "'", "'", "'", "'"), $this->factura->observaciones));
+      $pdf_doc->fdf_observaciones = utf8_decode( $this->fix_html($this->factura->observaciones) );
 
       // Datos del Cliente
-      $pdf_doc->fdf_nombrecliente = $this->factura->nombrecliente;
+      $pdf_doc->fdf_nombrecliente = $this->fix_html($this->factura->nombrecliente);
       $pdf_doc->fdf_FS_CIFNIF = FS_CIFNIF;
       $pdf_doc->fdf_cifnif = $this->factura->cifnif;
-      $pdf_doc->fdf_direccion = $this->factura->direccion;
+      $pdf_doc->fdf_direccion = $this->fix_html($this->factura->direccion);
       $pdf_doc->fdf_codpostal = $this->factura->codpostal;
       $pdf_doc->fdf_ciudad = $this->factura->ciudad;
       $pdf_doc->fdf_provincia = $this->factura->provincia;
@@ -182,7 +182,7 @@ class factura_detallada extends fs_controller {
       }
 
       // Cabecera Titulos Columnas
-      $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', 'IVA', 'IMPORTE'));
+      $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
       $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
       $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
       $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
@@ -201,7 +201,7 @@ class factura_detallada extends fs_controller {
          foreach($lineas_iva as $li)
          {
             $i++;
-            $filaiva[$i][0] = ($li->iva) ? 'IVA' . $li->iva : '';
+            $filaiva[$i][0] = ($li->iva) ? FS_IVA . $li->iva : '';
             $filaiva[$i][1] = ($li->neto) ? $this->ckeckEuro($li->neto) : '';
             $filaiva[$i][2] = ($li->iva) ? $li->iva . "%" : '';
             $filaiva[$i][3] = ($li->totaliva) ? $this->ckeckEuro($li->totaliva) : '';
@@ -242,7 +242,7 @@ class factura_detallada extends fs_controller {
             $articulo = new articulo();
             $art = $articulo->get($lineas[$i]->referencia);
             if ($art) {
-               $observa = "\n" . utf8_decode(str_replace(array('“', '”', '"', '&quot;'), array("'", "'", "'", "'"), $art->observaciones));
+               $observa = "\n" . utf8_decode( $this->fix_html($art->observaciones) );
             } else {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n" . '******* ERROR: Descripcion de Articulo no Localizada *******';
@@ -293,5 +293,14 @@ class factura_detallada extends fs_controller {
               )
       );
       $fsext->save();
+   }
+   
+   private function fix_html($txt)
+   {
+      $newt = str_replace('&lt;', '<', $txt);
+      $newt = str_replace('&gt;', '>', $newt);
+      $newt = str_replace('&quot;', '"', $newt);
+      $newt = str_replace('&#39;', "'", $newt);
+      return $newt;
    }
 }
