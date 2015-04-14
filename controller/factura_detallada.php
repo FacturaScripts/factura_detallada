@@ -245,7 +245,7 @@ class factura_detallada extends fs_controller {
                $observa = "\n" . utf8_decode( $this->fix_html($art->observaciones) );
             } else {
                // $observa = null; // No mostrar mensaje de error
-               $observa = "\n" . '******* ERROR: Descripcion de Articulo no Localizada *******';
+               $observa = "\n";
             }
 
             $lafila = array(
