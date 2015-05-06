@@ -251,7 +251,7 @@ class factura_detallada extends fs_controller {
             $lafila = array(
                 // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
                 '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                '1' => utf8_decode(strtoupper(substr($lineas[$i]->descripcion, 0, 45))) . $observa,
+                '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
                 '2' => utf8_decode($lineas[$i]->cantidad),
                 '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                 '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),

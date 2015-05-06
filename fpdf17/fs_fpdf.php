@@ -118,8 +118,7 @@ class PDF_MC_Table extends FPDF
         $cliente .= $this->fdf_cifnif . "\n";
         $cliente .= $this->fdf_direccion . "\n";
         $cliente .= $this->fdf_codpostal . " - ";
-        $cliente .= $this->fdf_ciudad . "\n";
-        $cliente .= $this->fdf_provincia . "\n";
+        $cliente .= $this->fdf_ciudad . " (".$this->fdf_provincia.")\n";
         $cliente .= "Tlf: " . $this->fdc_telefono1;
         if($this->fdc_telefono2) { $cliente .= " - " . $this->fdc_telefono2 . "\n"; } else { $cliente .= "\n"; }
         if($this->fdc_fax) { $cliente .= "Fax: " . $this->fdc_fax . "\n"; }
@@ -130,10 +129,10 @@ class PDF_MC_Table extends FPDF
         $this->addPago(utf8_decode($this->fdf_epago));
 
         // Divisa de la Factura
-        $this->addDivisa(utf8_decode($this->fdf_divisa));
+        //$this->addDivisa(utf8_decode($this->fdf_divisa));
 
         // Pais de la Factura
-        $this->addPais(utf8_decode($this->fdf_pais));
+        //$this->addPais(utf8_decode($this->fdf_pais));
 
         // Pie de la Factura
         $this->SetFont('Arial','',5);
@@ -635,7 +634,7 @@ class PDF_MC_Table extends FPDF
     // Forma de Pago
     function addPago( $mode )
     {
-        $r1  = 90;
+        $r1  = 150;
         $r2  = $r1 + 50;
         $y1  = 80;
         $y2  = $y1+10;
