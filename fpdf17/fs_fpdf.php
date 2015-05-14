@@ -2,7 +2,7 @@
 /*
  * This file is part of FacturaSctipts
  * Copyright (C) 2014  Valentín González    valengon@hotmail.com 
- * Copyright (C) 2014  Carlos Garcia Gomez  neorazorx@gmail.com
+ * Copyright (C) 2014-2015  Carlos Garcia Gomez  neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -135,8 +135,13 @@ class PDF_MC_Table extends FPDF
         //$this->addPais(utf8_decode($this->fdf_pais));
 
         // Pie de la Factura
-        $this->SetFont('Arial','',5);
-        $this->RotatedText(6, 210, utf8_decode($this->fde_piefactura), 90);
+        //$this->SetFont('Arial','',5);
+        //$this->RotatedText(6, 210, utf8_decode($this->fde_piefactura), 90);
+        $this->SetFont('Arial','',7);
+        $this->SetY(-8);
+        $this->SetLineWidth(0.1);		
+        $this->SetTextColor(0);
+        $this->Cell(0,4, utf8_decode($this->fde_piefactura), 0, 0, "C");
 
         // Cabecera Titulos Columnas
         $this->SetXY(10, 95);
