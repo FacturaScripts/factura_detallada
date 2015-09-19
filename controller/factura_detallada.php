@@ -39,7 +39,7 @@ class factura_detallada extends fs_controller {
       parent::__construct(__CLASS__, 'Factura Detallada', 'ventas', FALSE, FALSE);
    }
 
-   protected function process()
+   protected function private_core()
    {
       $this->share_extensions();
       
@@ -215,7 +215,7 @@ class factura_detallada extends fs_controller {
          if($filaiva)
          {
             $filaiva[1][6] = $this->factura->irpf.' %';
-            $filaiva[1][7] = $this->ckeckEuro($this->factura->totalirpf);
+            $filaiva[1][7] = $this->ckeckEuro(0 - $this->factura->totalirpf);
          }
          
          $pdf_doc->fdf_lineasiva = $filaiva;
