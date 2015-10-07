@@ -3,6 +3,7 @@
  * This file is part of FacturaSctipts
  * Copyright (C) 2014  Valentín González    valengon@hotmail.com
  * Copyright (C) 2014-2015  Carlos Garcia Gomez  neorazorx@gmail.com
+ * Copyright (C) 2015  César Sáez Rodríguez  NATHOO@lacalidad.es
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -52,9 +53,18 @@ class factura_detallada extends fs_controller {
       
       if ($this->factura)
       {
-         $cliente = new cliente();
-         $this->cliente = $cliente->get($this->factura->codcliente);
-         $this->generar_pdf();
+          $cliente = new cliente();
+          $this->cliente = $cliente->get($this->factura->codcliente);
+
+      	  if( isset($_POST['email']) )
+      	  {
+             $this->enviar_email('factura', $_REQUEST['tipo']);
+          }
+      
+          else 
+          {
+             $this->generar_pdf();
+          }
       }
       else
       {
@@ -282,7 +292,7 @@ class factura_detallada extends fs_controller {
    
    private function share_extensions()
    {
-      $fsext = new fs_extension(
+      $extensiones = array(
               array(
                   'name' => 'factura_detallada',
                   'page_from' => __CLASS__,
@@ -290,9 +300,24 @@ class factura_detallada extends fs_controller {
                   'type' => 'pdf',
                   'text' => 'Factura detallada',
                   'params' => ''
-              )
+              ),
+              array(
+              	  'name' => 'email_factura_detallada',
+              	  'page_from' => __CLASS__,
+              	  'page_to' => 'ventas_factura',
+              	  'type' => 'email',
+              	  'text' => ucfirst(FS_FACTURA).' detallada',
+              	  'params' => '&factura=TRUE&tipo=detallada'
+          	)
       );
-      $fsext->save();
+      foreach($extensiones as $ext)
+      {
+         $fsext = new fs_extension($ext);
+         if( !$fsext->save() )
+         {
+            $this->new_error_msg('Error al guardar la extensión '.$ext['name']);
+         }
+      }
    }
    
    private function fix_html($txt)
@@ -303,4 +328,80 @@ class factura_detallada extends fs_controller {
       $newt = str_replace('&#39;', "'", $newt);
       return $newt;
    }
+
+   private function enviar_email($doc, $tipo='detallada')
+   {
+      if( $this->empresa->can_send_mail() )
+      {
+         if( $_POST['email'] != $this->cliente->email )
+         {
+            $this->cliente->email = $_POST['email'];
+            $this->cliente->save();
+         }
+
+         /// obtenemos la configuración extra del email
+         $mailop = array(
+             'mail_host' => 'smtp.gmail.com',
+             'mail_port' => '465',
+             'mail_user' => '',
+             'mail_enc' => 'ssl'
+         );
+         $fsvar = new fs_var();
+         $mailop = $fsvar->array_get($mailop, FALSE);
+
+         if($doc == 'factura')
+         {
+            $filename = 'factura_'.$this->factura->codigo.'.pdf';
+            $this->generar_pdf($filename);
+         }
+
+         if( file_exists('tmp/'.FS_TMP_NAME.'enviar/'.$filename) )
+         {
+            $mail = new PHPMailer();
+            $mail->IsSMTP();
+            $mail->SMTPAuth = TRUE;
+            $mail->SMTPSecure = $mailop['mail_enc'];
+            $mail->Host = $mailop['mail_host'];
+            $mail->Port = intval($mailop['mail_port']);
+
+            $mail->Username = $this->empresa->email;
+            if($mailop['mail_user'] != '')
+            {
+               $mail->Username = $mailop['mail_user'];
+            }
+
+            $mail->Password = $this->empresa->email_password;
+            $mail->From = $this->empresa->email;
+            $mail->FromName = $this->user->nick;
+            $mail->CharSet = 'UTF-8';
+
+            if($doc == 'factura')
+            {
+               $mail->Subject = $this->empresa->nombre . ': Su factura '.$this->factura->codigo;
+               $mail->AltBody = 'Buenos días, le adjunto su factura '.$this->factura->codigo.".\n".$this->empresa->email_firma;
+            }
+            $mail->WordWrap = 50;
+            $mail->MsgHTML( nl2br($_POST['mensaje']) );
+            $mail->AddAttachment('tmp/'.FS_TMP_NAME.'enviar/'.$filename);
+            $mail->AddAddress($_POST['email'], $this->cliente->razonsocial);
+            if( isset($_POST['concopia']) )
+            {
+               $mail->AddCC($_POST['email_copia'], $this->cliente->razonsocial);
+            }
+            $mail->IsHTML(TRUE);
+
+            if( $mail->Send() )
+            {
+               $this->new_message('Mensaje enviado correctamente.');
+            }
+            else
+               $this->new_error_msg("Error al enviar el email: " . $mail->ErrorInfo);
+
+            unlink('tmp/'.FS_TMP_NAME.'enviar/'.$filename);
+         }
+         else
+            $this->new_error_msg('Imposible generar el PDF.');
+      }
+   }
+
 }
