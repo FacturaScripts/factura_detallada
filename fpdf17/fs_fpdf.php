@@ -179,7 +179,7 @@ class PDF_MC_Table extends FPDF
             // Si existen Incluimos las Observaciones
             if ($this->fdf_observaciones != '')
             {
-                $this->addObservaciones(substr($this->fdf_observaciones, 0, 116));
+                $this->addObservaciones(substr($this->fdf_observaciones, 0, 270));
             }
 
             // Lineas de Impuestos
@@ -692,11 +692,14 @@ class PDF_MC_Table extends FPDF
 
     // Incluir Observaciones	
     function addObservaciones($observa)
-    {
+    { 
         $this->SetFont( "Arial", "I", 8);
         $length = $this->GetStringWidth( "Observaciones: " . $observa );
-        $this->SetXY( 10, $this->h - 37.5 );
-        $this->Cell($length,4, "Observaciones: " . $observa);
+        if ($length <= 135)
+        	$this->SetXY( 10, $this->h - 37.5 );
+        else
+        	$this->SetXY( 10, $this->h - 39.5 );
+        $this->MultiCell($this->w - 20,4, "Observaciones: " . $observa);
     }
 
     // Incluir Lineas de Iva
@@ -825,7 +828,7 @@ class PDF_MC_Table extends FPDF
     //------    Máxima cifra soportada: 18 dígitos con 2 decimales
     //------    999,999,999,999,999,999.99
     // NOVECIENTOS NOVENTA Y NUEVE MIL NOVECIENTOS NOVENTA Y NUEVE con 99/100
-    function numtoletras($xcifra)
+    function numtoletras($xcifra, $convert00decimal = true)
     {
         $xarray = array(0 => "Cero",
                 1 => "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
@@ -838,14 +841,18 @@ class PDF_MC_Table extends FPDF
         $xlength = strlen($xcifra);
         $xpos_punto = strpos($xcifra, ".");
         $xaux_int = $xcifra;
-        $xdecimales = "00";
+        if ($convert00decimal)
+        	$xdecimales = "00";
+        else 
+        	$xdecimales = "";
         if (!($xpos_punto === false)) {
             if ($xpos_punto == 0) {
                 $xcifra = "0" . $xcifra;
                 $xpos_punto = strpos($xcifra, ".");
             }
             $xaux_int = substr($xcifra, 0, $xpos_punto); // obtengo el entero de la cifra a convertir
-            $xdecimales = substr($xcifra . "00", $xpos_punto + 1, 2); // obtengo los valores decimales
+            // obtengo los valores decimales en letras
+            $xdecimales = $this->numtoletras(substr($xcifra . "00", $xpos_punto + 1, 2), false);
         }
 
         $XAUX = str_pad($xaux_int, 18, " ", STR_PAD_LEFT); // ajusto la longitud de la cifra, para que sea divisible por centenas de miles (grupos de 6)
@@ -946,13 +953,20 @@ class PDF_MC_Table extends FPDF
                         break;
                     case 2:
                         if ($xcifra < 1) {
-                            $xcadena = "CERO con $xdecimales/100";
+                        	if ($convert00decimal)
+                            	$xcadena = "CERO con $xdecimales";
+                        	else
+                        		$xcadena = "CERO";
                         }
                         if ($xcifra >= 1 && $xcifra < 2) {
-                            $xcadena = "UNO con $xdecimales/100";
+                        	if ($convert00decimal)
+                            	$xcadena = "UNO con $xdecimales";
+                        	else
+                        		$xcadena = "UNO";
                         }
                         if ($xcifra >= 2) {
-                            $xcadena.= " con $xdecimales/100";
+                        	if ($convert00decimal)
+                            	$xcadena.= " con $xdecimales";
                         }
                         break;
                 } // endswitch ($xz)
