@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of FacturaSctipts
  * Copyright (C) 2014  Valentín González    valengon@hotmail.com
@@ -40,59 +41,44 @@ class factura_detallada extends fs_controller {
       parent::__construct(__CLASS__, 'Factura Detallada', 'ventas', FALSE, FALSE);
    }
 
-   protected function private_core()
-   {
+   protected function private_core() {
       $this->share_extensions();
-      
+
       $this->factura = FALSE;
-      if (isset($_GET['id']))
-      {
+      if (isset($_GET['id'])) {
          $factura = new factura_cliente();
          $this->factura = $factura->get($_GET['id']);
       }
-      
-      if ($this->factura)
-      {
-          $cliente = new cliente();
-          $this->cliente = $cliente->get($this->factura->codcliente);
 
-      	  if( isset($_POST['email']) )
-      	  {
-             $this->enviar_email('factura', $_REQUEST['tipo']);
-          }
-      
-          else 
-          {
-             $this->generar_pdf();
-          }
-      }
-      else
-      {
+      if ($this->factura) {
+         $cliente = new cliente();
+         $this->cliente = $cliente->get($this->factura->codcliente);
+
+         if (isset($_POST['email'])) {
+            $this->enviar_email('factura', $_REQUEST['tipo']);
+         } else {
+            $this->generar_pdf();
+         }
+      } else {
          $this->new_error_msg("¡Factura de cliente no encontrada!");
       }
    }
 
    // Corregir el Bug de fpdf con el Simbolo del Euro ---> €
-   public function ckeckEuro($cadena)
-   {
+   public function ckeckEuro($cadena) {
       $mostrar = $this->show_precio($cadena, $this->factura->coddivisa);
       $pos = strpos($mostrar, '€');
-      if ($pos !== false)
-      {
-         if (FS_POS_DIVISA == 'right')
-         {
+      if ($pos !== false) {
+         if (FS_POS_DIVISA == 'right') {
             return number_format($cadena, FS_NF0, FS_NF1, FS_NF2) . ' ' . EEURO;
-         }
-         else
-         {
+         } else {
             return EEURO . ' ' . number_format($cadena, FS_NF0, FS_NF1, FS_NF2);
          }
       }
       return $mostrar;
    }
 
-   public function generar_pdf($archivo = FALSE)
-   {
+   public function generar_pdf($archivo = FALSE) {
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
       ob_end_clean();
@@ -127,17 +113,14 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fde_piefactura = $this->empresa->pie_factura;
 
       /// Insertamos el Logo y Marca de Agua
-      if (file_exists('tmp/' . FS_TMP_NAME . 'logo.png'))
-      {
+      if (file_exists('tmp/' . FS_TMP_NAME . 'logo.png') OR file_exists('tmp/' . FS_TMP_NAME . 'logo.jpg')) {
          $pdf_doc->fdf_verlogotipo = '1'; // 1/0 --> Mostrar Logotipo
          $pdf_doc->fdf_Xlogotipo = '15'; // Valor X para Logotipo
          $pdf_doc->fdf_Ylogotipo = '35'; // Valor Y para Logotipo
          $pdf_doc->fdf_vermarcaagua = '1'; // 1/0 --> Mostrar Marca de Agua
          $pdf_doc->fdf_Xmarcaagua = '25'; // Valor X para Marca de Agua
          $pdf_doc->fdf_Ymarcaagua = '110'; // Valor Y para Marca de Agua
-      }
-      else
-      {
+      } else {
          $pdf_doc->fdf_verlogotipo = '0';
          $pdf_doc->fdf_Xlogotipo = '0';
          $pdf_doc->fdf_Ylogotipo = '0';
@@ -153,7 +136,7 @@ class factura_detallada extends fs_controller {
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
       $pdf_doc->fdf_codcliente = $this->factura->codcliente;
-      $pdf_doc->fdf_observaciones = utf8_decode( $this->fix_html($this->factura->observaciones) );
+      $pdf_doc->fdf_observaciones = utf8_decode($this->fix_html($this->factura->observaciones));
 
       // Datos del Cliente
       $pdf_doc->fdf_nombrecliente = $this->fix_html($this->factura->nombrecliente);
@@ -200,16 +183,12 @@ class factura_detallada extends fs_controller {
       /// Definimos todos los datos del PIE de la factura
       /// Lineas de IVA
       $lineas_iva = $this->factura->get_lineas_iva();
-      if( count($lineas_iva) > 3 )
-      {
+      if (count($lineas_iva) > 3) {
          $pdf_doc->fdf_lineasiva = $lineas_iva;
-      }
-      else
-      {
+      } else {
          $filaiva = array();
          $i = 0;
-         foreach($lineas_iva as $li)
-         {
+         foreach ($lineas_iva as $li) {
             $i++;
             $filaiva[$i][0] = ($li->iva) ? FS_IVA . $li->iva : '';
             $filaiva[$i][1] = ($li->neto) ? $this->ckeckEuro($li->neto) : '';
@@ -221,13 +200,12 @@ class factura_detallada extends fs_controller {
             $filaiva[$i][7] = ''; //// POR CREARRRRRR
             $filaiva[$i][8] = ($li->totallinea) ? $this->ckeckEuro($li->totallinea) : '';
          }
-         
-         if($filaiva)
-         {
-            $filaiva[1][6] = $this->factura->irpf.' %';
+
+         if ($filaiva) {
+            $filaiva[1][6] = $this->factura->irpf . ' %';
             $filaiva[1][7] = $this->ckeckEuro(0 - $this->factura->totalirpf);
          }
-         
+
          $pdf_doc->fdf_lineasiva = $filaiva;
       }
 
@@ -252,7 +230,7 @@ class factura_detallada extends fs_controller {
             $articulo = new articulo();
             $art = $articulo->get($lineas[$i]->referencia);
             if ($art) {
-               $observa = "\n" . utf8_decode( $this->fix_html($art->observaciones) );
+               $observa = "\n" . utf8_decode($this->fix_html($art->observaciones));
             } else {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
@@ -275,53 +253,45 @@ class factura_detallada extends fs_controller {
       }
 
       // Damos salida al archivo PDF
-      if ($archivo)
-      {
-         if (!file_exists('tmp/' . FS_TMP_NAME . 'enviar'))
-         {
+      if ($archivo) {
+         if (!file_exists('tmp/' . FS_TMP_NAME . 'enviar')) {
             mkdir('tmp/' . FS_TMP_NAME . 'enviar');
          }
-         
+
          $pdf_doc->Output('tmp/' . FS_TMP_NAME . 'enviar/' . $archivo, 'F');
-      }
-      else
-      {
+      } else {
          $pdf_doc->Output();
       }
    }
-   
-   private function share_extensions()
-   {
+
+   private function share_extensions() {
       $extensiones = array(
-              array(
-                  'name' => 'factura_detallada',
-                  'page_from' => __CLASS__,
-                  'page_to' => 'ventas_factura',
-                  'type' => 'pdf',
-                  'text' => 'Factura detallada',
-                  'params' => ''
-              ),
-              array(
-              	  'name' => 'email_factura_detallada',
-              	  'page_from' => __CLASS__,
-              	  'page_to' => 'ventas_factura',
-              	  'type' => 'email',
-              	  'text' => ucfirst(FS_FACTURA).' detallada',
-              	  'params' => '&factura=TRUE&tipo=detallada'
-          	)
+          array(
+              'name' => 'factura_detallada',
+              'page_from' => __CLASS__,
+              'page_to' => 'ventas_factura',
+              'type' => 'pdf',
+              'text' => 'Factura detallada',
+              'params' => ''
+          ),
+          array(
+              'name' => 'email_factura_detallada',
+              'page_from' => __CLASS__,
+              'page_to' => 'ventas_factura',
+              'type' => 'email',
+              'text' => ucfirst(FS_FACTURA) . ' detallada',
+              'params' => '&factura=TRUE&tipo=detallada'
+          )
       );
-      foreach($extensiones as $ext)
-      {
+      foreach ($extensiones as $ext) {
          $fsext = new fs_extension($ext);
-         if( !$fsext->save() )
-         {
-            $this->new_error_msg('Error al guardar la extensión '.$ext['name']);
+         if (!$fsext->save()) {
+            $this->new_error_msg('Error al guardar la extensión ' . $ext['name']);
          }
       }
    }
-   
-   private function fix_html($txt)
-   {
+
+   private function fix_html($txt) {
       $newt = str_replace('&lt;', '<', $txt);
       $newt = str_replace('&gt;', '>', $newt);
       $newt = str_replace('&quot;', '"', $newt);
@@ -329,12 +299,9 @@ class factura_detallada extends fs_controller {
       return $newt;
    }
 
-   private function enviar_email($doc, $tipo='detallada')
-   {
-      if( $this->empresa->can_send_mail() )
-      {
-         if( $_POST['email'] != $this->cliente->email )
-         {
+   private function enviar_email($doc, $tipo = 'detallada') {
+      if ($this->empresa->can_send_mail()) {
+         if ($_POST['email'] != $this->cliente->email) {
             $this->cliente->email = $_POST['email'];
             $this->cliente->save();
          }
@@ -349,14 +316,12 @@ class factura_detallada extends fs_controller {
          $fsvar = new fs_var();
          $mailop = $fsvar->array_get($mailop, FALSE);
 
-         if($doc == 'factura')
-         {
-            $filename = 'factura_'.$this->factura->codigo.'.pdf';
+         if ($doc == 'factura') {
+            $filename = 'factura_' . $this->factura->codigo . '.pdf';
             $this->generar_pdf($filename);
          }
 
-         if( file_exists('tmp/'.FS_TMP_NAME.'enviar/'.$filename) )
-         {
+         if (file_exists('tmp/' . FS_TMP_NAME . 'enviar/' . $filename)) {
             $mail = new PHPMailer();
             $mail->IsSMTP();
             $mail->SMTPAuth = TRUE;
@@ -365,8 +330,7 @@ class factura_detallada extends fs_controller {
             $mail->Port = intval($mailop['mail_port']);
 
             $mail->Username = $this->empresa->email;
-            if($mailop['mail_user'] != '')
-            {
+            if ($mailop['mail_user'] != '') {
                $mail->Username = $mailop['mail_user'];
             }
 
@@ -375,31 +339,26 @@ class factura_detallada extends fs_controller {
             $mail->FromName = $this->user->nick;
             $mail->CharSet = 'UTF-8';
 
-            if($doc == 'factura')
-            {
-               $mail->Subject = $this->empresa->nombre . ': Su factura '.$this->factura->codigo;
-               $mail->AltBody = 'Buenos días, le adjunto su factura '.$this->factura->codigo.".\n".$this->empresa->email_firma;
+            if ($doc == 'factura') {
+               $mail->Subject = $this->empresa->nombre . ': Su factura ' . $this->factura->codigo;
+               $mail->AltBody = 'Buenos días, le adjunto su factura ' . $this->factura->codigo . ".\n" . $this->empresa->email_firma;
             }
             $mail->WordWrap = 50;
-            $mail->MsgHTML( nl2br($_POST['mensaje']) );
-            $mail->AddAttachment('tmp/'.FS_TMP_NAME.'enviar/'.$filename);
+            $mail->MsgHTML(nl2br($_POST['mensaje']));
+            $mail->AddAttachment('tmp/' . FS_TMP_NAME . 'enviar/' . $filename);
             $mail->AddAddress($_POST['email'], $this->cliente->razonsocial);
-            if( isset($_POST['concopia']) )
-            {
+            if (isset($_POST['concopia'])) {
                $mail->AddCC($_POST['email_copia'], $this->cliente->razonsocial);
             }
             $mail->IsHTML(TRUE);
 
-            if( $mail->Send() )
-            {
+            if ($mail->Send()) {
                $this->new_message('Mensaje enviado correctamente.');
-            }
-            else
+            } else
                $this->new_error_msg("Error al enviar el email: " . $mail->ErrorInfo);
 
-            unlink('tmp/'.FS_TMP_NAME.'enviar/'.$filename);
-         }
-         else
+            unlink('tmp/' . FS_TMP_NAME . 'enviar/' . $filename);
+         } else
             $this->new_error_msg('Imposible generar el PDF.');
       }
    }
