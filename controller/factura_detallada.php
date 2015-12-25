@@ -36,6 +36,7 @@ class factura_detallada extends fs_controller {
 
    public $cliente;
    public $factura;
+   public $impresion;
 
    public function __construct() {
       parent::__construct(__CLASS__, 'Factura Detallada', 'ventas', FALSE, FALSE);
@@ -43,6 +44,15 @@ class factura_detallada extends fs_controller {
 
    protected function private_core() {
       $this->share_extensions();
+      
+      /// obtenemos los datos de configuración de impresión
+      $this->impresion = array(
+          'print_ref' => '1',
+          'print_dto' => '1',
+          'print_alb' => '0'
+      );
+      $fsvar = new fs_var();
+      $this->impresion = $fsvar->array_get($this->impresion, FALSE);
 
       $this->factura = FALSE;
       if (isset($_GET['id'])) {
@@ -84,6 +94,21 @@ class factura_detallada extends fs_controller {
       ob_end_clean();
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
       define('EEURO', chr(128));
+      $lineas = $this->factura->get_lineas();
+      if($this->impresion['print_dto'])
+      {
+         $this->impresion['print_dto'] = FALSE;
+         
+         /// leemos las líneas para ver si de verdad mostramos los descuentos
+         foreach($lineas as $lin)
+         {
+            if($lin->dtopor != 0)
+            {
+               $this->impresion['print_dto'] = TRUE;
+               break;
+            }
+         }
+      }
 
       $pdf_doc->SetTitle('Factura: ' . $this->factura->codigo . " " . $this->factura->numero2);
       $pdf_doc->SetSubject('Factura del cliente: ' . $this->factura->nombrecliente);
@@ -173,12 +198,25 @@ class factura_detallada extends fs_controller {
       if ($epais) {
          $pdf_doc->fdf_pais = $epais->nombre;
       }
+      
+      
+     
 
       // Cabecera Titulos Columnas
-      $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
-      $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
-      $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
-      $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
+      if($this->impresion['print_dto'])
+      {
+        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
+        $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
+        $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
+      }
+      else
+      {
+        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->SetWidths(array(16, 102, 10, 20,10, 22));
+        $pdf_doc->SetAligns(array('C', 'L', 'R', 'R','R', 'R'));
+        $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
+      }
 
       /// Definimos todos los datos del PIE de la factura
       /// Lineas de IVA
@@ -219,7 +257,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->AddPage();
 
       // Lineas de la Factura
-      $lineas = $this->factura->get_lineas();
+      //$lineas = $this->factura->get_lineas();
 
       if ($lineas) {
          $neto = 0;
@@ -235,18 +273,34 @@ class factura_detallada extends fs_controller {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
             }
-
-            $lafila = array(
-                // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
-                '2' => utf8_decode($lineas[$i]->cantidad),
-                '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
-                '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
-                '5' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
-                // '6' => $this->ckeckEuro($lineas[$i]->pvptotal), // Importe con Descuentos aplicados
-                '6' => $this->ckeckEuro($lineas[$i]->total_iva())
-            );
+            if($this->impresion['print_dto'])
+            {
+                $lafila = array(
+                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
+                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
+                    '2' => utf8_decode($lineas[$i]->cantidad),
+                    '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
+                    '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
+                    '5' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
+                    // '6' => $this->ckeckEuro($lineas[$i]->pvptotal), // Importe con Descuentos aplicados
+                    '6' => $this->ckeckEuro($lineas[$i]->total_iva())
+                );
+            }
+            else 
+            {
+                $lafila = array(
+                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
+                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
+                    '2' => utf8_decode($lineas[$i]->cantidad),
+                    '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
+                    //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
+                    '4' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
+                    // '6' => $this->ckeckEuro($lineas[$i]->pvptotal), // Importe con Descuentos aplicados
+                    '5' => $this->ckeckEuro($lineas[$i]->total_iva())
+                );
+            }
             $pdf_doc->Row($lafila, '1'); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
          }
          $pdf_doc->piepagina = true;
