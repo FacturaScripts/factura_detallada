@@ -213,7 +213,7 @@ class factura_detallada extends fs_controller {
       else
       {
         $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
-        $pdf_doc->SetWidths(array(16, 102, 10, 20,10, 22));
+        $pdf_doc->SetWidths(array(16, 107, 10, 20, 15, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R','R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
