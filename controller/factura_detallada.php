@@ -120,7 +120,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->SetAutoPageBreak(true, 40);
 
       // Definimos el color de relleno (gris, rojo, verde, azul)
-      $pdf_doc->SetColorRelleno('verde');
+      $pdf_doc->SetColorRelleno('azul');
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa
@@ -161,7 +161,7 @@ class factura_detallada extends fs_controller {
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
       $pdf_doc->fdf_codcliente = $this->factura->codcliente;
-      $pdf_doc->fdf_observaciones = utf8_decode($this->fix_html($this->factura->observaciones));
+      $pdf_doc->fdf_observaciones = iconv("UTF-8", "CP1252", $this->fix_html($this->factura->observaciones));
 
       // Datos del Cliente
       $pdf_doc->fdf_nombrecliente = $this->fix_html($this->factura->nombrecliente);
@@ -332,8 +332,7 @@ class factura_detallada extends fs_controller {
               'name' => 'email_factura_detallada',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
-              'type' => 'email',
-              'text' => ucfirst(FS_FACTURA) . ' detallada',
+              'type' => 'email', 'text' => ucfirst(FS_FACTURA) . ' detallada',
               'params' => '&factura=TRUE&tipo=detallada'
           )
       );
@@ -350,6 +349,7 @@ class factura_detallada extends fs_controller {
       $newt = str_replace('&gt;', '>', $newt);
       $newt = str_replace('&quot;', '"', $newt);
       $newt = str_replace('&#39;', "'", $newt);
+      //$newt = str_replace('€','EUR', $newt);
       return $newt;
    }
 
