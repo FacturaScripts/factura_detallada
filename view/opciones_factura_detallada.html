@@ -1,69 +1,49 @@
 {include="header"}
 
 <div class="container">
-    <div class="row">
-        <div class="col-xs-6">
-            <a href="{$fsc->url()}" class="btn btn-sm btn-default" title="Recargar la página">
-                <span class="glyphicon glyphicon-refresh"></span>
-            </a>
-            <a href="index.php?page=admin_home" class="btn btn-sm btn-default">
-                <span class="glyphicon glyphicon-arrow-left"></span> &nbsp; Atrás
-            </a>
-        </div>
-        <div class="col-xs-6 text-right">
-            <h2 style="margin-top: 0px;">Opciones factura detallada</h2>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <ul id="tab_opciones" class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active">
-                    <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
-                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                        <span class="hidden-xs">&nbsp; General</span>
-                    </a>
-                </li>                
-            </ul>
-        </div>
-    </div>
-    <form action="{$fsc->url()}" method="post">
-        <input type="hidden" name="factura_detallada_setup" value="TRUE"/>
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="general">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <br/>
-                        <div class="form-group">
-                            <label>
-                            Color de la factura: 
-                            <select class="form-control" name="color">
-                             {loop="$fsc->colores"}
-                                   {if condition="$value==$fsc->factura_detallada_setup['f_detallada_color']"}
-                                           <option selected value="{$value}" class="form-control"> {$value}</option>
-                                   {else}
-                                           <option value="{$value}" class="form-control">{$value}</option>
-                                   {/if}
-                              {/loop}
-                              </select>	
-                            </label>
-                            </br></br></br></br>
-                            En esta pantalla puedes configurar las opciones que mejor se ajusten a tu imagen corporativa
-                        </div>
-                    </div>
-                    <div class="col-sm-9 text-left">
-                        <br/> <br/>
-                        <button class="btn btn-sm btn-primary" type="submit" onclick="this.disabled = true;
-                          this.form.submit();">
-                            <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
-                        </button>                        
-                    </div>
-                    </br>
-                    <img style="float: left; margin-top: 30px;" height="250px" border="5" src="plugins/factura_detallada/view/fd.jpg" alt="fdlogo" >
-                </div>                
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="page-header">
+            <h1>
+               <span class="glyphicon glyphicon-cog"></span>
+               Opciones de factura detallada
+               <a href="{$fsc->url()}" class="btn btn-xs btn-default" title="Recargar la página">
+                  <span class="glyphicon glyphicon-refresh"></span>
+               </a>
+            </h1>
+         </div>
+         <p class="help-block">
+            En esta pantalla puedes configurar las opciones que mejor se ajusten a tu imagen corporativa.
+         </p>
+      </div>
+   </div>
+   <form action="{$fsc->url()}" method="post" class="form">
+      <input type="hidden" name="factura_detallada_setup" value="TRUE"/>
+      <div class="row">
+         <div class="col-sm-4">
+            <div class="thumbnail">
+               <img src="plugins/factura_detallada/view/fd.jpg" alt="fdlogo"/>
             </div>
-            
-            
-    </form>    
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Color de la factura:
+               <select class="form-control" name="color">
+               {loop="$fsc->colores"}
+                  {if="$value==$fsc->factura_detallada_setup['f_detallada_color']"}
+                  <option value="{$value}" selected="">{$value}</option>
+                  {else}
+                  <option value="{$value}">{$value}</option>
+                  {/if}
+               {/loop}
+               </select>
+            </div>
+            <button class="btn btn-sm btn-primary" type="submit">
+               <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+            </button>
+         </div>
+      </div>
+   </form>
 </div>
 
 {include="footer"}

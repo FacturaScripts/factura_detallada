@@ -2,7 +2,8 @@
 
 /*
  * This file is part of FacturaSctipts
- * Copyright (C) 2016   César Sáez Rodríguez   NATHOO@lacalidad.es
+ * Copyright (C) 2016   César Sáez Rodríguez    NATHOO@lacalidad.es
+ * Copyright (C) 2016   Carlos García Gómez     neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,13 +32,12 @@ class opciones_factura_detallada extends fs_controller
    
    public function __construct()
    {
-      parent::__construct(__CLASS__, 'Opciones', 'Factura Detallada', FALSE, FALSE);
+      parent::__construct(__CLASS__, 'Factura Detallada', 'admin', FALSE, FALSE);
    }
    
    protected function private_core()
    {
       $this->check_menu();
-      $this->share_extensions();
 
       $this->colores = array("gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
       
@@ -63,13 +63,35 @@ class opciones_factura_detallada extends fs_controller
       }
    }
    
-   private function share_extensions()
-   {
-   }
-   
+   /**
+    * Activamos las páginas del plugin.
+    */
    private function check_menu()
    {
-
+      if( file_exists(__DIR__) )
+      {
+         /// activamos las páginas del plugin
+         foreach( scandir(__DIR__) as $f)
+         {
+            if( is_string($f) AND strlen($f) > 0 AND !is_dir($f) AND $f != __CLASS__.'.php' )
+            {
+               $page_name = substr($f, 0, -4);
+               
+               require_once __DIR__.'/'.$f;
+               $new_fsc = new $page_name();
+                  
+               if( !$new_fsc->page->save() )
+               {
+                  $this->new_error_msg("Imposible guardar la página ".$page_name);
+               }
+               
+               unset($new_fsc);
+            }
+         }
+      }
+      else
+      {
+         $this->new_error_msg('No se encuentra el directorio '.__DIR__);
+      }
    }
-
 }
