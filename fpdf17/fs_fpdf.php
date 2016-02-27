@@ -67,6 +67,18 @@ class PDF_MC_Table extends FPDF {
       if ($a == 'azul') {
          $this->SetFillColor(120, 158, 253);
       }
+      if ($a == 'naranja') {
+         $this->SetFillColor(255, 141, 0);
+      }
+      if ($a == 'amarillo') {
+         $this->SetFillColor(255, 255, 0);
+      }
+      if ($a == 'marron') {
+         $this->SetFillColor(100, 50, 0);
+      }
+      if ($a == 'blanco') {
+         $this->SetFillColor(245, 245, 245);
+      }
    }
 
    //Cabecera de pagina
