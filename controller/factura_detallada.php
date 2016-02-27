@@ -120,7 +120,13 @@ class factura_detallada extends fs_controller {
       $pdf_doc->SetAutoPageBreak(true, 40);
 
       // Definimos el color de relleno (gris, rojo, verde, azul)
-      $pdf_doc->SetColorRelleno('azul');
+      /// cargamos la configuración
+      $fsvar = new fs_var();
+      $color = $fsvar->simple_get("f_detallada_color");
+      if ($color)
+      	$pdf_doc->SetColorRelleno($color);
+      else
+      	$pdf_doc->SetColorRelleno('azul');
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa

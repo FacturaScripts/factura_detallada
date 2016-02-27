@@ -4,4 +4,5 @@ Añade un nuevo formato de impresión de facturas de venta.
    <li>Sólo es posible incluir un máximo de 3 lineas de IVA en la impresion de la factura.</li>
    <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como Marcadeagua en el fondo del documento.</li>
    <li>El Logo NO debe de incluir los datos de la empresa. Solo la imagen corporativa.</li>
+   <li>Puedes elegir el color de la factura para adaptarlo mejor a tu imagen corporativa (en las opciones del plugin).</li>
 </ul>
