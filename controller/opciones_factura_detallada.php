@@ -65,14 +65,6 @@ class opciones_factura_detallada extends fs_controller
    
    private function share_extensions()
    {
-      /*$fsext = new fs_extension();
-      $fsext->name = 'opciones_factura_detallada';
-      $fsext->from = __CLASS__;
-      $fsext->to = 'ventas_servicios';
-      $fsext->type = 'button';
-      $fsext->text = '<span class="glyphicon glyphicon-cog" aria-hidden="true">'
-              . '</span><span class="hidden-xs">&nbsp; Opciones</span>';
-      $fsext->save();*/
    }
    
    private function check_menu()
