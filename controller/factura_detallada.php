@@ -67,7 +67,8 @@ class factura_detallada extends fs_controller {
          if (isset($_POST['email'])) {
             $this->enviar_email('factura', $_REQUEST['tipo']);
          } else {
-            $this->generar_pdf();
+            $filename = 'factura_' . $this->factura->codigo . '.pdf';
+            $this->generar_pdf(FALSE, $filename);
          }
       } else {
          $this->new_error_msg("¡Factura de cliente no encontrada!");
@@ -88,7 +89,7 @@ class factura_detallada extends fs_controller {
       return $mostrar;
    }
 
-   public function generar_pdf($archivo = FALSE) {
+   public function generar_pdf($archivomail = FALSE, $archivodownload = FALSE) {
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
       ob_end_clean();
@@ -313,12 +314,14 @@ class factura_detallada extends fs_controller {
       }
 
       // Damos salida al archivo PDF
-      if ($archivo) {
+      if ($archivomail) {
          if (!file_exists('tmp/' . FS_TMP_NAME . 'enviar')) {
             mkdir('tmp/' . FS_TMP_NAME . 'enviar');
          }
 
-         $pdf_doc->Output('tmp/' . FS_TMP_NAME . 'enviar/' . $archivo, 'F');
+         $pdf_doc->Output('tmp/' . FS_TMP_NAME . 'enviar/' . $archivomail, 'F');
+      } elseif ($archivodownload) {
+         $pdf_doc->Output($archivodownload, 'I');
       } else {
          $pdf_doc->Output();
       }
