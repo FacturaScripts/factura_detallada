@@ -38,6 +38,7 @@ class opciones_factura_detallada extends fs_controller
    protected function private_core()
    {
       $this->check_menu();
+      $this->share_extension();
 
       $this->colores = array("gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
       
@@ -61,6 +62,17 @@ class opciones_factura_detallada extends fs_controller
          else
             $this->new_error_msg('Error al guardar los datos.');
       }
+   }
+   
+   private function share_extension()
+   {
+      $fsext = new fs_extension();
+      $fsext->name = 'opciones_fac_detallada';
+      $fsext->from = __CLASS__;
+      $fsext->to = 'admin_empresa';
+      $fsext->type = 'button';
+      $fsext->text = '<span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; Factura Detallada';
+      $fsext->save();
    }
    
    /**
