@@ -29,6 +29,8 @@ require_model('articulo.php');
 require_model('divisa.php');
 require_model('pais.php');
 require_model('forma_pago.php');
+require_model('cuenta_banco.php');
+require_model('cuenta_banco_cliente.php');
 require_once 'extras/phpmailer/class.phpmailer.php';
 require_once 'extras/phpmailer/class.smtp.php';
 
@@ -49,7 +51,8 @@ class factura_detallada extends fs_controller {
       $this->impresion = array(
           'print_ref' => '1',
           'print_dto' => '1',
-          'print_alb' => '0'
+          'print_alb' => '0',
+          'print_formapago' => '1'
       );
       $fsvar = new fs_var();
       $this->impresion = $fsvar->array_get($this->impresion, FALSE);
@@ -185,12 +188,10 @@ class factura_detallada extends fs_controller {
 
       $pdf_doc->fdf_epago = $pdf_doc->fdf_divisa = $pdf_doc->fdf_pais = '';
 
-      // Forma de Pago de la Factura
-      $pago = new forma_pago();
-      $epago = $pago->get($this->factura->codpago);
-      if ($epago) {
-         $pdf_doc->fdf_epago = $epago->descripcion;
-      }
+      // Forma de Pago de la Factura  
+      $formapago = $this->_genera_formapago();
+      $pdf_doc->fdf_epago = $formapago;
+      
 
       // Divisa de la Factura
       $divisa = new divisa();
@@ -468,4 +469,51 @@ class factura_detallada extends fs_controller {
       }
    }
 
+  
+   private function _genera_formapago() 
+   {
+		$texto_pago = array();
+		if (! $this->factura->pagada and $this->impresion ['print_formapago']) {
+			$fp0 = new forma_pago ();
+			$forma_pago = $fp0->get ( $this->factura->codpago );
+			if ($forma_pago) 
+			{
+				$texto_pago[] = $forma_pago->descripcion;
+				if ($forma_pago->domiciliado) {
+					$cbc0 = new cuenta_banco_cliente ();
+					$encontrada = FALSE;
+					foreach ( $cbc0->all_from_cliente ( $this->factura->codcliente ) as $cbc ) {
+						$tmp_textopago = "Domiciliado en: ";
+						if ($cbc->iban) {
+							$texto_pago[] = $tmp_textopago. $cbc->iban ( TRUE );
+						}
+						
+						if ($cbc->swift) {
+							$texto_pago[] = "SWIFT/BIC: " . $cbc->swift;
+						}
+						$encontrada = TRUE;
+						break;
+					}
+					if (! $encontrada) {
+						$texto_pago[] = "Cliente sin cuenta bancaria asignada";
+					}
+				} else if ($forma_pago->codcuenta) {
+					$cb0 = new cuenta_banco ();
+					$cuenta_banco = $cb0->get ( $forma_pago->codcuenta );
+					if ($cuenta_banco) {
+						if ($cuenta_banco->iban) {
+							$texto_pago[] = "IBAN: " . $cuenta_banco->iban ( TRUE );
+						}
+						
+						if ($cuenta_banco->swift) {
+							$texto_pago[] = "SWIFT o BIC: " . $cuenta_banco->swift;
+						}
+					}
+				}
+				
+				$texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
+			}
+		}
+		return $texto_pago;
+   }
 }

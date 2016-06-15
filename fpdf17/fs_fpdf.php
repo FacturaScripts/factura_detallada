@@ -164,7 +164,7 @@ class PDF_MC_Table extends FPDF {
       $this->addClientAdresse(utf8_decode($cliente));
 
       // Forma de Pago de la Factura
-      $this->addPago(utf8_decode($this->fdf_epago));
+      $this->addPago($this->fdf_epago);
 
       // Divisa de la Factura
       //$this->addDivisa(utf8_decode($this->fdf_divisa));
@@ -614,7 +614,7 @@ class PDF_MC_Table extends FPDF {
    // Cliente
    function addClientAdresse($adresse) {
       $r1 = $this->w - 97;
-      $y1 = 41;
+      $y1 = 38;
       $this->SetXY($r1, $y1);
       $this->AddFont('Verdana');
       $this->SetFont('Verdana', '', 10);
@@ -623,19 +623,40 @@ class PDF_MC_Table extends FPDF {
 
    // Forma de Pago
    function addPago($mode) {
-      $r1 = 150;
-      $r2 = $r1 + 50;
-      $y1 = 80;
-      $y2 = $y1 + 10;
+   	  $numlineas = count($mode);
+	  // default
+      $r1 = 110;
+      $r2 = $r1 + 90;
+      $y1 = 70;
+      $y2 = $y1 + 23;
+      if ($numlineas < 3)
+      {
+	      $r1 = 150;
+	      $r2 = $r1 + 50;
+	      $y1 = 75;
+	      $y2 = $y1 + 15;
+      }
       $mid = $y1 + (($y2 - $y1) / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 2.5, 'D');
-      $this->Line($r1, $mid, $r2, $mid);
-      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);
+      $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
+      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);      
       $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 4, "FORMA DE PAGO", 0, 0, "C");
-      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 5);
-      $this->SetFont("Arial", "", 9);
-      $this->Cell(10, 5, $mode, 0, 0, "C");
+      $this->Cell(10, 4, "FORMA DE PAGO", 0, 0, "C");      
+      $salto = 4;
+      $just = 'L';
+      if ($numlineas < 3)
+      {
+      	$this->SetFont("Arial", "", 9);
+      	$this->SetXY($r1 + 3 , $y1 + 6);    
+      	$just = 'C';
+      }
+      else 
+      {
+      	$this->SetFont("Arial", "", 8);
+      	$this->SetXY($r1 + 3 , $y1 + 6);
+      }
+      foreach ($mode as $lin)
+      	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
    }
 
    // Divisa
