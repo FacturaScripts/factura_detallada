@@ -473,13 +473,13 @@ class factura_detallada extends fs_controller {
    private function _genera_formapago() 
    {
 		$texto_pago = array();
-		if (! $this->factura->pagada and $this->impresion ['print_formapago']) {
-			$fp0 = new forma_pago ();
-			$forma_pago = $fp0->get ( $this->factura->codpago );
-			if ($forma_pago) 
-			{
-				$texto_pago[] = $forma_pago->descripcion;
-				if ($forma_pago->domiciliado) {
+      $fp0 = new forma_pago();
+      
+      $forma_pago = $fp0->get($this->factura->codpago);
+      if($forma_pago)
+		{
+         $texto_pago[] = $forma_pago->descripcion;
+			if($forma_pago->domiciliado) {
 					$cbc0 = new cuenta_banco_cliente ();
 					$encontrada = FALSE;
 					foreach ( $cbc0->all_from_cliente ( $this->factura->codcliente ) as $cbc ) {
@@ -497,7 +497,7 @@ class factura_detallada extends fs_controller {
 					if (! $encontrada) {
 						$texto_pago[] = "Cliente sin cuenta bancaria asignada";
 					}
-				} else if ($forma_pago->codcuenta) {
+			} else if ($forma_pago->codcuenta) {
 					$cb0 = new cuenta_banco ();
 					$cuenta_banco = $cb0->get ( $forma_pago->codcuenta );
 					if ($cuenta_banco) {
@@ -509,11 +509,11 @@ class factura_detallada extends fs_controller {
 							$texto_pago[] = "SWIFT o BIC: " . $cuenta_banco->swift;
 						}
 					}
-				}
-				
-				$texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
 			}
+         
+         $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
 		}
-		return $texto_pago;
+      
+      return $texto_pago;
    }
 }

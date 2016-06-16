@@ -953,19 +953,19 @@ class PDF_MC_Table extends FPDF {
                case 2:
                   if ($xcifra < 1) {
                      if ($convert00decimal)
-                        $xcadena = "CERO con $xdecimales";
+                        $xcadena = "CERO con $xdecimales cent.";
                      else
                         $xcadena = "CERO";
                   }
                   if ($xcifra >= 1 && $xcifra < 2) {
                      if ($convert00decimal)
-                        $xcadena = "UNO con $xdecimales";
+                        $xcadena = "UNO con $xdecimales cent.";
                      else
                         $xcadena = "UNO";
                   }
                   if ($xcifra >= 2) {
                      if ($convert00decimal)
-                        $xcadena.= " con $xdecimales";
+                        $xcadena.= " con $xdecimales cent.";
                   }
                   break;
             } // endswitch ($xz)
