@@ -359,7 +359,10 @@ class factura_detallada extends fs_controller {
       $newt = str_replace('&gt;', '>', $newt);
       $newt = str_replace('&quot;', '"', $newt);
       $newt = str_replace('&#39;', "'", $newt);
-      $newt = str_replace('&quot;', '"', $newt);
+      $newt = str_replace('&#8211;', '-', $newt);
+      $newt = str_replace('&#8212;', '-', $newt);
+      $newt = str_replace('&#8213;', '-', $newt);
+      $newt = str_replace('–', '-', $newt);
       //$newt = str_replace('€','EUR', $newt);
       return $newt;
    }
