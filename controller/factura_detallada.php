@@ -335,14 +335,15 @@ class factura_detallada extends fs_controller {
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
               'type' => 'pdf',
-              'text' => 'Factura detallada',
+              'text' => '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada',
               'params' => ''
           ),
           array(
               'name' => 'email_factura_detallada',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
-              'type' => 'email', 'text' => ucfirst(FS_FACTURA) . ' detallada',
+              'type' => 'email',
+              'text' => ucfirst(FS_FACTURA) . ' detallada',
               'params' => '&factura=TRUE&tipo=detallada'
           )
       );
