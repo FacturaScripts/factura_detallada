@@ -107,26 +107,34 @@ class PDF_MC_Table extends FPDF {
       $this->addSociete(utf8_decode($this->fde_nombre), utf8_decode($direccion), utf8_decode($this->fde_email), utf8_decode($this->fde_web));
 
       //Logotipo
-      if ($this->fdf_verlogotipo == '1') {
-         if (file_exists('tmp/' . FS_TMP_NAME . 'logo.png')) {
-            $this->Image('tmp/' . FS_TMP_NAME . 'logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
-         } else if (file_exists('tmp/' . FS_TMP_NAME . 'logo.jpg')) {
-            $this->Image('tmp/' . FS_TMP_NAME . 'logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
+      if($this->fdf_verlogotipo == '1')
+      {
+         if( file_exists(FS_MYDOCS.'images/logo.png') )
+         {
+            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
+         }
+         else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
+         {
+            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
          }
 
          $this->Ln(0);
       }
 
       //Marca de agua
-      if ($this->fdf_vermarcaagua == '1') {
+      if($this->fdf_vermarcaagua == '1')
+      {
          // set alpha to semi-transparency
          $this->SetAlpha(0.05);
 
          // draw png image
-         if (file_exists('tmp/' . FS_TMP_NAME . 'logo.png')) {
-            $this->Image('tmp/' . FS_TMP_NAME . 'logo.png', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
-         } else if (file_exists('tmp/' . FS_TMP_NAME . 'logo.jpg')) {
-            $this->Image('tmp/' . FS_TMP_NAME . 'logo.jpg', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
+         if( file_exists(FS_MYDOCS.'images/logo.png') )
+         {
+            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
+         }
+         else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
+         {
+            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
          }
 
          // restore full opacity

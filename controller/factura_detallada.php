@@ -148,14 +148,17 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fde_piefactura = $this->empresa->pie_factura;
 
       /// Insertamos el Logo y Marca de Agua
-      if (file_exists('tmp/' . FS_TMP_NAME . 'logo.png') OR file_exists('tmp/' . FS_TMP_NAME . 'logo.jpg')) {
+      if( file_exists(FS_MYDOCS.'images/logo.png') OR file_exists(FS_MYDOCS.'images/logo.jpg') )
+      {
          $pdf_doc->fdf_verlogotipo = '1'; // 1/0 --> Mostrar Logotipo
          $pdf_doc->fdf_Xlogotipo = '15'; // Valor X para Logotipo
          $pdf_doc->fdf_Ylogotipo = '35'; // Valor Y para Logotipo
          $pdf_doc->fdf_vermarcaagua = '1'; // 1/0 --> Mostrar Marca de Agua
          $pdf_doc->fdf_Xmarcaagua = '25'; // Valor X para Marca de Agua
          $pdf_doc->fdf_Ymarcaagua = '110'; // Valor Y para Marca de Agua
-      } else {
+      }
+      else
+      {
          $pdf_doc->fdf_verlogotipo = '0';
          $pdf_doc->fdf_Xlogotipo = '0';
          $pdf_doc->fdf_Ylogotipo = '0';
