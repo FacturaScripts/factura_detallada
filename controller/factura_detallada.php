@@ -2,9 +2,9 @@
 
 /*
  * This file is part of FacturaSctipts
- * Copyright (C) 2014  Valentín González    valengon@hotmail.com
- * Copyright (C) 2014-2015  Carlos Garcia Gomez  neorazorx@gmail.com
- * Copyright (C) 2015-2016  César Sáez Rodríguez  NATHOO@lacalidad.es
+ * Copyright (C) 2014      Valentín González    valengon@hotmail.com
+ * Copyright (C) 2014-2016 Carlos Garcia Gomez  neorazorx@gmail.com
+ * Copyright (C) 2015-2016 César Sáez Rodríguez  NATHOO@lacalidad.es
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -388,23 +388,7 @@ class factura_detallada extends fs_controller {
 
          if (file_exists('tmp/' . FS_TMP_NAME . 'enviar/' . $filename)) 
          {
-         	$mail = new PHPMailer();
-         	$mail->CharSet = 'UTF-8';
-         	$mail->WordWrap = 50;
-         	$mail->isSMTP();
-         	$mail->SMTPAuth = TRUE;
-         	$mail->SMTPSecure = $this->empresa->email_config['mail_enc'];
-         	$mail->Host = $this->empresa->email_config['mail_host'];
-         	$mail->Port = intval($this->empresa->email_config['mail_port']);
-         	
-         	$mail->Username = $this->empresa->email;
-         	if($this->empresa->email_config['mail_user'] != '')
-         	{
-         		$mail->Username = $this->empresa->email_config['mail_user'];
-         	}
-         	
-         	$mail->Password = $this->empresa->email_config['mail_password'];
-         	$mail->From = $this->empresa->email;
+            $mail = $this->empresa->new_mail();
          	$mail->FromName = $this->user->get_agente_fullname();
          	$mail->addReplyTo($_POST['de'], $mail->FromName);
          	
@@ -420,12 +404,8 @@ class factura_detallada extends fs_controller {
          			$mail->addCC($_POST['email_copia'], $this->cliente->razonsocial);
          		}
          	}
-         	if($this->empresa->email_config['mail_bcc'])
-         	{
-         		$mail->addBCC($this->empresa->email_config['mail_bcc']);
-         	}  
 
-            if ($doc == 'factura')
+            if($doc == 'factura')
             {
                $mail->Subject = $this->empresa->nombre . ': Su factura ' . $this->factura->codigo;
             }
@@ -439,19 +419,7 @@ class factura_detallada extends fs_controller {
                $mail->addAttachment($_FILES['adjunto']['tmp_name'], $_FILES['adjunto']['name']);
             }
             
-            $SMTPOptions = array();
-            if($this->empresa->email_config['mail_low_security'])
-            {
-               $SMTPOptions = array(
-                   'ssl' => array(
-                       'verify_peer' => false,
-                       'verify_peer_name' => false,
-                       'allow_self_signed' => true
-                   )
-               );
-            }
-            
-            if( $mail->smtpConnect($SMTPOptions) )
+            if( $this->empresa->mail_connect($mail) )
             {
                if( $mail->send() )
                {
@@ -462,7 +430,7 @@ class factura_detallada extends fs_controller {
                   {
                      $this->factura->femail = $this->today();
                      $this->factura->save();
-                  }                  
+                  }
                }
                else
                   $this->new_error_msg("Error al enviar el email: " . $mail->ErrorInfo);
