@@ -95,7 +95,6 @@ class factura_detallada extends fs_controller {
    public function generar_pdf($archivomail = FALSE, $archivodownload = FALSE) {
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
-      ob_end_clean();
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
       define('EEURO', chr(128));
       $lineas = $this->factura->get_lineas();
@@ -195,7 +194,6 @@ class factura_detallada extends fs_controller {
       $formapago = $this->_genera_formapago();
       $pdf_doc->fdf_epago = $formapago;
       
-
       // Divisa de la Factura
       $divisa = new divisa();
       $edivisa = $divisa->get($this->factura->coddivisa);
@@ -210,9 +208,6 @@ class factura_detallada extends fs_controller {
          $pdf_doc->fdf_pais = $epais->nombre;
       }
       
-      
-     
-
       // Cabecera Titulos Columnas
       if($this->impresion['print_dto'])
       {
@@ -318,15 +313,23 @@ class factura_detallada extends fs_controller {
       }
 
       // Damos salida al archivo PDF
-      if ($archivomail) {
-         if (!file_exists('tmp/' . FS_TMP_NAME . 'enviar')) {
+      if($archivomail)
+      {
+         if( !file_exists('tmp/' . FS_TMP_NAME . 'enviar') )
+         {
             mkdir('tmp/' . FS_TMP_NAME . 'enviar');
          }
-
+         
          $pdf_doc->Output('tmp/' . FS_TMP_NAME . 'enviar/' . $archivomail, 'F');
-      } elseif ($archivodownload) {
+      }
+      else if($archivodownload)
+      {
+         ob_end_clean();
          $pdf_doc->Output($archivodownload, 'I');
-      } else {
+      }
+      else
+      {
+         ob_end_clean();
          $pdf_doc->Output();
       }
    }
