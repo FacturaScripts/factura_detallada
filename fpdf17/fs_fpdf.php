@@ -169,6 +169,10 @@ class PDF_MC_Table extends FPDF {
       if ($this->fdc_email) {
          $cliente .= "Email: " . $this->fdc_email . "\n";
       }
+	  if ($this->fdc_orden) {
+         $cliente .= "N Orden: " . $this->fdc_orden . "\n";
+      }
+
       $this->addClientAdresse(utf8_decode($cliente));
 
       // Forma de Pago de la Factura
@@ -265,6 +269,7 @@ class PDF_MC_Table extends FPDF {
 
       // En Ultimo lugar escribimos La descripcion del articulo
       $this->SetXY($x1, $y);
+
       $w = $this->widths[$ultimo];
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
       $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
