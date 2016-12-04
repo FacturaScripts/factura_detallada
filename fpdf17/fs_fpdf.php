@@ -111,11 +111,15 @@ class PDF_MC_Table extends FPDF {
       {
          if( file_exists(FS_MYDOCS.'images/logo.png') )
          {
-            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
+            list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.png');
+            $factor_tamano = 10000 / $alto;
+            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $factor_tamano);
          }
          else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
          {
-            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 50);
+            list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.jpg');
+            $factor_tamano = 10000 / $alto;
+            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $factor_tamano);
          }
 
          $this->Ln(0);
