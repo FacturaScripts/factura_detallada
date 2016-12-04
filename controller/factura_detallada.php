@@ -168,7 +168,7 @@ class factura_detallada extends fs_controller {
 
       // Tipo de Documento
       $pdf_doc->fdf_tipodocumento = 'FACTURA'; // (FACTURA, FACTURA PROFORMA, ¿ALBARAN, PRESUPUESTO?...)
-      $pdf_doc->fdf_codigo = $this->factura->codigo . " " . $this->factura->numero2;
+      $pdf_doc->fdf_codigo = $this->factura->codigo;
 
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
@@ -187,7 +187,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fdc_telefono2 = $this->cliente->telefono2;
       $pdf_doc->fdc_fax = $this->cliente->fax;
       $pdf_doc->fdc_email = $this->cliente->email;
-	  $pdf_doc->fdc_orden = $this->factura->numero2;
+      $pdf_doc->fdc_orden = $this->factura->numero2;
 
       $pdf_doc->fdf_epago = $pdf_doc->fdf_divisa = $pdf_doc->fdf_pais = '';
 
