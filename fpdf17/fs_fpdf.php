@@ -859,7 +859,8 @@ class PDF_MC_Table extends FPDF {
           100 => "CIENTO", 200 => "DOSCIENTOS", 300 => "TRESCIENTOS", 400 => "CUATROCIENTOS", 500 => "QUINIENTOS", 600 => "SEISCIENTOS", 700 => "SETECIENTOS", 800 => "OCHOCIENTOS", 900 => "NOVECIENTOS"
       );
       //
-      $xcifra = trim($xcifra);
+      $xcifra_org = $xcifra;
+      $xcifra = trim(abs($xcifra));
       $xlength = strlen($xcifra);
       $xpos_punto = strpos($xcifra, ".");
       $xaux_int = $xcifra;
@@ -1002,7 +1003,10 @@ class PDF_MC_Table extends FPDF {
       } // ENDFOR ($xz)
 
       $xcadena = str_replace("UN MIL ", "MIL ", $xcadena); // quito el BUG de UN MIL
-      return trim($xcadena);
+      if($xcifra_org < 0)
+        return trim("(Menos) " . $xcadena);
+      else
+        return trim($xcadena);
    }
 
    // END FUNCTION
