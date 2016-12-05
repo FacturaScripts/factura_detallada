@@ -527,7 +527,13 @@ class PDF_MC_Table extends FPDF {
       $x1 = 10;
       $y1 = 8;
       $this->SetXY($x1, $y1);
-      $this->SetFont('Arial', 'B', 12);
+      // Nombre empresa > 43 caracteres reducimos tamaño de letra > 57, recort.
+      if(strlen($nom) > 43) {
+          $this->SetFont('Arial', 'B', 9);
+          if(strlen($nom) > 56 )
+              $nom = substr ($nom, 0, 54) . "...";
+      } else
+          $this->SetFont('Arial', 'B', 12);
       $this->SetTextColor(0);
       $length = $this->GetStringWidth($nom);
       $this->Cell($length, 4, $nom);
