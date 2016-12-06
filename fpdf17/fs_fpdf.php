@@ -83,6 +83,9 @@ class PDF_MC_Table extends FPDF {
 
    //Cabecera de pagina
    function Header() {
+       // Creamos el recuadro de la empresa
+       $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
+
       // Datos de la empresa
       $direccion = $this->fde_FS_CIFNIF . ": " . utf8_decode($this->fde_cifnif) . "\n" . $this->fde_direccion;
       if ($this->fde_codpostal && $this->fde_ciudad) {
@@ -217,12 +220,14 @@ class PDF_MC_Table extends FPDF {
       $this->SetY($aquiY);
       $aquiX = $this->GetX();
 
-      $this->SetDrawColor(0, 0, 0);
+      $this->SetDrawColor(210, 210, 210);
       $this->SetTextColor(0);
       for ($i = 0; $i < count($this->datoscab); $i++) {
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], 155, 1, 'D');
+         $numero_filas = $this->numero_lineas;
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $numero_filas * 5, 1, 'D');
          $aquiX += $this->widths[$i];
       }
+      $this->SetDrawColor(0, 0, 0);
    }
 
    //Pie de pagina
@@ -733,11 +738,8 @@ class PDF_MC_Table extends FPDF {
    // Incluir Observaciones	
    function addObservaciones($observa) {
       $this->SetFont("Arial", "I", 8);
-      $length = $this->GetStringWidth("Observaciones: " . $observa);
-      if ($length <= 135)
-         $this->SetXY(10, $this->h - 37.5);
-      else
-         $this->SetXY(10, $this->h - 39.5);
+      $this->Line(10, 110 +($this->numero_lineas * 5), 160, 110 +($this->numero_lineas * 5));
+      $this->SetXY(10, 112 + ($this->numero_lineas * 5) );
       $this->MultiCell($this->w - 20, 4, "Observaciones: " . $observa);
    }
 

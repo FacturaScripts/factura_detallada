@@ -98,6 +98,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
       define('EEURO', chr(128));
       $lineas = $this->factura->get_lineas();
+      $pdf_doc->numero_lineas = count($lineas);
       if($this->impresion['print_dto'])
       {
          $this->impresion['print_dto'] = FALSE;
