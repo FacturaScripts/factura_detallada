@@ -753,10 +753,12 @@ class PDF_MC_Table extends FPDF {
 
    // Incluir Observaciones	
    function addObservaciones($observa) {
+      $this->SetFont("Arial", "B", 8);
+      $this->Text(10, 109 +($this->numero_lineas * 5), "Observaciones: ");
       $this->SetFont("Arial", "I", 8);
-      $this->Line(10, 110 +($this->numero_lineas * 5), 160, 110 +($this->numero_lineas * 5));
+      $this->Line(10, 110 +($this->numero_lineas * 5), 200, 110 +($this->numero_lineas * 5));
       $this->SetXY(10, 112 + ($this->numero_lineas * 5) );
-      $this->MultiCell($this->w - 20, 4, "Observaciones: " . $observa);
+      $this->MultiCell($this->w - 20, 4, $observa);
    }
 
    // Incluir Lineas de Iva
