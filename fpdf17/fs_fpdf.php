@@ -106,6 +106,15 @@ class PDF_MC_Table extends FPDF {
       }
       $this->addSociete(utf8_decode($this->fde_nombre), utf8_decode($direccion), utf8_decode($this->fde_email), utf8_decode($this->fde_web));
 
+      // Añado si es rectificativa la info sobre la factura
+      if($this->codserie == "R") {
+          $this->SetTextColor(255,0,0);
+          $this->SetXY(114, 65);
+          $this->SetFont('Arial', '', 14);
+          $this->Write(5, 'F. RECTIFICATIVA: ' . $this->codigorect);
+          $this->SetTextColor(0);
+      }
+
       //Logotipo
       if($this->fdf_verlogotipo == '1')
       {
@@ -684,6 +693,7 @@ class PDF_MC_Table extends FPDF {
       }
       foreach ($mode as $lin)
       	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
+
    }
 
    // Divisa

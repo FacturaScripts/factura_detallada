@@ -122,6 +122,11 @@ class factura_detallada extends fs_controller {
       $pdf_doc->AliasNbPages();
       $pdf_doc->SetAutoPageBreak(true, 40);
 
+      // Sacamos si es una factura rectificativa y tomamos el codigo de factura
+      $pdf_doc->codserie = $this->factura->codserie;
+      if($pdf_doc->codserie == "R")
+          $pdf_doc->codigorect = $this->factura->codigorect;
+
       // Definimos el color de relleno (gris, rojo, verde, azul)
       /// cargamos la configuración
       $fsvar = new fs_var();
@@ -491,7 +496,7 @@ class factura_detallada extends fs_controller {
 					}
 			}
          
-         $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
+                    $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
 		}
       
       return $texto_pago;
