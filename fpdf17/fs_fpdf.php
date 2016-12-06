@@ -20,6 +20,7 @@
  */
 
 require_once 'plugins/factura_detallada/fpdf17/fpdf.php';
+require_once 'plugins/factura_detallada/qrcode/qrcode.class.php';
 
 class PDF_MC_Table extends FPDF {
 
@@ -108,6 +109,21 @@ class PDF_MC_Table extends FPDF {
          $direccion .= "\n" . $this->fde_fax;
       }
       $this->addSociete(utf8_decode($this->fde_nombre), utf8_decode($direccion), utf8_decode($this->fde_email), utf8_decode($this->fde_web));
+
+      $cadena = 'BEGIN:VCARD' . "\n";
+      $cadena .= 'VERSION:2.1' . "\n";
+      $cadena .= 'ORG:' . $this->fde_nombre . "\n";
+      $cadena .= 'ADR;WORK:;;' . $this->fde_direccion . ';' . $this->fde_ciudad . ';;' . $this->fde_codpostal . "\n";
+      $cadena .= 'EMAIL:' . $this->fde_email . "\n";
+      $cadena .= 'END:VCARD';
+
+      $qrcode = new QRcode($cadena, 'L');
+      $qrcode->disableBorder();
+      $background=array(255,255,255);
+      $color=array(0,0,0);
+      $qrcode->displayFPDF($this, 86, 13, 20, $background, $color);
+      unset($qrcode);
+      $this->SetColorRelleno($this->color_rellono);
 
       // Añado si es rectificativa la info sobre la factura
       if($this->codserie == "R") {

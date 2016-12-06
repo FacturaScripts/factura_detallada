@@ -132,10 +132,13 @@ class factura_detallada extends fs_controller {
       /// cargamos la configuración
       $fsvar = new fs_var();
       $color = $fsvar->simple_get("f_detallada_color");
-      if ($color)
+      if ($color) {
       	$pdf_doc->SetColorRelleno($color);
-      else
+        $pdf_doc->color_rellono = $color;
+      } else {
       	$pdf_doc->SetColorRelleno('azul');
+        $pdf_doc->color_rellono = 'azul';
+      }
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa
