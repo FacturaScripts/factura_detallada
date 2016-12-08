@@ -221,14 +221,14 @@ class factura_detallada extends fs_controller {
       // Cabecera Titulos Columnas
       if($this->impresion['print_dto'])
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
       else
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 107, 10, 20, 15, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R','R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
@@ -289,12 +289,17 @@ class factura_detallada extends fs_controller {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
             }
+
+            $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
+            if(strlen($descripcion_retocada) > 60)
+                $descripcion_retocada = substr ($descripcion_retocada, 0, 57) . "...";
+            $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    // '0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($descripcion_retocada),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -306,9 +311,9 @@ class factura_detallada extends fs_controller {
             else 
             {
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($this->fix_html($lineas[$i]->descripcion))) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    //'0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($descripcion_retocada),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
