@@ -291,11 +291,11 @@ class factura_detallada extends fs_controller {
             }
 
             $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
-            if(strlen($descripcion_retocada) > 60)
-                $descripcion_retocada = substr ($descripcion_retocada, 0, 57) . "...";
             $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
+                if(strlen($descripcion_retocada) > 55)
+                    $descripcion_retocada = substr ($descripcion_retocada, 0, 52) . "...";
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
                     // '0' => utf8_decode($lineas[$i]->albaran_numero()),
@@ -310,6 +310,8 @@ class factura_detallada extends fs_controller {
             }
             else 
             {
+                if(strlen($descripcion_retocada) > 60)
+                    $descripcion_retocada = substr ($descripcion_retocada, 0, 57) . "...";
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
                     //'0' => utf8_decode($lineas[$i]->albaran_numero()),
