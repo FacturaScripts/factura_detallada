@@ -41,7 +41,7 @@ class factura_detallada extends fs_controller {
    public $impresion;
 
    public function __construct() {
-      parent::__construct(__CLASS__, 'Factura Detallada', 'ventas', FALSE, FALSE);
+      parent::__construct(__CLASS__, 'Factura Detallada2', 'ventas', FALSE, FALSE);
    }
 
    protected function private_core() {
@@ -98,6 +98,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
       define('EEURO', chr(128));
       $lineas = $this->factura->get_lineas();
+      $pdf_doc->numero_lineas = count($lineas);
       if($this->impresion['print_dto'])
       {
          $this->impresion['print_dto'] = FALSE;
@@ -122,14 +123,22 @@ class factura_detallada extends fs_controller {
       $pdf_doc->AliasNbPages();
       $pdf_doc->SetAutoPageBreak(true, 40);
 
+      // Sacamos si es una factura rectificativa y tomamos el codigo de factura
+      $pdf_doc->codserie = $this->factura->codserie;
+      if($pdf_doc->codserie == "R")
+          $pdf_doc->codigorect = $this->factura->codigorect;
+
       // Definimos el color de relleno (gris, rojo, verde, azul)
       /// cargamos la configuración
       $fsvar = new fs_var();
       $color = $fsvar->simple_get("f_detallada_color");
-      if ($color)
+      if ($color) {
       	$pdf_doc->SetColorRelleno($color);
-      else
+        $pdf_doc->color_rellono = $color;
+      } else {
       	$pdf_doc->SetColorRelleno('azul');
+        $pdf_doc->color_rellono = 'azul';
+      }
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa
@@ -168,7 +177,7 @@ class factura_detallada extends fs_controller {
 
       // Tipo de Documento
       $pdf_doc->fdf_tipodocumento = 'FACTURA'; // (FACTURA, FACTURA PROFORMA, ¿ALBARAN, PRESUPUESTO?...)
-      $pdf_doc->fdf_codigo = $this->factura->codigo . " " . $this->factura->numero2;
+      $pdf_doc->fdf_codigo = $this->factura->codigo;
 
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
@@ -187,6 +196,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fdc_telefono2 = $this->cliente->telefono2;
       $pdf_doc->fdc_fax = $this->cliente->fax;
       $pdf_doc->fdc_email = $this->cliente->email;
+      $pdf_doc->fdc_orden = $this->factura->numero2;
 
       $pdf_doc->fdf_epago = $pdf_doc->fdf_divisa = $pdf_doc->fdf_pais = '';
 
@@ -211,14 +221,14 @@ class factura_detallada extends fs_controller {
       // Cabecera Titulos Columnas
       if($this->impresion['print_dto'])
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
       else
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 107, 10, 20, 15, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R','R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
@@ -279,12 +289,17 @@ class factura_detallada extends fs_controller {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
             }
+
+            $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
+            $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
+                if(strlen($descripcion_retocada) > 55)
+                    $descripcion_retocada = substr ($descripcion_retocada, 0, 52) . "...";
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    // '0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($descripcion_retocada),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -295,10 +310,12 @@ class factura_detallada extends fs_controller {
             }
             else 
             {
+                if(strlen($descripcion_retocada) > 60)
+                    $descripcion_retocada = substr ($descripcion_retocada, 0, 57) . "...";
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($this->fix_html($lineas[$i]->descripcion))) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    //'0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($descripcion_retocada),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -337,15 +354,15 @@ class factura_detallada extends fs_controller {
    private function share_extensions() {
       $extensiones = array(
           array(
-              'name' => 'factura_detallada',
+              'name' => 'factura_detallada2',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
               'type' => 'pdf',
-              'text' => '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada',
+              'text' => '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada 2',
               'params' => ''
           ),
           array(
-              'name' => 'email_factura_detallada',
+              'name' => 'email_factura_detallada2',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
               'type' => 'email',
@@ -490,7 +507,7 @@ class factura_detallada extends fs_controller {
 					}
 			}
          
-         $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
+                    $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
 		}
       
       return $texto_pago;
