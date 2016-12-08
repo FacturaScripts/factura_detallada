@@ -5,4 +5,12 @@ Añade un nuevo formato de impresión de facturas de venta.
    <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como Marcadeagua en el fondo del documento.</li>
    <li>El Logo NO debe de incluir los datos de la empresa. Solo la imagen corporativa.</li>
    <li>Puedes elegir el color de la factura para adaptarlo mejor a tu imagen corporativa (en las opciones del plugin).</li>
+   <li>Modificado el logo para que no se solape con los textos.</li>
+   <li>Modificado el nombre de la empresa y las descripciones para que no haya solapes.</li>
+   <li>Modificado el layout para que quede más atractiva la factura.</li>
+   <li>Añadido el numero de albaran completo a la impresion.</li>
+   <li>Valores negativos a texto añaden el Menos.</li>
+   <li>Las observaciones pueden usar más espacio.</li>
+   <li>Si una linea no tiene precio la toma por una observación para la linea anterior.</li>
+
 </ul>

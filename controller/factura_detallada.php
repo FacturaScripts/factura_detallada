@@ -41,7 +41,7 @@ class factura_detallada extends fs_controller {
    public $impresion;
 
    public function __construct() {
-      parent::__construct(__CLASS__, 'Factura Detallada', 'ventas', FALSE, FALSE);
+      parent::__construct(__CLASS__, 'Factura Detallada2', 'ventas', FALSE, FALSE);
    }
 
    protected function private_core() {
@@ -354,15 +354,15 @@ class factura_detallada extends fs_controller {
    private function share_extensions() {
       $extensiones = array(
           array(
-              'name' => 'factura_detallada',
+              'name' => 'factura_detallada2',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
               'type' => 'pdf',
-              'text' => '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada',
+              'text' => '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada 2',
               'params' => ''
           ),
           array(
-              'name' => 'email_factura_detallada',
+              'name' => 'email_factura_detallada2',
               'page_from' => __CLASS__,
               'page_to' => 'ventas_factura',
               'type' => 'email',
