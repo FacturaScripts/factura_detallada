@@ -324,7 +324,10 @@ class factura_detallada extends fs_controller {
                     '5' => $this->ckeckEuro($lineas[$i]->total_iva())
                 );
             }
-            $pdf_doc->Row($lafila, '1'); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+            if(($i+1) < count($lineas))
+               $pdf_doc->Row($lafila, '1', true); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+            else
+               $pdf_doc->Row($lafila, '1', false); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
          }
          $pdf_doc->piepagina = true;
       }

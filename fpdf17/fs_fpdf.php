@@ -140,13 +140,13 @@ class PDF_MC_Table extends FPDF {
          if( file_exists(FS_MYDOCS.'images/logo.png') )
          {
             list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.png');
-            $factor_tamano = 10000 / $alto;
+            $factor_tamano = 100 * (100 / $alto);
             $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $factor_tamano);
          }
          else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
          {
             list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.jpg');
-            $factor_tamano = 10000 / $alto;
+            $factor_tamano = 100 * (100 / $alto);
             $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $factor_tamano);
          }
 
@@ -202,7 +202,7 @@ class PDF_MC_Table extends FPDF {
          $cliente .= "Email: " . $this->fdc_email . "\n";
       }
 	  if ($this->fdc_orden) {
-         $cliente .= "N Orden: " . $this->fdc_orden . "\n";
+         $cliente .= "N Pedido: " . $this->fdc_orden . "\n";
       }
 
       $this->addClientAdresse(utf8_decode($cliente));
@@ -239,8 +239,7 @@ class PDF_MC_Table extends FPDF {
       $this->SetDrawColor(210, 210, 210);
       $this->SetTextColor(0);
       for ($i = 0; $i < count($this->datoscab); $i++) {
-         $numero_filas = $this->numero_lineas;
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $numero_filas * 5, 1, 'D');
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], 10, 1, 'D');
          $aquiX += $this->widths[$i];
       }
       $this->SetDrawColor(0, 0, 0);
@@ -270,7 +269,7 @@ class PDF_MC_Table extends FPDF {
       }
    }
 
-   function Row($data, $ultimo = '1') {
+   function Row($data, $ultimo = '1', $haz_linea) {
       $this->SetFont('Arial', '', 8);
 
       // Guardamos la posicion Actual
@@ -337,10 +336,13 @@ class PDF_MC_Table extends FPDF {
       $aquiX = $this->GetX() + 0.155;
       $aquiY = $this->GetY();
       $this->SetDrawColor(200, 200, 200);
-      for ($i = 0; $i < count($this->datoscab); $i++) {
-         $finX = $this->widths[$i] + $aquiX - 0.316;
-         $this->Line($aquiX, $aquiY, $finX, $aquiY);
-         $aquiX = $finX + 0.316;
+      if($haz_linea)
+      {
+         for ($i = 0; $i < count($this->datoscab); $i++) {
+            $finX = $this->widths[$i] + $aquiX - 0.316;
+            $this->Line($aquiX, $aquiY, $finX, $aquiY);
+            $aquiX = $finX + 0.316;
+         }
       }
       $this->SetDrawColor(0, 0, 0);
       $this->SetTextColor(0);
