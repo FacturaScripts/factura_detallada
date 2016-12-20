@@ -302,7 +302,7 @@ function Close()
 	$this->_enddoc();
 }
 
-function AddPage($orientation='', $size='')
+function AddPage($lineas, $orientation='', $size='')
 {
 	// Start a new page
 	if($this->state==0)
@@ -345,7 +345,7 @@ function AddPage($orientation='', $size='')
 	$this->ColorFlag = $cf;
 	// Page header
 	$this->InHeader = true;
-	$this->Header();
+	$this->Header($lineas);
 	$this->InHeader = false;
 	// Restore line width
 	if($this->LineWidth!=$lw)

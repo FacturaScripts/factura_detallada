@@ -83,7 +83,7 @@ class PDF_MC_Table extends FPDF {
    }
 
    //Cabecera de pagina
-   function Header() {
+   function Header($lineas) {
        // Creamos el recuadro de la empresa
        $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
 
@@ -238,9 +238,18 @@ class PDF_MC_Table extends FPDF {
 
       $this->SetDrawColor(210, 210, 210);
       $this->SetTextColor(0);
+
+      $elementos = count($lineas);
+      $enters = 0;
+      for($i = 0; $i < $elementos; $i++)
+      {
+         $enters += substr_count($lineas[$i]->descripcion, chr(13))+1;
+      }
+      $enters = $enters / $elementos;
+
       for ($i = 0; $i < count($this->datoscab); $i++) {
          $numero_filas = $this->numero_lineas;
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $numero_filas * 5, 1, 'D');
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $enters * $numero_filas * 5, 1, 'D');
          $aquiX += $this->widths[$i];
       }
       $this->SetDrawColor(0, 0, 0);

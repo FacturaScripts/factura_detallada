@@ -270,7 +270,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fdf_textotal = $this->factura->total;
 
       /// Agregamos la pagina inicial de la factura
-      $pdf_doc->AddPage();
+      $pdf_doc->AddPage($lineas);
 
       // Lineas de la Factura
       //$lineas = $this->factura->get_lineas();
