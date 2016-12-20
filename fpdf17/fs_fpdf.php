@@ -239,7 +239,8 @@ class PDF_MC_Table extends FPDF {
       $this->SetDrawColor(210, 210, 210);
       $this->SetTextColor(0);
       for ($i = 0; $i < count($this->datoscab); $i++) {
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], 10, 1, 'D');
+         $numero_filas = $this->numero_lineas;
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $numero_filas * 5, 1, 'D');
          $aquiX += $this->widths[$i];
       }
       $this->SetDrawColor(0, 0, 0);
