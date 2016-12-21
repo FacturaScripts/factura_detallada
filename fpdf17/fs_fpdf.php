@@ -239,6 +239,11 @@ class PDF_MC_Table extends FPDF {
       $this->SetDrawColor(210, 210, 210);
       $this->SetTextColor(0);
 
+      /* Calcular el total de lineas y por lo tanto el largo del cuadro
+       * de datos, de esta manera se controla si hay lineas que contienen
+       * "Enter" y por lo tanto se prepara a medida de lo que vamos a
+       * poner, siempre con un límite de 155
+       */
       $elementos = count($lineas);
       $enters = 0;
       for($i = 0; $i < $elementos; $i++)
@@ -246,10 +251,13 @@ class PDF_MC_Table extends FPDF {
          $enters += substr_count($lineas[$i]->descripcion, chr(13))+1;
       }
       $enters = $enters / $elementos;
+      $total_largo = $enters * $numero_filas * 5;
+      if($total_largo > 155)
+         $total_largo = 155;
 
       for ($i = 0; $i < count($this->datoscab); $i++) {
          $numero_filas = $this->numero_lineas;
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $enters * $numero_filas * 5, 1, 'D');
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
          $aquiX += $this->widths[$i];
       }
       $this->SetDrawColor(0, 0, 0);
