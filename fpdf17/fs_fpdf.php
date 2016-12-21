@@ -251,12 +251,12 @@ class PDF_MC_Table extends FPDF {
          $enters += substr_count($lineas[$i]->descripcion, chr(13))+1;
       }
       $enters = $enters / $elementos;
+      $numero_filas = $this->numero_lineas;
       $total_largo = $enters * $numero_filas * 5;
       if($total_largo > 155)
          $total_largo = 155;
 
       for ($i = 0; $i < count($this->datoscab); $i++) {
-         $numero_filas = $this->numero_lineas;
          $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
          $aquiX += $this->widths[$i];
       }
