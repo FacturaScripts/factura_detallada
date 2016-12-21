@@ -371,7 +371,7 @@ function AddPage($lineas, $orientation='', $size='')
 	$this->ColorFlag = $cf;
 }
 
-function Header()
+function Header($lineas)
 {
 	// To be implemented in your own inherited class
 }
