@@ -298,12 +298,25 @@ class factura_detallada extends fs_controller {
             $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
-                if(strlen($descripcion_retocada) > 55)
-                    $descripcion_retocada = substr ($descripcion_retocada, 0, 52) . "...";
+                $array_descripcion = explode("\n", $descripcion_retocada);
+                if(count($array_descripcion) <= 2)
+                    $linea_nueva = $descripcion_retocada;
+                else
+                {
+                    $linea_nueva = "";
+                    foreach($array_descripcion as $linea_descripcion)
+                    {
+                        if(strlen($linea_descripcion) > 55)
+                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 52) . "...";
+                        else
+                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        $linea_nueva = $linea_nueva . "\n";
+                    }
+                }
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
                     // '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode($descripcion_retocada),
+                    '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -314,12 +327,25 @@ class factura_detallada extends fs_controller {
             }
             else 
             {
-                if(strlen($descripcion_retocada) > 60)
-                    $descripcion_retocada = substr ($descripcion_retocada, 0, 57) . "...";
+                $array_descripcion = explode("\n", $descripcion_retocada);
+                if(count($array_descripcion) <= 2)
+                    $linea_nueva = $descripcion_retocada;
+                else
+                {
+                    $linea_nueva = "";
+                    foreach($array_descripcion as $linea_descripcion)
+                    {
+                        if(strlen($linea_descripcion) > 60)
+                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
+                        else
+                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        $linea_nueva = $linea_nueva . "\n";
+                    }
+                }
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
                     //'0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode($descripcion_retocada),
+                    '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
