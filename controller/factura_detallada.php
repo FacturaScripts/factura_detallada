@@ -290,7 +290,11 @@ class factura_detallada extends fs_controller {
                $observa = "\n";
             }
 
-            $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
+            $may_min = $fsvar->simple_get("f_detallada_print_may_min");
+            if($may_min)
+               $descripcion_retocada = $this->fix_html($lineas[$i]->descripcion) . $observa;
+            else
+               $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
             $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
