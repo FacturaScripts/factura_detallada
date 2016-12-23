@@ -902,7 +902,7 @@ class PDF_MC_Table extends FPDF {
       $this->SetFont("Arial", "B", 6);
       $this->SetXY($r1 + 16, $y1 + 13);
       $texto = $this->numtoletras($this->fdf_textotal);
-      $this->MultiCell(43, 3, $texto, 0, 'C');
+      $this->MultiCell(43, 2, $texto, 0, 'C');
    }
 
    //------    CONVERTIR NUMEROS A LETRAS         ---------------
