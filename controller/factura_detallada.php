@@ -304,13 +304,17 @@ class factura_detallada extends fs_controller {
                 else
                 {
                     $linea_nueva = "";
+                    $num_lineas = count($array_descripcion);
+                    $linea_veririficada = 1;
                     foreach($array_descripcion as $linea_descripcion)
                     {
-                        if(strlen($linea_descripcion) > 55)
-                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 52) . "...";
+                        if(strlen($linea_descripcion) > 60)
+                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
                         else
                             $linea_nueva = $linea_nueva . $linea_descripcion;
-                        $linea_nueva = $linea_nueva . "\n";
+                        if($linea_veririficada <> $num_lineas)
+                           $linea_nueva = $linea_nueva . "\n";
+                        $linea_veririficada++;
                     }
                 }
                 $lafila = array(
@@ -333,13 +337,17 @@ class factura_detallada extends fs_controller {
                 else
                 {
                     $linea_nueva = "";
+                    $num_lineas = count($array_descripcion);
+                    $linea_veririficada = 1;
                     foreach($array_descripcion as $linea_descripcion)
                     {
                         if(strlen($linea_descripcion) > 60)
                             $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
                         else
                             $linea_nueva = $linea_nueva . $linea_descripcion;
-                        $linea_nueva = $linea_nueva . "\n";
+                        if($linea_veririficada <> $num_lineas)
+                           $linea_nueva = $linea_nueva . "\n";
+                        $linea_veririficada++;
                     }
                 }
                 $lafila = array(

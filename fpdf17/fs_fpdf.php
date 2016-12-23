@@ -250,7 +250,7 @@ class PDF_MC_Table extends FPDF {
       $enters = 0;
       for($i = 0; $i < $elementos; $i++)
       {
-         $enters += substr_count($lineas[$i]->descripcion, chr(13))+1;
+         $enters += substr_count($lineas[$i]->descripcion, "\n")+1;
       }
       $enters = $enters / $elementos;
       $numero_filas = $this->numero_lineas;
