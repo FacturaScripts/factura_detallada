@@ -270,7 +270,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fdf_textotal = $this->factura->total;
 
       /// Agregamos la pagina inicial de la factura
-      $pdf_doc->AddPage($lineas);
+      $pdf_doc->AddPage();
 
       // Lineas de la Factura
       //$lineas = $this->factura->get_lineas();
@@ -299,7 +299,7 @@ class factura_detallada extends fs_controller {
             if($this->impresion['print_dto'])
             {
                 $array_descripcion = explode("\n", $descripcion_retocada);
-                if(count($array_descripcion) <= 2)
+                if(count($array_descripcion) <= 0)
                     $linea_nueva = $descripcion_retocada;
                 else
                 {
@@ -332,7 +332,7 @@ class factura_detallada extends fs_controller {
             else 
             {
                 $array_descripcion = explode("\n", $descripcion_retocada);
-                if(count($array_descripcion) <= 2)
+                if(count($array_descripcion) <= 0)
                     $linea_nueva = $descripcion_retocada;
                 else
                 {

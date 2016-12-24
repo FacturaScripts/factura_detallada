@@ -83,7 +83,7 @@ class PDF_MC_Table extends FPDF {
    }
 
    //Cabecera de pagina
-   function Header($lineas) {
+   function Header() {
        // Creamos el recuadro de la empresa
        $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
 
@@ -238,31 +238,6 @@ class PDF_MC_Table extends FPDF {
       $this->SetY($aquiY);
       $aquiX = $this->GetX();
 
-      $this->SetDrawColor(210, 210, 210);
-      $this->SetTextColor(0);
-
-      /* Calcular el total de lineas y por lo tanto el largo del cuadro
-       * de datos, de esta manera se controla si hay lineas que contienen
-       * "Enter" y por lo tanto se prepara a medida de lo que vamos a
-       * poner, siempre con un límite de 155
-       */
-      $elementos = count($lineas);
-      $enters = 0;
-      for($i = 0; $i < $elementos; $i++)
-      {
-         $enters += substr_count($lineas[$i]->descripcion, "\n")+1;
-      }
-      $enters = $enters / $elementos;
-      $numero_filas = $this->numero_lineas;
-      $total_largo = $enters * $numero_filas * 5;
-      if($total_largo > 155)
-         $total_largo = 155;
-
-      for ($i = 0; $i < count($this->datoscab); $i++) {
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
-         $aquiX += $this->widths[$i];
-      }
-      $this->SetDrawColor(0, 0, 0);
    }
 
    //Pie de pagina
@@ -286,6 +261,7 @@ class PDF_MC_Table extends FPDF {
       } else {
          // Neto por Pagina
          $this->addNeto();
+         $this->DibujaCuadro(count($this->datoscab), 155);
       }
    }
 
@@ -342,6 +318,7 @@ class PDF_MC_Table extends FPDF {
          $this->lineaactual = ($this->lineaactual + $nb) - ($nbp * 31);
       } else {
          if (($this->lineaactual + $nb) == 31) { // Pagina completa
+            $this->DibujaCuadro(count($this->datoscab),155);
             $this->AddPage($this->CurOrientation);
             $this->lineaactual = 1;
          } else {
@@ -363,11 +340,23 @@ class PDF_MC_Table extends FPDF {
             $this->Line($aquiX, $aquiY, $finX, $aquiY);
             $aquiX = $finX + 0.316;
          }
+      } else {
+         $this->DibujaCuadro(count($this->datoscab),$this->lineaactual*5);
       }
       $this->SetDrawColor(0, 0, 0);
       $this->SetTextColor(0);
    }
 
+   function DibujaCuadro($columnas, $total_largo) {
+      $this->SetDrawColor(210, 210, 210);
+      $aquiY = 100.6;
+      $aquiX = 10.00125;
+      for ($i = 0; $i < $columnas; $i++) {
+         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
+         $aquiX += $this->widths[$i];
+      }
+      $this->SetDrawColor(0, 0, 0);
+   }
    function NbLines($w, $txt) {
       //Computes the number of lines a MultiCell of width w will take
       $cw = &$this->CurrentFont['cw'];
