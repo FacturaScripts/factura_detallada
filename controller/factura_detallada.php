@@ -119,7 +119,6 @@ class factura_detallada extends fs_controller {
       $pdf_doc->SetAuthor($this->empresa->nombre);
       $pdf_doc->SetCreator('FacturaSctipts V_' . $this->version());
 
-      $pdf_doc->Open();
       $pdf_doc->AliasNbPages();
       $pdf_doc->SetAutoPageBreak(true, 40);
 
@@ -234,6 +233,9 @@ class factura_detallada extends fs_controller {
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
 
+      /// Agregamos la pagina inicial de la factura
+      $pdf_doc->AddPage();
+
       /// Definimos todos los datos del PIE de la factura
       /// Lineas de IVA
       $lineas_iva = $this->factura->get_lineas_iva();
@@ -268,9 +270,6 @@ class factura_detallada extends fs_controller {
 
       // Total factura numeros a texto
       $pdf_doc->fdf_textotal = $this->factura->total;
-
-      /// Agregamos la pagina inicial de la factura
-      $pdf_doc->AddPage();
 
       // Lineas de la Factura
       //$lineas = $this->factura->get_lineas();
