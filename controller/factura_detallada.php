@@ -237,7 +237,7 @@ class factura_detallada extends fs_controller {
       /// Definimos todos los datos del PIE de la factura
       /// Lineas de IVA
       $lineas_iva = $this->factura->get_lineas_iva();
-      if (count($lineas_iva) > 3) {
+      if (count($lineas_iva) > 4) {
          $pdf_doc->fdf_lineasiva = $lineas_iva;
       } else {
          $filaiva = array();

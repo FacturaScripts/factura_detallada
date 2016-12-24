@@ -778,23 +778,26 @@ class PDF_MC_Table extends FPDF {
       $y1 = $this->h - 30;
 
       if ($datos) {
-         if (count($datos) > 3) {
+         if (count($datos) > 4) {
             // Comentar o eliminar las siguientes 5 lineas para NO mostrar el error.
             $this->SetFont("Arial", "B", 10);
             $this->SetXY($r1, $y1 + 8);
             $this->Cell(8, 4, "ERROR: Localizadas " . count($datos) . " lineas de " . FS_IVA . "... ", 0, '', "L");
             $this->SetXY($r1, $y1 + 12);
-            $this->Cell(8, 4, chr(161) . chr(161) . chr(161) . " Esta plantilla SOLO puede detallar TRES lineas de " . FS_IVA . " !!!", 0, '', "L");
+            $this->Cell(8, 4, chr(161) . chr(161) . chr(161) . " Esta plantilla SOLO puede detallar CUATRO lineas de " . FS_IVA . " !!!", 0, '', "L");
          } else {
             for ($i = 1; $i <= count($datos); $i++) {
                if ($i == 1) {
                   $y2 = $y1 + 6;
                }
                if ($i == 2) {
-                  $y2 = $y1 + 10;
+                  $y2 = $y1 + 9;
                }
                if ($i == 3) {
-                  $y2 = $y1 + 14;
+                  $y2 = $y1 + 12;
+               }
+               if ($i == 4) {
+                  $y2 = $y1 + 15;
                }
                $this->SetFont("Arial", "B", 6);
                $this->SetXY($r1, $y2);
