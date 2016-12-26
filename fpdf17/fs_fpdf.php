@@ -32,6 +32,7 @@ class PDF_MC_Table extends FPDF {
    var $angle = 0;
    var $lineaactual = 0;
    var $piepagina = false;
+   var $numero_lineas = 0;
 
    function Setdatoscab($v) {
       //Set the array
@@ -319,6 +320,7 @@ class PDF_MC_Table extends FPDF {
       } else {
          if (($this->lineaactual + $nb) == 31) { // Pagina completa
             $this->DibujaCuadro(count($this->datoscab),155);
+            $this->numero_lineas = $this->lineaactual + $nb;
             $this->AddPage($this->CurOrientation);
             $this->lineaactual = 1;
          } else {
@@ -341,6 +343,7 @@ class PDF_MC_Table extends FPDF {
             $aquiX = $finX + 0.316;
          }
       } else {
+         $this->numero_lineas = $this->lineaactual;
          $this->DibujaCuadro(count($this->datoscab),$this->lineaactual*5);
       }
       $this->SetDrawColor(0, 0, 0);
