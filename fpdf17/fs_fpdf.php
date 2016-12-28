@@ -145,16 +145,26 @@ class PDF_MC_Table extends FPDF {
          if( file_exists(FS_MYDOCS.'images/logo.png') )
          {
             list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.png');
-            $factor_tamano = 45 / $alto;
-            $total_ancho = $factor_tamano * $ancho;
-            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            $factor_tamano_ancho = 45 / $alto;
+            $factor_tamano_alto = 90 / $ancho;
+            $total_ancho = $factor_tamano_ancho * $ancho;
+            $total_alto = $factor_tamano_alto * $ancho;
+            if($total_alto >45)
+               $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            else
+               $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
          }
          else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
          {
             list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.jpg');
-            $factor_tamano = 100 / $alto;
-            $total_ancho = $factor_tamano * $ancho;
-            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            $factor_tamano_ancho = 45 / $alto;
+            $factor_tamano_alto = 90 / $ancho;
+            $total_ancho = $factor_tamano_ancho * $ancho;
+            $total_alto = $factor_tamano_alto * $ancho;
+            if($total_alto > 45)
+               $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            else
+               $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
          }
 
          $this->Ln(0);
