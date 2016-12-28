@@ -1,8 +1,15 @@
 Añade un nuevo formato de impresión de facturas de venta.
 <ul>
    <li>Se incluyen porcentajes y totales de IRPF y Recargo de Equivalencia por cada grupo de IVA en la impresion de la factura.</li>
-   <li>Sólo es posible incluir un máximo de 3 lineas de IVA en la impresion de la factura.</li>
+   <li>Sólo es posible incluir un máximo de 4 lineas de IVA en la impresion de la factura.</li>
    <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como Marcadeagua en el fondo del documento.</li>
    <li>El Logo NO debe de incluir los datos de la empresa. Solo la imagen corporativa.</li>
    <li>Puedes elegir el color de la factura para adaptarlo mejor a tu imagen corporativa (en las opciones del plugin).</li>
+   <li>Modificado el formato.</li>
+   <li>Añadido código QR.</li>
+   <li>Control del nombre de la empresa para que no se salga de la factura.</li>
+   <li>fpdf 1.81.</li>
+   <li>si el valor es negativo pone "Menos" en letras.</li>
+   <li>La factura rectificativa tiene un texto indicando que lo es.</li>
+   <li>Lineas con valor 0 se identan como si se tratara de comentarios.</li>
 </ul>
