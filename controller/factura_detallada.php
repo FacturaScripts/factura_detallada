@@ -307,10 +307,7 @@ class factura_detallada extends fs_controller {
                     $linea_veririficada = 1;
                     foreach($array_descripcion as $linea_descripcion)
                     {
-                        if(strlen($linea_descripcion) > 60)
-                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
-                        else
-                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        $linea_nueva = $linea_nueva . $linea_descripcion;
                         if($linea_veririficada <> $num_lineas)
                            $linea_nueva = $linea_nueva . "\n";
                         $linea_veririficada++;
@@ -340,10 +337,7 @@ class factura_detallada extends fs_controller {
                     $linea_veririficada = 1;
                     foreach($array_descripcion as $linea_descripcion)
                     {
-                        if(strlen($linea_descripcion) > 60)
-                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
-                        else
-                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        $linea_nueva = $linea_nueva . $linea_descripcion;
                         if($linea_veririficada <> $num_lineas)
                            $linea_nueva = $linea_nueva . "\n";
                         $linea_veririficada++;
