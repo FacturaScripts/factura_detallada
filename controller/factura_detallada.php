@@ -98,6 +98,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
       define('EEURO', chr(128));
       $lineas = $this->factura->get_lineas();
+      $pdf_doc->numero_lineas = count($lineas);
       if($this->impresion['print_dto'])
       {
          $this->impresion['print_dto'] = FALSE;
@@ -118,18 +119,25 @@ class factura_detallada extends fs_controller {
       $pdf_doc->SetAuthor($this->empresa->nombre);
       $pdf_doc->SetCreator('FacturaSctipts V_' . $this->version());
 
-      $pdf_doc->Open();
       $pdf_doc->AliasNbPages();
       $pdf_doc->SetAutoPageBreak(true, 40);
+
+      // Sacamos si es una factura rectificativa y tomamos el codigo de factura
+      $pdf_doc->codserie = $this->factura->codserie;
+      if($pdf_doc->codserie == "R")
+          $pdf_doc->codigorect = $this->factura->codigorect;
 
       // Definimos el color de relleno (gris, rojo, verde, azul)
       /// cargamos la configuración
       $fsvar = new fs_var();
       $color = $fsvar->simple_get("f_detallada_color");
-      if ($color)
+      if ($color) {
       	$pdf_doc->SetColorRelleno($color);
-      else
+        $pdf_doc->color_rellono = $color;
+      } else {
       	$pdf_doc->SetColorRelleno('azul');
+        $pdf_doc->color_rellono = 'azul';
+      }
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa
@@ -168,7 +176,7 @@ class factura_detallada extends fs_controller {
 
       // Tipo de Documento
       $pdf_doc->fdf_tipodocumento = 'FACTURA'; // (FACTURA, FACTURA PROFORMA, ¿ALBARAN, PRESUPUESTO?...)
-      $pdf_doc->fdf_codigo = $this->factura->codigo . " " . $this->factura->numero2;
+      $pdf_doc->fdf_codigo = $this->factura->codigo;
 
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
@@ -187,6 +195,7 @@ class factura_detallada extends fs_controller {
       $pdf_doc->fdc_telefono2 = $this->cliente->telefono2;
       $pdf_doc->fdc_fax = $this->cliente->fax;
       $pdf_doc->fdc_email = $this->cliente->email;
+      $pdf_doc->fdc_orden = $this->factura->numero2;
 
       $pdf_doc->fdf_epago = $pdf_doc->fdf_divisa = $pdf_doc->fdf_pais = '';
 
@@ -211,23 +220,26 @@ class factura_detallada extends fs_controller {
       // Cabecera Titulos Columnas
       if($this->impresion['print_dto'])
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', 'DTO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
       else
       {
-        $pdf_doc->Setdatoscab(array('ALB', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
+        $pdf_doc->Setdatoscab(array('ALB20', 'DESCRIPCION', 'CANT', 'PRECIO', FS_IVA, 'IMPORTE'));
         $pdf_doc->SetWidths(array(16, 107, 10, 20, 15, 22));
         $pdf_doc->SetAligns(array('C', 'L', 'R', 'R','R', 'R'));
         $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
 
+      /// Agregamos la pagina inicial de la factura
+      $pdf_doc->AddPage();
+
       /// Definimos todos los datos del PIE de la factura
       /// Lineas de IVA
       $lineas_iva = $this->factura->get_lineas_iva();
-      if (count($lineas_iva) > 3) {
+      if (count($lineas_iva) > 4) {
          $pdf_doc->fdf_lineasiva = $lineas_iva;
       } else {
          $filaiva = array();
@@ -259,9 +271,6 @@ class factura_detallada extends fs_controller {
       // Total factura numeros a texto
       $pdf_doc->fdf_textotal = $this->factura->total;
 
-      /// Agregamos la pagina inicial de la factura
-      $pdf_doc->AddPage();
-
       // Lineas de la Factura
       //$lineas = $this->factura->get_lineas();
 
@@ -279,12 +288,38 @@ class factura_detallada extends fs_controller {
                // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
             }
+
+            $may_min = $fsvar->simple_get("f_detallada_print_may_min");
+            if($may_min)
+               $descripcion_retocada = $this->fix_html($lineas[$i]->descripcion) . $observa;
+            else
+               $descripcion_retocada = strtoupper($this->fix_html($lineas[$i]->descripcion)) . $observa;
+            $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
             if($this->impresion['print_dto'])
             {
+                $array_descripcion = explode("\n", $descripcion_retocada);
+                if(count($array_descripcion) <= 0)
+                    $linea_nueva = $descripcion_retocada;
+                else
+                {
+                    $linea_nueva = "";
+                    $num_lineas = count($array_descripcion);
+                    $linea_veririficada = 1;
+                    foreach($array_descripcion as $linea_descripcion)
+                    {
+                        if(strlen($linea_descripcion) > 60)
+                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
+                        else
+                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        if($linea_veririficada <> $num_lineas)
+                           $linea_nueva = $linea_nueva . "\n";
+                        $linea_veririficada++;
+                    }
+                }
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($lineas[$i]->descripcion)) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    // '0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -295,10 +330,29 @@ class factura_detallada extends fs_controller {
             }
             else 
             {
+                $array_descripcion = explode("\n", $descripcion_retocada);
+                if(count($array_descripcion) <= 0)
+                    $linea_nueva = $descripcion_retocada;
+                else
+                {
+                    $linea_nueva = "";
+                    $num_lineas = count($array_descripcion);
+                    $linea_veririficada = 1;
+                    foreach($array_descripcion as $linea_descripcion)
+                    {
+                        if(strlen($linea_descripcion) > 60)
+                            $linea_nueva = $linea_nueva . substr ($linea_descripcion, 0, 57) . "...";
+                        else
+                            $linea_nueva = $linea_nueva . $linea_descripcion;
+                        if($linea_veririficada <> $num_lineas)
+                           $linea_nueva = $linea_nueva . "\n";
+                        $linea_veririficada++;
+                    }
+                }
                 $lafila = array(
-                    // '0' => utf8_decode($lineas[$i]->albaran_codigo() . '-' . $lineas[$i]->albaran_numero()),
-                    '0' => utf8_decode($lineas[$i]->albaran_numero()),
-                    '1' => utf8_decode(strtoupper($this->fix_html($lineas[$i]->descripcion))) . $observa,
+                    '0' => utf8_decode($numero_albaran),
+                    //'0' => utf8_decode($lineas[$i]->albaran_numero()),
+                    '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
@@ -307,7 +361,10 @@ class factura_detallada extends fs_controller {
                     '5' => $this->ckeckEuro($lineas[$i]->total_iva())
                 );
             }
-            $pdf_doc->Row($lafila, '1'); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+            if(($i+1) < count($lineas))
+               $pdf_doc->Row($lafila, '1', true); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+            else
+               $pdf_doc->Row($lafila, '1', false); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
          }
          $pdf_doc->piepagina = true;
       }
@@ -490,7 +547,7 @@ class factura_detallada extends fs_controller {
 					}
 			}
          
-         $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
+                    $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
 		}
       
       return $texto_pago;

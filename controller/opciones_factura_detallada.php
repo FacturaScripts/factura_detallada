@@ -46,7 +46,8 @@ class opciones_factura_detallada extends fs_controller
       $fsvar = new fs_var();
       $this->factura_detallada_setup = $fsvar->array_get(
          array(
-            'f_detallada_color' => 'azul'
+            'f_detallada_color' => 'azul',
+            'f_detallada_print_may_min' => FALSE
          ),
          FALSE
       );
@@ -54,6 +55,7 @@ class opciones_factura_detallada extends fs_controller
       if( isset($_POST['factura_detallada_setup']) )
       {
          $this->factura_detallada_setup['f_detallada_color'] = $_POST['color'];
+         $this->factura_detallada_setup['f_detallada_print_may_min'] = $_POST['print_may_min'];
          
          if( $fsvar->array_save($this->factura_detallada_setup) )
          {
