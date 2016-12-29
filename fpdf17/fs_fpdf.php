@@ -149,8 +149,8 @@ class PDF_MC_Table extends FPDF {
             $factor_tamano_ancho = 45 / $alto;
             $factor_tamano_alto = 90 / $ancho;
             $total_ancho = $factor_tamano_ancho * $ancho;
-            $total_alto = $factor_tamano_alto * $ancho;
-            if($total_alto >45)
+            $total_alto = $factor_tamano_alto * $alto;
+            if($total_alto > 45)
                $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
             else
                $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
@@ -161,7 +161,7 @@ class PDF_MC_Table extends FPDF {
             $factor_tamano_ancho = 45 / $alto;
             $factor_tamano_alto = 90 / $ancho;
             $total_ancho = $factor_tamano_ancho * $ancho;
-            $total_alto = $factor_tamano_alto * $ancho;
+            $total_alto = $factor_tamano_alto * $alto;
             if($total_alto > 45)
                $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
             else
