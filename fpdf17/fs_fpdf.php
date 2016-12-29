@@ -33,6 +33,7 @@ class PDF_MC_Table extends FPDF {
    var $lineaactual = 0;
    var $piepagina = false;
    var $numero_lineas = 0;
+   var $codigorect;
 
    function Setdatoscab($v) {
       //Set the array
@@ -131,7 +132,7 @@ class PDF_MC_Table extends FPDF {
       }
 
       // Añado si es rectificativa la info sobre la factura
-      if($this->codserie == "R") {
+      if($this->codigorect) {
           $this->SetTextColor(255,0,0);
           $this->SetXY(114, 65);
           $this->SetFont('Arial', '', 14);

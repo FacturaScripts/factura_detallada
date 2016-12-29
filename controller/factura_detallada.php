@@ -124,7 +124,7 @@ class factura_detallada extends fs_controller {
 
       // Sacamos si es una factura rectificativa y tomamos el codigo de factura
       $pdf_doc->codserie = $this->factura->codserie;
-      if($pdf_doc->codserie == "R")
+      if($this->factura->codigorect)
           $pdf_doc->codigorect = $this->factura->codigorect;
 
       // Definimos el color de relleno (gris, rojo, verde, azul)
