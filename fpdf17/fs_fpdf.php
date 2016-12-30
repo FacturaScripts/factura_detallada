@@ -288,7 +288,6 @@ class PDF_MC_Table extends FPDF {
       $x = $this->GetX();
       $y = $this->GetY();
 
-      $precio_unitario = $data[3];
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
          if ($i != $ultimo) { // La descripcion del articulo la trataremos la ultima. Aqui no.
@@ -307,17 +306,14 @@ class PDF_MC_Table extends FPDF {
                $this->SetTextColor($this->colores[$i][0], $this->colores[$i][1], $this->colores[$i][2]);
             }
             // Escribimos el texto
-			if ($precio_unitario <> 0)
-				$this->MultiCell($w, 5, $data[$i], 0, $a);
+            $this->MultiCell($w, 5, $data[$i], 0, $a);
             // Fijamos la posicion a la derecha de la celda
             $this->SetXY($x, $y);
          }
       }
 
       // En Ultimo lugar escribimos La descripcion del articulo
-	  if ($precio_unitario == 0)
-		  $x1 += 5;
-	  $this->SetXY($x1, $y);
+      $this->SetXY($x1, $y);
 
       $w = $this->widths[$ultimo];
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
