@@ -306,7 +306,7 @@ class PDF_MC_Table extends FPDF {
                $this->SetTextColor($this->colores[$i][0], $this->colores[$i][1], $this->colores[$i][2]);
             }
             // Escribimos el texto
-            if($i == 0) {
+            if($i <= 2) {
                if($mostrar_cantidad){
                   $this->MultiCell($w, 5, $data[$i], 0, $a);
                }
@@ -325,7 +325,7 @@ class PDF_MC_Table extends FPDF {
 
       $w = $this->widths[$ultimo];
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
-      if($mostrar_cantidad || $mostrar_precio){
+      if($mostrar_cantidad && $mostrar_precio){
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
       } else {
          $this->SetFont('Arial', 'B', 8);
