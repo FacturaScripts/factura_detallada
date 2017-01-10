@@ -281,7 +281,7 @@ class PDF_MC_Table extends FPDF {
       }
    }
 
-   function Row($data, $ultimo = '1', $haz_linea) {
+   function Row($data, $ultimo = '1', $haz_linea, $mostrar_cantidad, $mostrar_precio) {
       $this->SetFont('Arial', '', 8);
 
       // Guardamos la posicion Actual
@@ -306,7 +306,15 @@ class PDF_MC_Table extends FPDF {
                $this->SetTextColor($this->colores[$i][0], $this->colores[$i][1], $this->colores[$i][2]);
             }
             // Escribimos el texto
-            $this->MultiCell($w, 5, $data[$i], 0, $a);
+            if($i == 0) {
+               if($mostrar_cantidad){
+                  $this->MultiCell($w, 5, $data[$i], 0, $a);
+               }
+            } else {
+               if($mostrar_precio){
+                  $this->MultiCell($w, 5, $data[$i], 0, $a);
+               }
+            }
             // Fijamos la posicion a la derecha de la celda
             $this->SetXY($x, $y);
          }
@@ -317,7 +325,11 @@ class PDF_MC_Table extends FPDF {
 
       $w = $this->widths[$ultimo];
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
-      $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
+      if($mostrar_cantidad || $mostrar_precio){
+         $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
+      } else {
+         $this->MultiCell($w, 5, '<b>' . strtoupper($data[$ultimo]) . '</b>', 0, $a);
+      }
 
       // Calcular la altura MAXIMA de la fila e ir a la siguiente línea
       $nb = 0;

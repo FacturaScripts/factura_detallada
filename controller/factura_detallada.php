@@ -356,9 +356,9 @@ class factura_detallada extends fs_controller {
                 );
             }
             if(($i+1) < count($lineas))
-               $pdf_doc->Row($lafila, '1', true); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+               $pdf_doc->Row($lafila, '1', true, $lineas[$i]->mostrar_cantidad, $lineas[$i]->mostrar_precio); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
             else
-               $pdf_doc->Row($lafila, '1', false); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
+               $pdf_doc->Row($lafila, '1', false, $lineas[$i]->mostrar_cantidad, $lineas[$i]->mostrar_precio); // Row(array, Descripcion del Articulo -- ultimo valor a imprimir)
          }
          $pdf_doc->piepagina = true;
       }
