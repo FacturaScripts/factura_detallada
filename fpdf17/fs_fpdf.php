@@ -328,7 +328,9 @@ class PDF_MC_Table extends FPDF {
       if($mostrar_cantidad || $mostrar_precio){
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
       } else {
-         $this->MultiCell($w, 5, '<b>' . strtoupper($data[$ultimo]) . '</b>', 0, $a);
+         $this->SetFont('Arial', 'B', 8);
+         $this->MultiCell($w, 5, strtoupper($data[$ultimo]), 0, $a);
+         $this->SetFont('Arial', '', 8);
       }
 
       // Calcular la altura MAXIMA de la fila e ir a la siguiente línea
