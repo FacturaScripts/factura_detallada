@@ -271,9 +271,6 @@ class factura_detallada extends fs_controller {
       // Total factura numeros a texto
       $pdf_doc->fdf_textotal = $this->factura->total;
 
-      // Lineas de la Factura
-      //$lineas = $this->factura->get_lineas();
-
       if ($lineas) {
          $neto = 0;
          for ($i = 0; $i < count($lineas); $i++) {
@@ -282,10 +279,10 @@ class factura_detallada extends fs_controller {
 
             $articulo = new articulo();
             $art = $articulo->get($lineas[$i]->referencia);
-            if ($art) {
+            $obse_prod = $fsvar->simple_get("f_detallada_print_observaciones_producto");
+            if ($art && $obse_prod) {
                $observa = "\n" . utf8_decode($this->fix_html($art->observaciones));
             } else {
-               // $observa = null; // No mostrar mensaje de error
                $observa = "\n";
             }
 
