@@ -244,8 +244,20 @@ class PDF_MC_Table extends FPDF {
       // Cabecera Titulos Columnas
       $this->SetXY(10, 95);
       $this->SetFont("Arial", "B", 9);
+
+      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");
       for ($i = 0; $i < count($this->datoscab); $i++) {
-         $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
+         if($imprime_albaran)
+            $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
+         else {
+            if($i == 0){
+               $ancho = $this->widths[$i] + $this->widths[$i+1];
+               $this->Cell($ancho, 5, $this->datoscab[$i+1], 1, 0, 'C', 1);
+               $i++;
+            } else {
+               $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
+            }
+         }
       }
 
       // Cuerpo de la Factura
@@ -289,7 +301,7 @@ class PDF_MC_Table extends FPDF {
       $y = $this->GetY();
 
       $fsvar = new fs_var();
-      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");;
+      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
          // La descripcion del articulo la trataremos la ultima. Aqui no.
