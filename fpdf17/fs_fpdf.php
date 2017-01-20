@@ -86,8 +86,8 @@ class PDF_MC_Table extends FPDF {
 
    //Cabecera de pagina
    function Header() {
-       // Creamos el recuadro de la empresa
-       $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
+      // Creamos el recuadro de la empresa
+      $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
 
       // Datos de la empresa
       $direccion = $this->fde_FS_CIFNIF . ": " . utf8_decode($this->fde_cifnif) . "\n" . $this->fde_direccion;
@@ -132,11 +132,12 @@ class PDF_MC_Table extends FPDF {
       }
 
       // Añado si es rectificativa la info sobre la factura
-      if($this->codigorect) {
+      if(!$this->codigorect) {
           $this->SetTextColor(255,0,0);
-          $this->SetXY(114, 65);
-          $this->SetFont('Arial', '', 14);
-          $this->Write(5, 'F. RECTIFICATIVA: ' . $this->codigorect);
+          $this->SetXY(150, 88);
+          $this->SetFont('Arial', '', 12);
+          // $this->Write(5, 'F. RECT.: ' . $this->codigorect);
+          $this->RotatedText(109,92,'F. RECT.: ' . $this->codigorect,90);
           $this->SetTextColor(0);
       }
 
@@ -662,14 +663,14 @@ class PDF_MC_Table extends FPDF {
    function addDate($date) {
       $r1 = $this->w - 80;
       $r2 = $r1 + 30;
-      $y1 = 17;
+      $y1 = 15;
       $y2 = $y1;
       $mid = $y1 + ($y2 / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), $y2, 3.5, 'D');
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
-      $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 5, "FECHA", 0, 0, "C");
+      $this->SetFont("Arial", "B", 10);
+      $this->Cell(10, 3, "FECHA", 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $date, 0, 0, "C");
@@ -678,14 +679,14 @@ class PDF_MC_Table extends FPDF {
    function addClient($ref) {
       $r1 = $this->w - 50;
       $r2 = $r1 + 40;
-      $y1 = 17;
+      $y1 = 15;
       $y2 = $y1;
       $mid = $y1 + ($y2 / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), $y2, 3.5, 'D');
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
-      $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 5, 'N' . chr(176) . ' de CLIENTE', 0, 0, "C");
+      $this->SetFont("Arial", "B", 10);
+      $this->Cell(10, 3, 'N' . chr(176) . ' de CLIENTE', 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $ref, 0, 0, "C");
@@ -694,23 +695,31 @@ class PDF_MC_Table extends FPDF {
    function addPageNumber($page) {
       $r1 = $this->w - 100;
       $r2 = $r1 + 20;
-      $y1 = 17;
+      $y1 = 15;
       $y2 = $y1;
       $mid = $y1 + ($y2 / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), $y2, 3.5, 'D');
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
-      $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 5, "PAGINA", 0, 0, "C");
+      $this->SetFont("Arial", "B", 10);
+      $this->Cell(10, 3, "PAGINA", 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 3, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $page, 0, 0, "C");
    }
 
-   // Cliente
+   /**
+    * addClientAdresse: Crea y rellena el cuadro correspondiente a los datos
+    *                   del cliente.
+    * @param type $adresse
+    */
    function addClientAdresse($adresse) {
+      $this->RoundedRect(110, 32, 90, 36, 3.5, 'D');
+      $this->Line(110, 38, 200, 38);
       $r1 = $this->w - 97;
-      $y1 = 38;
+      $this->SetFont("Arial", "B", 10);
+      $this->Cell(55, 23, 'CLIENTE', 0, 0, "C");
+      $y1 = 39;
       $this->SetXY($r1, $y1);
       $this->AddFont('Verdana');
       $this->SetFont('Verdana', '', 10);
