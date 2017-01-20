@@ -132,7 +132,7 @@ class PDF_MC_Table extends FPDF {
       }
 
       // Añado si es rectificativa la info sobre la factura
-      if(!$this->codigorect) {
+      if($this->codigorect) {
           $this->SetTextColor(255,0,0);
           $this->SetXY(150, 88);
           $this->SetFont('Arial', '', 12);
