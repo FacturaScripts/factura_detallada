@@ -329,7 +329,7 @@ class PDF_MC_Table extends FPDF {
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
       } else {
          $this->SetFont('Arial', 'B', 8);
-         $this->MultiCell($w, 5, strtoupper($data[$ultimo]), 0, $a);
+         $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
          $this->SetFont('Arial', '', 8);
       }
 
