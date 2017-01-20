@@ -136,7 +136,6 @@ class PDF_MC_Table extends FPDF {
           $this->SetTextColor(255,0,0);
           $this->SetXY(150, 88);
           $this->SetFont('Arial', '', 12);
-          // $this->Write(5, 'F. RECT.: ' . $this->codigorect);
           $this->RotatedText(109,92,'F. RECT.: ' . $this->codigorect,90);
           $this->SetTextColor(0);
       }
@@ -289,9 +288,12 @@ class PDF_MC_Table extends FPDF {
       $x = $this->GetX();
       $y = $this->GetY();
 
+      $fsvar = new fs_var();
+      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");;
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
-         if ($i != $ultimo) { // La descripcion del articulo la trataremos la ultima. Aqui no.
+         // La descripcion del articulo la trataremos la ultima. Aqui no.
+         if ($i != $ultimo) {
             $w = $this->widths[$i];
             if ($i == ($ultimo - 1)) {
                $x1 = $x + $w;
@@ -306,14 +308,16 @@ class PDF_MC_Table extends FPDF {
             if (isset($this->colores[$i][0])) {
                $this->SetTextColor($this->colores[$i][0], $this->colores[$i][1], $this->colores[$i][2]);
             }
-            // Escribimos el texto
-            if($i <= 2) {
-               if($mostrar_cantidad){
-                  $this->MultiCell($w, 5, $data[$i], 0, $a);
-               }
-            } else {
-               if($mostrar_precio){
-                  $this->MultiCell($w, 5, $data[$i], 0, $a);
+            if(!(!$imprime_albaran && ($i == 0))) {
+               // Escribimos el texto
+               if($i <= 2) {
+                  if($mostrar_cantidad){
+                     $this->MultiCell($w, 5, $data[$i], 0, $a);
+                  }
+               } else {
+                  if($mostrar_precio){
+                     $this->MultiCell($w, 5, $data[$i], 0, $a);
+                  }
                }
             }
             // Fijamos la posicion a la derecha de la celda
@@ -322,6 +326,10 @@ class PDF_MC_Table extends FPDF {
       }
 
       // En Ultimo lugar escribimos La descripcion del articulo
+      if(!$imprime_albaran) {
+         $x1 = 10;
+         $w += 10;
+      }
       $this->SetXY($x1, $y);
 
       $w = $this->widths[$ultimo];
@@ -370,19 +378,26 @@ class PDF_MC_Table extends FPDF {
          }
       } else {
          $this->numero_lineas = $this->lineaactual;
-         $this->DibujaCuadro(count($this->datoscab),$this->lineaactual*5);
+         $this->DibujaCuadro(count($this->datoscab),$this->lineaactual*5, $imprime_albaran);
       }
       $this->SetDrawColor(0, 0, 0);
       $this->SetTextColor(0);
    }
 
-   function DibujaCuadro($columnas, $total_largo) {
+   function DibujaCuadro($columnas, $total_largo, $imprime_albaran) {
       $this->SetDrawColor(210, 210, 210);
       $aquiY = 100.6;
       $aquiX = 10.00125;
       for ($i = 0; $i < $columnas; $i++) {
-         $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
-         $aquiX += $this->widths[$i];
+         if(!$imprime_albaran && $i == 0){
+            $ancho = $this->widths[0] + $this->widths[1];
+            $this->RoundedRect($aquiX, $aquiY, $ancho, $total_largo, 1, 'D');
+            $aquiX += $ancho;
+            $i++;
+         } else {
+            $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
+            $aquiX += $this->widths[$i];
+         }
       }
       $this->SetDrawColor(0, 0, 0);
    }

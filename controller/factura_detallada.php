@@ -312,13 +312,11 @@ class factura_detallada extends fs_controller {
                 }
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
-                    // '0' => utf8_decode($lineas[$i]->albaran_numero()),
                     '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
                     '5' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
-                    // '6' => $this->ckeckEuro($lineas[$i]->pvptotal), // Importe con Descuentos aplicados
                     '6' => $this->ckeckEuro($lineas[$i]->total_iva())
                 );
             }
@@ -342,13 +340,10 @@ class factura_detallada extends fs_controller {
                 }
                 $lafila = array(
                     '0' => utf8_decode($numero_albaran),
-                    //'0' => utf8_decode($lineas[$i]->albaran_numero()),
                     '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
-                    //'4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
                     '4' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
-                    // '6' => $this->ckeckEuro($lineas[$i]->pvptotal), // Importe con Descuentos aplicados
                     '5' => $this->ckeckEuro($lineas[$i]->total_iva())
                 );
             }

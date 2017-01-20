@@ -68,6 +68,16 @@
                    Imprimir observaciones de los productos.
                 </label>
             </div>
+            <div class="form-group">
+                <label class="checkbox-inline">
+                   {if="$fsc->factura_detallada_setup['f_detallada_imprime_albaran']"}
+                   <input type="checkbox" name="imprime_albaran" value="TRUE" checked=""/>
+                   {else}
+                   <input type="checkbox" name="imprime_albaran" value="TRUE"/>
+                   {/if}
+                   Imprimir columna Albaran.
+                </label>
+            </div>
              <button class="btn btn-sm btn-primary" type="submit">
                <span class="glyphicon glyphicon-floppy-disk"></span>&nbsp; Guardar
             </button>
