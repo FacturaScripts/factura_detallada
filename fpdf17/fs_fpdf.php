@@ -34,6 +34,9 @@ class PDF_MC_Table extends FPDF {
    var $piepagina = false;
    var $numero_lineas = 0;
    var $codigorect;
+   var $observaciones_nueva_hoja = false;
+   var $hoja_actual = 0;
+   var $hoja_nueva = 0;
 
    function Setdatoscab($v) {
       //Set the array
@@ -266,6 +269,9 @@ class PDF_MC_Table extends FPDF {
       $this->SetY($aquiY);
       $aquiX = $this->GetX();
 
+      if($this->hoja_actual != $this->hoja_nueva)
+         $this->Footer();
+
    }
 
    //Pie de pagina
@@ -277,8 +283,8 @@ class PDF_MC_Table extends FPDF {
       $this->SetFont('Arial', '', 8);
       if ($this->piepagina == true) {
          // Si existen Incluimos las Observaciones
-         if ($this->fdf_observaciones != '') {
-            $this->addObservaciones(substr($this->fdf_observaciones, 0, 270));
+         if ($this->fdf_observaciones != '' && !$this->observaciones_nueva_hoja) {
+            $this->addObservaciones($this->fdf_observaciones);
          }
 
          // Lineas de Impuestos
@@ -286,6 +292,14 @@ class PDF_MC_Table extends FPDF {
 
          // Total factura
          $this->addTotal();
+
+         if($this->observaciones_nueva_hoja) {
+            $this->hoja_actual = $this->page;
+            $this->hoja_nueva = $this->page + 1;
+            $this->observaciones_nueva_hoja = false;
+            $this->numero_lineas = 0;
+            $this->AddPage();
+         }
       } else {
          // Neto por Pagina
          $this->addNeto();
@@ -831,13 +845,121 @@ class PDF_MC_Table extends FPDF {
 
    // Incluir Observaciones	
    function addObservaciones($observa) {
-      $this->SetFont("Arial", "B", 8);
-      $this->Text(10, 109 +($this->numero_lineas * 5), "Observaciones: ");
-      $this->SetFont("Arial", "I", 8);
-      $this->Line(10, 110 +($this->numero_lineas * 5), 200, 110 +($this->numero_lineas * 5));
-      $this->SetXY(10, 112 + ($this->numero_lineas * 5) );
-      $this->MultiCell($this->w - 20, 4, $observa);
+      $altura = $this->GetMultiCellHeight($this->w - 20, 4, $observa) + 14;
+      if($altura > 162){
+         while ($altura > 162) {
+            $lastEnterPosition = strrpos($observa, PHP_EOL);
+            $observa = mb_substr($observa, 0, $lastEnterPosition);
+            $altura = $this->GetMultiCellHeight($this->w - 20, 4, $observa) + 14;
+         }
+      }
+      $posicionX = 112 + ($this->numero_lineas * 5);
+      $total_uso = $posicionX + $altura;
+      if($total_uso > 275 && !$this->observaciones_nueva_hoja){
+         $this->observaciones_nueva_hoja = true;
+      } else {
+         if(($this->hoja_nueva > 0 && $this->hoja_nueva == $this->page) || ($this->hoja_nueva == 0) ) {
+            $this->SetFont("Arial", "B", 8);
+            $this->Text(10, 109 +($this->numero_lineas * 5), "Observaciones: ");
+            $this->SetFont("Arial", "I", 8);
+            $this->Line(10, 110 +($this->numero_lineas * 5), 200, 110 +($this->numero_lineas * 5));
+            $this->SetXY(10, 112 + ($this->numero_lineas * 5) );
+            $this->MultiCell($this->w - 20, 4, $observa);
+         }
+      }
    }
+
+function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
+    // Calculate MultiCell with automatic or explicit line breaks height
+    // $border is un-used, but I kept it in the parameters to keep the call
+    //   to this function consistent with MultiCell()
+    $cw = &$this->CurrentFont['cw'];
+    if($w==0)
+        $w = $this->w-$this->rMargin-$this->x;
+    $wmax = ($w-2*$this->cMargin)*1000/$this->FontSize;
+    $s = str_replace("\r",'',$txt);
+    $nb = strlen($s);
+    if($nb>0 && $s[$nb-1]=="\n")
+        $nb--;
+    $sep = -1;
+    $i = 0;
+    $j = 0;
+    $l = 0;
+    $ns = 0;
+    $height = 0;
+    while($i<$nb)
+    {
+        // Get next character
+        $c = $s[$i];
+        if($c=="\n")
+        {
+            // Explicit line break
+            if($this->ws>0)
+            {
+                $this->ws = 0;
+                $this->_out('0 Tw');
+            }
+            //Increase Height
+            $height += $h;
+            $i++;
+            $sep = -1;
+            $j = $i;
+            $l = 0;
+            $ns = 0;
+            continue;
+        }
+        if($c==' ')
+        {
+            $sep = $i;
+            $ls = $l;
+            $ns++;
+        }
+        $l += $cw[$c];
+        if($l>$wmax)
+        {
+            // Automatic line break
+            if($sep==-1)
+            {
+                if($i==$j)
+                    $i++;
+                if($this->ws>0)
+                {
+                    $this->ws = 0;
+                    $this->_out('0 Tw');
+                }
+                //Increase Height
+                $height += $h;
+            }
+            else
+            {
+                if($align=='J')
+                {
+                    $this->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
+                    $this->_out(sprintf('%.3F Tw',$this->ws*$this->k));
+                }
+                //Increase Height
+                $height += $h;
+                $i = $sep+1;
+            }
+            $sep = -1;
+            $j = $i;
+            $l = 0;
+            $ns = 0;
+        }
+        else
+            $i++;
+    }
+    // Last chunk
+    if($this->ws>0)
+    {
+        $this->ws = 0;
+        $this->_out('0 Tw');
+    }
+    //Increase Height
+    $height += $h;
+
+    return $height;
+  }
 
    // Incluir Lineas de Iva
    function addLineasIva($datos) {
