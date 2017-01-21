@@ -201,8 +201,8 @@ class PDF_MC_Table extends FPDF {
       $this->addPageNumber($this->PageNo() . '/{nb}');
 
       // Datos del Cliente
-      $cliente = $this->fdf_nombrecliente . "\n";
-      $cliente .= $this->fdf_FS_CIFNIF . ": ";
+      $nombrecliente = $this->fdf_nombrecliente . "\n";
+      $cliente = $this->fdf_FS_CIFNIF . ": ";
       $cliente .= $this->fdf_cifnif . "\n";
       $cliente .= $this->fdf_direccion . "\n";
       $cliente .= $this->fdf_codpostal . " - ";
@@ -223,7 +223,7 @@ class PDF_MC_Table extends FPDF {
          $cliente .= "N Pedido: " . $this->fdc_orden . "\n";
       }
 
-      $this->addClientAdresse(utf8_decode($cliente));
+      $this->addClientAdresse(utf8_decode($nombrecliente), utf8_decode($cliente));
 
       // Forma de Pago de la Factura
       $this->addPago($this->fdf_epago);
@@ -740,17 +740,20 @@ class PDF_MC_Table extends FPDF {
     *                   del cliente.
     * @param type $adresse
     */
-   function addClientAdresse($adresse) {
+   function addClientAdresse($empresa, $adresse) {
       $this->RoundedRect(110, 32, 90, 36, 3.5, 'D');
       $this->Line(110, 38, 200, 38);
       $r1 = $this->w - 97;
       $this->SetFont("Arial", "B", 10);
       $this->Cell(55, 23, 'CLIENTE', 0, 0, "C");
-      $y1 = 39;
-      $this->SetXY($r1, $y1);
+      $y1 = 38;
+      $this->SetXY($r1-2, $y1);
+      $this->SetFont('Arial', 'B', 10);
+      $this->Write(5, $empresa);
+      $this->SetXY($r1, 43);
       $this->AddFont('Verdana');
-      $this->SetFont('Verdana', '', 10);
-      $this->MultiCell(87, 4, $adresse);
+      $this->SetFont('Verdana', '', 8);
+      $this->MultiCell(87, 3.5, $adresse);
    }
 
    // Forma de Pago
