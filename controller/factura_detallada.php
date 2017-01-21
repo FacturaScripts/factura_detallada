@@ -279,7 +279,7 @@ class factura_detallada extends fs_controller {
 
             $articulo = new articulo();
             $art = $articulo->get($lineas[$i]->referencia);
-            $obse_prod = $fsvar->simple_get("f_detallada_print_observaciones_producto");
+            $obse_prod = $fsvar->simple_get("f_detallada_observaciones_producto");
             if ($art && $obse_prod) {
                $observa = "\n" . utf8_decode($this->fix_html($art->observaciones));
             } else {
