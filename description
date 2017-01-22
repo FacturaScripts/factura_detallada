@@ -11,4 +11,7 @@ Añade un nuevo formato de impresión de facturas de venta.
    <li>fpdf 1.81.</li>
    <li>si el valor es negativo pone "Menos" en letras.</li>
    <li>La factura rectificativa tiene un texto indicando que lo es.</li>
+   <li>Opción para esconder la columna de albarán.</li>
+   <li>Opción para agrupar los albaranes en la linea de descripcion.</li>
+   <li>Opción para determinar si queremos o no imprimir las observaciones de los productos.</li>
 </ul>
