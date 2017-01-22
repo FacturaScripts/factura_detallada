@@ -37,6 +37,7 @@ class PDF_MC_Table extends FPDF {
    var $observaciones_nueva_hoja = false;
    var $hoja_actual = 0;
    var $hoja_nueva = 0;
+   var $albaran_anterior;
 
    function Setdatoscab($v) {
       //Set the array
@@ -248,7 +249,8 @@ class PDF_MC_Table extends FPDF {
       $this->SetXY(10, 95);
       $this->SetFont("Arial", "B", 9);
 
-      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");
+      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
+                     && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
       for ($i = 0; $i < count($this->datoscab); $i++) {
          if($imprime_albaran)
             $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
@@ -302,8 +304,11 @@ class PDF_MC_Table extends FPDF {
          }
       } else {
          // Neto por Pagina
+         $fsvar = new fs_var();
+         $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
+               && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
          $this->addNeto();
-         $this->DibujaCuadro(count($this->datoscab), 155);
+         $this->DibujaCuadro(count($this->datoscab), 155, $imprime_albaran);
       }
    }
 
@@ -315,7 +320,8 @@ class PDF_MC_Table extends FPDF {
       $y = $this->GetY();
 
       $fsvar = new fs_var();
-      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran");
+      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
+                     && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
          // La descripcion del articulo la trataremos la ultima. Aqui no.
@@ -352,17 +358,35 @@ class PDF_MC_Table extends FPDF {
       }
 
       // En Ultimo lugar escribimos La descripcion del articulo
+      $w = $this->widths[$ultimo];
       if(!$imprime_albaran) {
          $x1 = 10;
-         $w += 10;
+         $inicio = 1;
+         $w += $this->widths[0];
+      } else {
+         $inicio = 0;
       }
       $this->SetXY($x1, $y);
 
-      $w = $this->widths[$ultimo];
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
+      $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
+      $suma_linea = 0;
       if($mostrar_cantidad && $mostrar_precio){
+         if($agrupa_albaranes && ($this->albaran_anterior != $data[0])){
+            $this->SetFont('Arial', 'B', 8);
+            $this->MultiCell($w, 5, $data[0], 0, 'C');
+            $this->SetFont('Arial', '', 8);
+            $this->albaran_anterior = $data[0];
+            $suma_linea = 1;
+         }
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
       } else {
+         if($agrupa_albaranes){
+            $this->SetFont('Arial', 'B', 8);
+            $this->MultiCell($w, 5, $data[0], 0, 'C');
+            $this->SetFont('Arial', '', 8);
+            $suma_linea = 1;
+         }
          $this->SetFont('Arial', 'B', 8);
          $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
          $this->SetFont('Arial', '', 8);
@@ -370,9 +394,10 @@ class PDF_MC_Table extends FPDF {
 
       // Calcular la altura MAXIMA de la fila e ir a la siguiente línea
       $nb = 0;
-      for ($i = 0; $i < count($data); $i++) {
+      for ($i = $inicio; $i < count($data); $i++) {
          $nb = max($nb, $this->NbLines($this->widths[$i], $data[$i]));
       }
+      $nb += $suma_linea;
 
       if (($this->lineaactual + $nb) > 31) { // Mas de una Pagina
          $nbp = intval(($this->lineaactual + $nb) / 31);

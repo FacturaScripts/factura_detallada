@@ -50,7 +50,8 @@ class opciones_factura_detallada extends fs_controller
             'f_detallada_print_may_min' => FALSE,
             'f_detallada_QRCODE' => FALSE,
             'f_detallada_observaciones_producto' => FALSE,
-            'f_detallada_imprime_albaran' => FALSE
+            'f_detallada_imprime_albaran' => FALSE,
+            'f_detallada_agrupa_albaranes' => FALSE
          ),
          FALSE
       );
@@ -62,6 +63,7 @@ class opciones_factura_detallada extends fs_controller
          $this->factura_detallada_setup['f_detallada_QRCODE'] = isset($_POST['QRCODE']);
          $this->factura_detallada_setup['f_detallada_observaciones_producto'] = isset($_POST['observaciones_producto']);
          $this->factura_detallada_setup['f_detallada_imprime_albaran'] = isset($_POST['imprime_albaran']);
+         $this->factura_detallada_setup['f_detallada_agrupa_albaranes'] = isset($_POST['agrupa_albaran']);
 
          
          if( $fsvar->array_save($this->factura_detallada_setup) )

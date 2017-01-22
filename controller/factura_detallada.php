@@ -31,6 +31,7 @@ require_model('pais.php');
 require_model('forma_pago.php');
 require_model('cuenta_banco.php');
 require_model('cuenta_banco_cliente.php');
+require_model('albaran_cliente.php');
 require_once 'extras/phpmailer/class.phpmailer.php';
 require_once 'extras/phpmailer/class.smtp.php';
 
@@ -288,10 +289,22 @@ class factura_detallada extends fs_controller {
 
             $may_min = $fsvar->simple_get("f_detallada_print_may_min");
             if($may_min)
-               $descripcion_retocada = $this->fix_html($lineas[$i]->descripcion) . $observa;
+               $descripcion_retocada = $this->fix_html($lineas[$i]->descripcion) . trim($observa);
             else
-               $descripcion_retocada = mb_strtoupper($this->fix_html($lineas[$i]->descripcion),'utf-8') . $observa;
-            $numero_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
+               $descripcion_retocada = mb_strtoupper($this->fix_html($lineas[$i]->descripcion),'utf-8') . trim($observa);
+
+            $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
+            if($agrupa_albaranes){
+               $albaran_cliente = new albaran_cliente();
+               $albaran = $albaran_cliente->get_by_codigo($lineas[$i]->albaran_codigo());
+               $codigo_albaran = mb_strtoupper(FS_ALBARAN,'utf-8') . ": " . $lineas[$i]->albaran_codigo();
+               $codigo_albaran .= " - ";
+               $añade = $this->ckeckEuro($albaran->neto);
+            } else {
+               $codigo_albaran = substr ($lineas[$i]->albaran_codigo(),5,strlen($lineas[$i]->albaran_codigo())-5);
+               $añade = "";
+            }
+
             if($this->impresion['print_dto'])
             {
                 $array_descripcion = explode("\n", $descripcion_retocada);
@@ -311,7 +324,7 @@ class factura_detallada extends fs_controller {
                     }
                 }
                 $lafila = array(
-                    '0' => utf8_decode($numero_albaran),
+                    '0' => utf8_decode($codigo_albaran) . $añade,
                     '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
@@ -339,7 +352,7 @@ class factura_detallada extends fs_controller {
                     }
                 }
                 $lafila = array(
-                    '0' => utf8_decode($numero_albaran),
+                    '0' => utf8_decode($codigo_albaran) . $añade,
                     '1' => utf8_decode($linea_nueva),
                     '2' => utf8_decode($lineas[$i]->cantidad),
                     '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
