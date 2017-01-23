@@ -320,8 +320,11 @@ class PDF_MC_Table extends FPDF {
       $y = $this->GetY();
 
       $fsvar = new fs_var();
+      $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
       $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
                      && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
+      if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
+         $y += 5;
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
          // La descripcion del articulo la trataremos la ultima. Aqui no.
@@ -357,7 +360,11 @@ class PDF_MC_Table extends FPDF {
          }
       }
 
-      // En Ultimo lugar escribimos La descripcion del articulo
+      if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
+         $y -= 5;
+
+      // Por último scribimos La descripcion del articulo
+      $this->SetTextColor($this->colores[1][0], $this->colores[1][1], $this->colores[1][2]);
       $w = $this->widths[$ultimo];
       if(!$imprime_albaran) {
          $x1 = 10;
@@ -369,7 +376,6 @@ class PDF_MC_Table extends FPDF {
       $this->SetXY($x1, $y);
 
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
-      $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
       $suma_linea = 0;
       if($mostrar_cantidad && $mostrar_precio){
          if($agrupa_albaranes && ($this->albaran_anterior != $data[0])){
