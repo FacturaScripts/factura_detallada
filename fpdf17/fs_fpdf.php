@@ -389,11 +389,13 @@ class PDF_MC_Table extends FPDF {
             $suma_linea = 1;
          }
          $maquetar_negrita = $fsvar->simple_get("f_detallada_maquetar_negrita");
-         if($maquetar_negrita)
+         if($maquetar_negrita) {
             $this->SetFont('Arial', 'B', 8);
-         else
+            $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
+         } else {
             $this->SetFont('Arial', '', 8);
-         $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
+            $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
+         }
          $this->SetFont('Arial', '', 8);
       }
 
