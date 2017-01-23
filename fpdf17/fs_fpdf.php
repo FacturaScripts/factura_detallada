@@ -381,13 +381,18 @@ class PDF_MC_Table extends FPDF {
          }
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
       } else {
-         if($agrupa_albaranes){
+         if($agrupa_albaranes && ($this->albaran_anterior != $data[0])){
             $this->SetFont('Arial', 'B', 8);
             $this->MultiCell($w, 5, $data[0], 0, 'C');
             $this->SetFont('Arial', '', 8);
+            $this->albaran_anterior = $data[0];
             $suma_linea = 1;
          }
-         $this->SetFont('Arial', 'B', 8);
+         $maquetar_negrita = $fsvar->simple_get("f_detallada_maquetar_negrita");
+         if($maquetar_negrita)
+            $this->SetFont('Arial', 'B', 8);
+         else
+            $this->SetFont('Arial', '', 8);
          $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
          $this->SetFont('Arial', '', 8);
       }

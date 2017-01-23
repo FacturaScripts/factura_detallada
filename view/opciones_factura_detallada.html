@@ -88,7 +88,16 @@
                    Agrupa y detalla albaran en Descripción.
                 </label>
             </div>
-             <button class="btn btn-sm btn-primary" type="submit">
+            <div class="form-group">
+                <label class="checkbox-inline">
+                   {if="$fsc->factura_detallada_setup['f_detallada_maquetar_negrita']"}
+                   <input type="checkbox" name="maquetar_negrita" value="TRUE" checked=""/>
+                   {else}
+                   <input type="checkbox" name="maquetar_negrita" value="TRUE"/>
+                   {/if}
+                   Si quitamos precio o cantidad en (MAQUETAR) poner línea en negrita.
+                </label>
+            </div>             <button class="btn btn-sm btn-primary" type="submit">
                <span class="glyphicon glyphicon-floppy-disk"></span>&nbsp; Guardar
             </button>
          </div>
