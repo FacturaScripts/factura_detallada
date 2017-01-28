@@ -4,6 +4,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+ * Copyright (C) 2016-2017  Rafael Salas  rsalas.match@gmail.com
  */
 
 require_once 'plugins/factura_detallada/fpdf17/fs_fpdf.php';
