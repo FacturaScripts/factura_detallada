@@ -512,43 +512,45 @@ class factura_detallada extends fs_controller {
       
       $forma_pago = $fp0->get($this->factura->codpago);
       if($forma_pago)
-		{
+      {
          $texto_pago[] = $forma_pago->descripcion;
-			if($forma_pago->domiciliado) {
-					$cbc0 = new cuenta_banco_cliente ();
-					$encontrada = FALSE;
-					foreach ( $cbc0->all_from_cliente ( $this->factura->codcliente ) as $cbc ) {
-						$tmp_textopago = "Domiciliado en: ";
-						if ($cbc->iban) {
-							$texto_pago[] = $tmp_textopago. $cbc->iban ( TRUE );
-						}
-						
-						if ($cbc->swift) {
-							$texto_pago[] = "SWIFT/BIC: " . $cbc->swift;
-						}
-						$encontrada = TRUE;
-						break;
-					}
-					if (! $encontrada) {
-						$texto_pago[] = "Cliente sin cuenta bancaria asignada";
-					}
-			} else if ($forma_pago->codcuenta) {
-					$cb0 = new cuenta_banco ();
-					$cuenta_banco = $cb0->get ( $forma_pago->codcuenta );
-					if ($cuenta_banco) {
-						if ($cuenta_banco->iban) {
-							$texto_pago[] = "IBAN: " . $cuenta_banco->iban ( TRUE );
-						}
-						
-						if ($cuenta_banco->swift) {
-							$texto_pago[] = "SWIFT o BIC: " . $cuenta_banco->swift;
-						}
-					}
-			}
-         
-                    $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
-		}
-      
+         if($forma_pago->imprimir)
+         {
+            if($forma_pago->domiciliado)
+            {
+               $cbc0 = new cuenta_banco_cliente ();
+               $encontrada = FALSE;
+               foreach ( $cbc0->all_from_cliente ( $this->factura->codcliente ) as $cbc ) {
+                  $tmp_textopago = "Domiciliado en: ";
+                  if ($cbc->iban) {
+                     $texto_pago[] = $tmp_textopago. $cbc->iban ( TRUE );
+                  }
+
+                  if ($cbc->swift) {
+                     $texto_pago[] = "SWIFT/BIC: " . $cbc->swift;
+                  }
+                  $encontrada = TRUE;
+                  break;
+               }
+               if (! $encontrada) {
+                  $texto_pago[] = "Cliente sin cuenta bancaria asignada";
+               }
+            } else if ($forma_pago->codcuenta) {
+               $cb0 = new cuenta_banco ();
+               $cuenta_banco = $cb0->get ( $forma_pago->codcuenta );
+               if ($cuenta_banco) {
+                  if ($cuenta_banco->iban) {
+                     $texto_pago[] = "IBAN: " . $cuenta_banco->iban ( TRUE );
+                  }
+
+                  if ($cuenta_banco->swift) {
+                     $texto_pago[] = "SWIFT o BIC: " . $cuenta_banco->swift;
+                  }
+               }
+            }
+            $texto_pago[] = "Vencimiento: " . $this->factura->vencimiento;
+         }
+      }
       return $texto_pago;
    }
 }

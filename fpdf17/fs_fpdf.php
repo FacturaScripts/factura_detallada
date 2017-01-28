@@ -816,13 +816,6 @@ class PDF_MC_Table extends FPDF {
       $r2 = $r1 + 90;
       $y1 = 70;
       $y2 = $y1 + 23;
-      if ($numlineas < 3)
-      {
-	      $r1 = 150;
-	      $r2 = $r1 + 50;
-	      $y1 = 75;
-	      $y2 = $y1 + 15;
-      }
       $mid = $y1 + (($y2 - $y1) / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 2.5, 'D');
       $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
