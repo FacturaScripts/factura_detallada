@@ -38,6 +38,7 @@ class PDF_MC_Table extends FPDF {
    var $hoja_actual = 0;
    var $hoja_nueva = 0;
    var $albaran_anterior;
+   var $es_factura = true;
 
    function Setdatoscab($v) {
       //Set the array
@@ -91,7 +92,10 @@ class PDF_MC_Table extends FPDF {
    //Cabecera de pagina
    function Header() {
       // Creamos el recuadro de la empresa
-      $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
+      if($this->es_factura)
+         $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
+      else
+         $this->RoundedRect(9, 6, 100, 28, 3.5, 'D');
 
       // Datos de la empresa
       $direccion = $this->fde_FS_CIFNIF . ": " . utf8_decode($this->fde_cifnif) . "\n" . $this->fde_direccion;
@@ -230,7 +234,10 @@ class PDF_MC_Table extends FPDF {
       $this->addClientAdresse(utf8_decode($nombrecliente), utf8_decode($cliente));
 
       // Forma de Pago de la Factura
-      $this->addPago($this->fdf_epago);
+      if($this->es_factura)
+         $this->addPago($this->fdf_epago);
+      else
+         $this->addExtras($this->fdf_contacto);
 
       // Divisa de la Factura
       //$this->addDivisa(utf8_decode($this->fdf_divisa));
@@ -243,7 +250,8 @@ class PDF_MC_Table extends FPDF {
       $this->SetY(-8);
       $this->SetLineWidth(0.1);
       $this->SetTextColor(0);
-      $this->Cell(0, 4, utf8_decode($this->fde_piefactura), 0, 0, "C");
+      if($this->es_factura)
+         $this->Cell(0, 4, utf8_decode($this->fde_piefactura), 0, 0, "C");
 
       // Cabecera Titulos Columnas
       $this->SetXY(10, 95);
@@ -289,11 +297,16 @@ class PDF_MC_Table extends FPDF {
             $this->addObservaciones($this->fdf_observaciones);
          }
 
-         // Lineas de Impuestos
-         $this->addLineasIva($this->fdf_lineasiva);
+         if($this->es_factura){
+            // Lineas de Impuestos
+            $this->addLineasIva($this->fdf_lineasiva);
 
-         // Total factura
-         $this->addTotal();
+            // Total factura
+            $this->addTotal();            
+         } else{
+            // Total albaran
+            $this->addTotal();                        
+         }
 
          if($this->observaciones_nueva_hoja) {
             $this->hoja_actual = $this->page;
@@ -320,9 +333,16 @@ class PDF_MC_Table extends FPDF {
       $y = $this->GetY();
 
       $fsvar = new fs_var();
-      $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
-      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
-                     && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
+      if($this->es_factura) {
+         $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
+         $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
+                        && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
+         $imprime_IVA = true;
+      } else {
+         $agrupa_albaranes = false;
+         $imprime_albaran = false;
+         $imprime_IVA = true;
+      }
       if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
          $y += 5;
       // Imprimimos solo los campos numericos
@@ -650,7 +670,7 @@ class PDF_MC_Table extends FPDF {
    }
 
    // END - Girar Texto o Imagen
-   // Factura
+   // Factura / albaran
    function sizeOfText($texte, $largeur) {
       $index = 0;
       $nb_lines = 0;
@@ -721,7 +741,7 @@ class PDF_MC_Table extends FPDF {
       $mid = ($r1 + $r2 ) / 2;
 
       $texte = $libelle . ' N' . chr(176) . ': ' . $num;
-      $szfont = 11;
+      $szfont = 15;
       $loop = 0;
 
       while ($loop == 0) {
@@ -838,6 +858,30 @@ class PDF_MC_Table extends FPDF {
       foreach ($mode as $lin)
       	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
 
+   }
+
+   /**
+    * addExtras: Añadimos los datos extra del albarán
+    * @param type $mode
+    */
+   function addExtras($mode) {
+     // default
+      $r1 = 110;
+      $r2 = $r1 + 90;
+      $y1 = 70;
+      $y2 = $y1 + 23;
+      $mid = $y1 + (($y2 - $y1) / 2);
+      $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 2.5, 'D');
+      $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
+      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);      
+      $this->SetFont("Arial", "B", 9);
+      $this->Cell(10, 4, "DATOS ALBARAN", 0, 0, "C");      
+      $salto = 4;
+      $just = 'L';
+      $this->SetFont("Arial", "", 8);
+      $this->SetXY($r1 + 3 , $y1 + 6);
+      foreach ($mode as $lin)
+      	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
    }
 
    // Divisa
@@ -1054,7 +1098,8 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       // Total Neto de la pagina
       $this->SetFont("Arial", "", 9);
       $this->SetXY($r1 + 16, $y1 + 6.5);
-      $this->Cell(43, 4, $this->neto, 0, 0, "C");
+      if(isset($this->neto))
+         $this->Cell(43, 4, $this->neto, 0, 0, "C");
 
       // Suma y Sigue		
       $this->SetFont("Arial", "B", 6);
@@ -1063,31 +1108,33 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
    }
 
    function addTotal() {
-      $this->SetFont("Arial", "B", 8);
-      $r1 = 10;
-      $r2 = $r1 + 125;
-      $y1 = $this->h - 30;
-      $y2 = $y1 + 20;
-      $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 1.5, 'D');
-      $this->Line($r1, $y1 + 4, $r2, $y1 + 4);
-      $this->Line($r1 + 8, $y1 + 4, $r1 + 8, $y2);
-      $this->Line($r1 + 26, $y1, $r1 + 26, $y2);
-      $this->Line($r1 + 33, $y1 + 4, $r1 + 33, $y2);
-      $this->Line($r1 + 51, $y1, $r1 + 51, $y2);
-      $this->Line($r1 + 58, $y1 + 4, $r1 + 58, $y2);
-      $this->Line($r1 + 76, $y1, $r1 + 76, $y2);
-      $this->Line($r1 + 83, $y1 + 4, $r1 + 83, $y2);
-      $this->Line($r1 + 101, $y1, $r1 + 101, $y2);
-      $this->SetXY($r1, $y1);
-      $this->Cell(26, 4, "NETO", 0, '', "C");
-      $this->SetX($r1 + 26);
-      $this->Cell(25, 4, FS_IVA, 0, '', "C");
-      $this->SetX($r1 + 51);
-      $this->Cell(25, 4, "REC. EQUIV.", 0, '', "C");
-      $this->SetX($r1 + 76);
-      $this->Cell(25, 4, FS_IRPF, 0, '', "C");
-      $this->SetX($r1 + 101);
-      $this->Cell(24, 4, "IMPORTES", 0, '', "C");
+      if($this->es_factura){
+         $this->SetFont("Arial", "B", 8);
+         $r1 = 10;
+         $r2 = $r1 + 125;
+         $y1 = $this->h - 30;
+         $y2 = $y1 + 20;
+         $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 1.5, 'D');
+         $this->Line($r1, $y1 + 4, $r2, $y1 + 4);
+         $this->Line($r1 + 8, $y1 + 4, $r1 + 8, $y2);
+         $this->Line($r1 + 26, $y1, $r1 + 26, $y2);
+         $this->Line($r1 + 33, $y1 + 4, $r1 + 33, $y2);
+         $this->Line($r1 + 51, $y1, $r1 + 51, $y2);
+         $this->Line($r1 + 58, $y1 + 4, $r1 + 58, $y2);
+         $this->Line($r1 + 76, $y1, $r1 + 76, $y2);
+         $this->Line($r1 + 83, $y1 + 4, $r1 + 83, $y2);
+         $this->Line($r1 + 101, $y1, $r1 + 101, $y2);
+         $this->SetXY($r1, $y1);
+         $this->Cell(26, 4, "NETO", 0, '', "C");
+         $this->SetX($r1 + 26);
+         $this->Cell(25, 4, FS_IVA, 0, '', "C");
+         $this->SetX($r1 + 51);
+         $this->Cell(25, 4, "REC. EQUIV.", 0, '', "C");
+         $this->SetX($r1 + 76);
+         $this->Cell(25, 4, FS_IRPF, 0, '', "C");
+         $this->SetX($r1 + 101);
+         $this->Cell(24, 4, "IMPORTES", 0, '', "C");
+      }
 
       $r1 = $this->w - 70;
       $r2 = $r1 + 60;
@@ -1243,6 +1290,8 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
                      $xcadena.= " MILLONES ";
                   break;
                case 2:
+                  if($xdecimales === "00")
+                     $xdecimales = "CERO";
                   if ($xcifra < 1) {
                      if ($convert00decimal)
                         $xcadena = "CERO con $xdecimales cent.";
