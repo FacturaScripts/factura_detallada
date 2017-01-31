@@ -1147,7 +1147,10 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       $this->Line($r1 + 15, $y1 + 4, $r2, $y1 + 4);
       $this->SetFont("Arial", "B", 8);
       $this->SetXY($r1 + 22, $y1);
-      $this->Cell(30, 4, $this->fdf_divisa, 0, 0, "C");
+      if($this->es_factura)
+        $this->Cell(30, 4, $this->fdf_divisa, 0, 0, "C");
+      else
+        $this->Cell(30, 4, $this->fdf_divisa . ' NETO', 0, 0, "C");
       $this->SetFont("Arial", "B", 8);
       $this->SetXY($r1, $y1 + 7);
       $this->Cell(15, 4, "TOTAL", 0, 0, "C");
