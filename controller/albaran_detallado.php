@@ -186,15 +186,15 @@ class albaran_detallado extends fs_controller {
       $pdf_doc->fdc_telefono2 = $this->cliente->telefono2;
       $pdf_doc->fdc_fax = $this->cliente->fax;
       $pdf_doc->fdc_email = $this->cliente->email;
-      $pdf_doc->fdc_orden = $this->albaran->numero2;
 
       $pdf_doc->fdf_contacto = array();
       if(isset($this->albaran->persona_contacto))
          $pdf_doc->fdf_contacto[] = "Persona de contacto: " . $this->albaran->persona_contacto;
       if(isset($this->albaran->actuacion_en))
-         $pdf_doc->fdf_contacto[] = "Actuación En: " . $this->albaran->persona_contacto;
+         $pdf_doc->fdf_contacto[] = "Actuación En: " . $this->albaran->actuacion_en;
       if(isset($this->cliente->numeroproveedor))
          $pdf_doc->fdf_contacto[] = "Número Proveedor: " . $this->cliente->numeroproveedor;
+      $pdf_doc->fdf_contacto[] = "N Pedido: " . $this->albaran->numero2;
       
       // Divisa de la Factura
       $divisa = new divisa();
