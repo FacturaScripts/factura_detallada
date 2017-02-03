@@ -2,8 +2,8 @@
 
 /*
  * This file is part of FacturaSctipts
- * Copyright (C) 2016   César Sáez Rodríguez    NATHOO@lacalidad.es
- * Copyright (C) 2016   Carlos García Gómez     neorazorx@gmail.com
+ * Copyright (C) 2016      César Sáez Rodríguez    NATHOO@lacalidad.es
+ * Copyright (C) 2016-2017 Carlos García Gómez     neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -98,7 +98,7 @@ class opciones_factura_detallada extends fs_controller
          /// activamos las páginas del plugin
          foreach( scandir(__DIR__) as $f)
          {
-            if( is_string($f) AND strlen($f) > 0 AND !is_dir($f) AND $f != __CLASS__.'.php' )
+            if( $f != '.' AND $f != '..' AND is_string($f) AND strlen($f) > 4 AND !is_dir($f) AND $f != __CLASS__.'.php' )
             {
                $page_name = substr($f, 0, -4);
                
