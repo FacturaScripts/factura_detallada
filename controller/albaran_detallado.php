@@ -330,12 +330,12 @@ class albaran_detallado extends fs_controller {
       }
       else if($archivodownload)
       {
-         ob_end_clean();
+         if (ob_get_contents()) ob_end_clean();
          $pdf_doc->Output($archivodownload, 'I');
       }
       else
       {
-         ob_end_clean();
+         if (ob_get_contents()) ob_end_clean();
          $pdf_doc->Output();
       }
 
