@@ -344,8 +344,15 @@ class PDF_MC_Table extends FPDF {
          $imprime_albaran = false;
          $imprime_IVA = true;
       }
-      if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
-         $y += 5;
+      if($agrupa_albaranes && ($this->albaran_anterior != $data[0])) {
+        $y += 5;
+        if ($y > 250) { // Pagina completa
+          $this->numero_lineas = $this->lineaactual + $nb;
+          $this->AddPage($this->CurOrientation);
+          $this->lineaactual = 0;
+          $y = 105.6;
+        }
+      }
       // Imprimimos solo los campos numericos
       for ($i = 0; $i < count($data); $i++) {
          // La descripcion del articulo la trataremos la ultima. Aqui no.
@@ -438,7 +445,7 @@ class PDF_MC_Table extends FPDF {
          $this->lineaactual = ($this->lineaactual + $nb) - ($nbp * 31);
       } else {
          if (($this->lineaactual + $nb) == 31) { // Pagina completa
-            $this->DibujaCuadro(count($this->datoscab),155);
+            $this->DibujaCuadro(count($this->datoscab),155,$imprime_albaran);
             $this->numero_lineas = $this->lineaactual + $nb;
             $this->AddPage($this->CurOrientation);
             $this->lineaactual = 1;
