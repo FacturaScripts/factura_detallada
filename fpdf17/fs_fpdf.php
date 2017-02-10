@@ -250,12 +250,23 @@ class PDF_MC_Table extends FPDF
       $cliente = $this->fdf_FS_CIFNIF . ": ";
       $cliente .= $this->fdf_cifnif . "\n";
       $cliente .= $this->fdf_direccion . "\n";
-      $cliente .= $this->fdf_codpostal . " - ";
-      $cliente .= $this->fdf_ciudad . " (" . $this->fdf_provincia . ")\n";
+      
+      if($this->fdf_codpostal)
+      {
+         $cliente .= $this->fdf_codpostal . " - ";
+      }
+      
+      $cliente .= $this->fdf_ciudad;
+      
+      if($this->fdf_provincia)
+      {
+         $cliente .= " (" . $this->fdf_provincia . ")";
+      }
+      $cliente .= "\n";
       
       if($this->fdc_telefono1 OR $this->fdc_telefono2)
       {
-         $cliente .= $this->idioma->telefono . ": ";
+         $cliente .= ucfirst( $this->idioma->fix_html($this->idioma->telefono) ) . ": ";
          if($this->fdc_telefono1)
          {
             $cliente .= $this->fdc_telefono1;
@@ -279,7 +290,7 @@ class PDF_MC_Table extends FPDF
       }
       if($this->fdc_email)
       {
-         $cliente .= utf8_decode($this->idioma->email) . ": " . $this->fdc_email . "\n";
+         $cliente .= utf8_decode( ucfirst( $this->idioma->fix_html($this->idioma->email) ) ) . ": " . $this->fdc_email . "\n";
       }
       if($this->fdc_orden)
       {
@@ -891,7 +902,7 @@ class PDF_MC_Table extends FPDF
       {
          $this->SetXY($x1, $y1 + 73);
          $this->SetFont('Arial', '', 9);
-         $this->Write(5, 'Email: ');
+         $this->Write(5, utf8_decode(ucfirst( $this->idioma->fix_html($this->idioma->email) ) ).': ');
          $this->SetTextColor(0, 0, 255);
          $this->Write(5, $email, 'mailto:' . $email);
          $this->SetTextColor(0);

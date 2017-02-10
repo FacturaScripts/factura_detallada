@@ -204,6 +204,8 @@ class opciones_factura_detallada extends fs_controller
                $this->new_error_msg('Error al guardar los datos.');
             }
          }
+         
+         $this->share_extension();
       }
       else
       {

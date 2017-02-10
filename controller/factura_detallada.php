@@ -185,15 +185,15 @@ class factura_detallada extends fs_controller
 
       /// Definimos todos los datos de la cabecera de la factura
       /// Datos de la empresa
-      $pdf_doc->fde_nombre = $this->fix_html($this->empresa->nombre);
+      $pdf_doc->fde_nombre = $this->idioma->fix_html($this->empresa->nombre);
       $pdf_doc->fde_FS_CIFNIF = FS_CIFNIF;
       $pdf_doc->fde_cifnif = $this->empresa->cifnif;
       $pdf_doc->fde_direccion = $this->empresa->direccion;
       $pdf_doc->fde_codpostal = $this->empresa->codpostal;
       $pdf_doc->fde_ciudad = $this->empresa->ciudad;
       $pdf_doc->fde_provincia = $this->empresa->provincia;
-      $pdf_doc->fde_telefono = $this->idioma->telefono . ': ' . $this->empresa->telefono;
-      $pdf_doc->fde_fax = $this->idioma->fax . ': ' . $this->empresa->fax;
+      $pdf_doc->fde_telefono = ucfirst( $this->idioma->fix_html($this->idioma->telefono) ) . ': ' . $this->empresa->telefono;
+      $pdf_doc->fde_fax = ucfirst( $this->idioma->fix_html($this->idioma->fax) ) . ': ' . $this->empresa->fax;
       $pdf_doc->fde_email = $this->empresa->email;
       $pdf_doc->fde_web = $this->empresa->web;
       $pdf_doc->fde_piefactura = $this->empresa->pie_factura;
@@ -225,16 +225,16 @@ class factura_detallada extends fs_controller
       // Fecha, Codigo Cliente y observaciones de la factura
       $pdf_doc->fdf_fecha = $this->factura->fecha;
       $pdf_doc->fdf_codcliente = $this->factura->codcliente;
-      $pdf_doc->fdf_observaciones = $this->fix_html($this->factura->observaciones);
+      $pdf_doc->fdf_observaciones = $this->idioma->fix_html($this->factura->observaciones);
       
       // Datos del Cliente
-      $pdf_doc->fdf_nombrecliente = $this->fix_html($this->factura->nombrecliente);
+      $pdf_doc->fdf_nombrecliente = $this->idioma->fix_html($this->factura->nombrecliente);
       $pdf_doc->fdf_FS_CIFNIF = FS_CIFNIF;
       $pdf_doc->fdf_cifnif = $this->factura->cifnif;
-      $pdf_doc->fdf_direccion = $this->fix_html($this->factura->direccion);
+      $pdf_doc->fdf_direccion = $this->idioma->fix_html($this->factura->direccion);
       $pdf_doc->fdf_codpostal = $this->factura->codpostal;
-      $pdf_doc->fdf_ciudad = $this->fix_html($this->factura->ciudad);
-      $pdf_doc->fdf_provincia = $this->fix_html($this->factura->provincia);
+      $pdf_doc->fdf_ciudad = $this->idioma->fix_html($this->factura->ciudad);
+      $pdf_doc->fdf_provincia = $this->idioma->fix_html($this->factura->provincia);
       $pdf_doc->fdc_telefono1 = $this->cliente->telefono1;
       $pdf_doc->fdc_telefono2 = $this->cliente->telefono2;
       $pdf_doc->fdc_fax = $this->cliente->fax;
@@ -260,7 +260,7 @@ class factura_detallada extends fs_controller
       $epais = $pais->get($this->factura->codpais);
       if($epais)
       {
-         $pdf_doc->fdf_pais = $this->fix_html($epais->nombre);
+         $pdf_doc->fdf_pais = $this->idioma->fix_html($epais->nombre);
       }
 
       // Cabecera Titulos Columnas
@@ -353,7 +353,7 @@ class factura_detallada extends fs_controller
             $art = $articulo->get($lineas[$i]->referencia);
             if($art && $this->impresion['f_detallada_observaciones_producto'])
             {
-               $observa = "\n" . utf8_decode($this->fix_html($art->observaciones));
+               $observa = "\n" . utf8_decode($this->idioma->fix_html($art->observaciones));
             }
             else
             {
@@ -362,11 +362,11 @@ class factura_detallada extends fs_controller
             
             if($this->impresion['f_detallada_print_may_min'])
             {
-               $descripcion_retocada = $this->fix_html($lineas[$i]->descripcion) . trim($observa);
+               $descripcion_retocada = $this->idioma->fix_html($lineas[$i]->descripcion) . trim($observa);
             }
             else
             {
-               $descripcion_retocada = mb_strtoupper($this->fix_html($lineas[$i]->descripcion), 'utf-8') . trim($observa);
+               $descripcion_retocada = mb_strtoupper($this->idioma->fix_html($lineas[$i]->descripcion), 'utf-8') . trim($observa);
             }
             
             if($this->impresion['f_detallada_agrupa_albaranes'])
@@ -520,19 +520,6 @@ class factura_detallada extends fs_controller
       $fsext2->name = 'enviar_factura_detallada';
       $fsext2->from = __CLASS__;
       $fsext2->delete();
-   }
-
-   private function fix_html($txt)
-   {
-      $newt = str_replace('&lt;', '<', $txt);
-      $newt = str_replace('&gt;', '>', $newt);
-      $newt = str_replace('&quot;', '"', $newt);
-      $newt = str_replace('&#39;', "'", $newt);
-      $newt = str_replace('&#8211;', '-', $newt);
-      $newt = str_replace('&#8212;', '-', $newt);
-      $newt = str_replace('&#8213;', '-', $newt);
-      $newt = str_replace('–', '-', $newt);
-      return $newt;
    }
 
    private function enviar_email($doc, $tipo = 'detallada')

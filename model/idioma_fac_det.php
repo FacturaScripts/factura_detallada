@@ -260,4 +260,17 @@ class idioma_fac_det extends fs_model
       
       return $elist;
    }
+   
+   public function fix_html($txt)
+   {
+      $newt = str_replace('&lt;', '<', $txt);
+      $newt = str_replace('&gt;', '>', $newt);
+      $newt = str_replace('&quot;', '"', $newt);
+      $newt = str_replace('&#39;', "'", $newt);
+      $newt = str_replace('&#8211;', '-', $newt);
+      $newt = str_replace('&#8212;', '-', $newt);
+      $newt = str_replace('&#8213;', '-', $newt);
+      $newt = str_replace('–', '-', $newt);
+      return $newt;
+   }
 }
