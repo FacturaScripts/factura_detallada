@@ -488,7 +488,6 @@ class factura_detallada extends fs_controller
 
    private function share_extensions()
    {
-
       foreach($this->idioma->all() as $idi)
       {
          $fsext = new fs_extension();
@@ -498,7 +497,15 @@ class factura_detallada extends fs_controller
          $fsext->type = 'pdf';
          $fsext->text = '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada ' . $idi->codidioma;
          $fsext->params = '&codidioma=' . $idi->codidioma;
-         $fsext->save();
+         
+         if($idi->activo)
+         {
+            $fsext->save();
+         }
+         else
+         {
+            $fsext->delete();
+         }
 
          $fsext2 = new fs_extension();
          $fsext2->name = 'enviar_factura_detallada_' . $idi->codidioma;
@@ -507,7 +514,15 @@ class factura_detallada extends fs_controller
          $fsext2->type = 'email';
          $fsext2->text = 'Factura detallada ' . $idi->codidioma;
          $fsext2->params = '&codidioma=' . $idi->codidioma;
-         $fsext2->save();
+         
+         if($idi->activo)
+         {
+            $fsext2->save();
+         }
+         else
+         {
+            $fsext2->delete();
+         }
       }
 
       /// eliminamos las antiguas extensiones

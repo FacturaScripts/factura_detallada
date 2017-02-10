@@ -372,7 +372,7 @@ class PDF_MC_Table extends FPDF
          // Si existen Incluimos las Observaciones
          if($this->fdf_observaciones != '' && !$this->observaciones_nueva_hoja)
          {
-            $this->addObservaciones($this->fdf_observaciones);
+            $this->addObservaciones( utf8_decode($this->fdf_observaciones) );
          }
 
          if($this->es_factura)

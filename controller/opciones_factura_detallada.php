@@ -51,7 +51,6 @@ class opciones_factura_detallada extends fs_controller
       else
       {
          $this->check_menu();
-         $this->share_extension();
          $this->colores = array("gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
          
          /// cargamos la configuración
@@ -68,6 +67,8 @@ class opciones_factura_detallada extends fs_controller
             ),
             FALSE
          );
+         
+         $this->idioma = new idioma_fac_det();
          
          if( isset($_POST['factura_detallada_setup']) )
          {
@@ -94,8 +95,6 @@ class opciones_factura_detallada extends fs_controller
          {
             $this->eliminar_idioma();
          }
-         
-         $this->idioma = new idioma_fac_det();
       }
    }
    
@@ -108,6 +107,43 @@ class opciones_factura_detallada extends fs_controller
       $fsext->type = 'button';
       $fsext->text = '<span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; Factura Detallada';
       $fsext->save();
+      
+      foreach($this->idioma->all() as $idi)
+      {
+         $fsext = new fs_extension();
+         $fsext->name = 'factura_detallada_' . $idi->codidioma;
+         $fsext->from = 'factura_detallada';
+         $fsext->to = 'ventas_factura';
+         $fsext->type = 'pdf';
+         $fsext->text = '<span class="glyphicon glyphicon-print"></span>&nbsp; Factura detallada ' . $idi->codidioma;
+         $fsext->params = '&codidioma=' . $idi->codidioma;
+         
+         if($idi->activo)
+         {
+            $fsext->save();
+         }
+         else
+         {
+            $fsext->delete();
+         }
+
+         $fsext2 = new fs_extension();
+         $fsext2->name = 'enviar_factura_detallada_' . $idi->codidioma;
+         $fsext2->from = 'factura_detallada';
+         $fsext2->to = 'ventas_factura';
+         $fsext2->type = 'email';
+         $fsext2->text = 'Factura detallada ' . $idi->codidioma;
+         $fsext2->params = '&codidioma=' . $idi->codidioma;
+         
+         if($idi->activo)
+         {
+            $fsext2->save();
+         }
+         else
+         {
+            $fsext2->delete();
+         }
+      }
    }
    
    /**
@@ -157,6 +193,8 @@ class opciones_factura_detallada extends fs_controller
       {
          $this->new_error_msg('Error al guardar los datos.');
       }
+      
+      $this->share_extension();
    }
    
    private function editar_idioma()
@@ -215,10 +253,18 @@ class opciones_factura_detallada extends fs_controller
    
    private function eliminar_idioma()
    {
-      $idi0 = new idioma_fac_det();
-      $idioma = $idi0->get($_GET['delete_idioma']);
+      $idioma = $this->idioma->get($_GET['delete_idioma']);
       if($idioma)
       {
+         /// primero desactivamos
+         $idioma->activo = FALSE;
+         if( $idioma->save() )
+         {
+            /// de esta forma share_extension elimina las extensiones
+            $this->share_extension();
+         }
+         
+         /// ahora eliminamos
          if( $idioma->delete() )
          {
             $this->new_message('Idioma eliminado correctamente.');

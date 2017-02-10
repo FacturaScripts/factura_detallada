@@ -92,18 +92,18 @@ class idioma_fac_det extends fs_model
          $this->nombre = NULL;
          $this->activo = TRUE;
          
-         $this->telefono = 'telefono';
+         $this->telefono = 'teléfono';
          $this->fax = 'fax';
          $this->email = 'email';
          $this->web = 'web';
          $this->factura_num = 'factura nº';
-         $this->pagina = 'pagina';
+         $this->pagina = 'página';
          $this->fecha = 'fecha';
          $this->num_cliente = 'nº de cliente';
          $this->cliente = 'cliente';
          $this->forma_pago = 'forma de pago';
          $this->vencimiento = 'vencimiento';
-         $this->descripcion = 'descripcion';
+         $this->descripcion = 'descripción';
          $this->cant = 'cant';
          $this->precio = 'precio';
          $this->dto = 'dto';

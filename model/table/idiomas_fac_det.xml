@@ -22,7 +22,7 @@
    <columna>
       <nombre>telefono</nombre>
       <tipo>character varying(100)</tipo>
-      <defecto>'telefono'::character varying</defecto>
+      <defecto>'teléfono'::character varying</defecto>
    </columna>
    <columna>
       <nombre>fax</nombre>
@@ -47,7 +47,7 @@
    <columna>
       <nombre>pagina</nombre>
       <tipo>character varying(100)</tipo>
-      <defecto>'pagina'::character varying</defecto>
+      <defecto>'página'::character varying</defecto>
    </columna>
    <columna>
       <nombre>fecha</nombre>
@@ -77,7 +77,7 @@
    <columna>
       <nombre>descripcion</nombre>
       <tipo>character varying(100)</tipo>
-      <defecto>'descripcion'::character varying</defecto>
+      <defecto>'descripción'::character varying</defecto>
    </columna>
    <columna>
       <nombre>cant</nombre>
