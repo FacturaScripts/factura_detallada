@@ -1,17 +1,10 @@
-Añade un nuevo formato de impresión de facturas/albaranes de venta.
+Añade un nuevo formato de impresión de facturas/albaranes de venta:
 <ul>
-   <li>Añade un formato moderno tanto al albarán de venta como a la factura.</li>
-   <li>Se incluyen porcentajes y totales de IRPF y Recargo de Equivalencia por cada grupo de IVA en la impresion de la factura.</li>
-   <li>Sólo es posible incluir un máximo de 4 lineas de IVA en la impresion de la factura.</li>
-   <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como Marcadeagua en el fondo del documento.</li>
-   <li>El Logo NO debe de incluir los datos de la empresa. Solo la imagen corporativa.</li>
    <li>Puedes elegir el color de la factura para adaptarlo mejor a tu imagen corporativa (en las opciones del plugin).</li>
-   <li>Modificado el formato.</li>
-   <li>Añadido código QR.</li>
-   <li>Control del nombre de la empresa para que no se salga de la factura.</li>
-   <li>fpdf 1.81.</li>
-   <li>La factura rectificativa tiene un texto indicando que lo es.</li>
+   <li>Pudes añadir traducciones de ciertos términos para imprimir en varios idiomas.</li>
    <li>Opción para esconder la columna de albarán.</li>
    <li>Opción para agrupar los albaranes en la linea de descripcion.</li>
    <li>Opción para determinar si queremos o no imprimir las observaciones de los productos.</li>
+   <li>Sólo es posible incluir un máximo de 4 lineas de IVA en la impresion de la factura.</li>
+   <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como marca de agua en el fondo del documento.</li>
 </ul>

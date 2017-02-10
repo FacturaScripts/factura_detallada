@@ -2,9 +2,9 @@
 
 /*
  * This file is part of FacturaSctipts
- * Copyright (C) 2014  Valentín González    valengon@hotmail.com 
- * Copyright (C) 2014-2015  Carlos Garcia Gomez  neorazorx@gmail.com
- * Copyright (C) 2016-2017  Rafael Salas  rsalas.match@gmail.com
+ * Copyright (C) 2014      Valentín González    valengon@hotmail.com 
+ * Copyright (C) 2014-2015 Carlos Garcia Gomez  neorazorx@gmail.com
+ * Copyright (C) 2016-2017 Rafael Salas  rsalas.match@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,41 +23,49 @@
 require_once 'plugins/factura_detallada/fpdf17/fpdf.php';
 require_once 'plugins/factura_detallada/qrcode/qrcode.class.php';
 
-class PDF_MC_Table extends FPDF {
-
-   var $datoscab;
-   var $widths;
+class PDF_MC_Table extends FPDF
+{
+   var $albaran_anterior;
    var $aligns;
-   var $colores;
-   var $extgstates = array();
    var $angle = 0;
-   var $lineaactual = 0;
-   var $piepagina = false;
-   var $numero_lineas = 0;
    var $codigorect;
-   var $observaciones_nueva_hoja = false;
+   var $colores;
+   var $color_relleno;
+   var $datoscab;
+   var $es_factura = true;
+   var $extgstates = array();
    var $hoja_actual = 0;
    var $hoja_nueva = 0;
-   var $albaran_anterior;
-   var $es_factura = true;
+   var $idioma;
+   var $impresion;
+   var $lineaactual = 0;
+   var $numero_lineas = 0;
+   var $observaciones_nueva_hoja = false;
+   var $piepagina = false;
+   var $widths;
 
-   function Setdatoscab($v) {
+   function Setdatoscab($v)
+   {
       //Set the array
       $this->datoscab = $v;
    }
 
-   function SetWidths($w) {
+   function SetWidths($w)
+   {
       //Set the array
       $this->widths = $w;
    }
 
-   function SetAligns($a) {
+   function SetAligns($a)
+   {
       //Set the array
       $this->aligns = $a;
    }
 
-   function SetColors($a) {
-      for ($i = 0; $i < count($a); $i++) {
+   function SetColors($a)
+   {
+      for($i = 0; $i < count($a); $i++)
+      {
          $datos = explode('|', $a[$i]);
          $this->colores[$i][0] = $datos[0];
          $this->colores[$i][1] = $datos[1];
@@ -65,65 +73,88 @@ class PDF_MC_Table extends FPDF {
       }
    }
 
-   function SetColorRelleno($a) {
-      $this->SetFillColor(192); // Por defecto Gris
-      if ($a == 'rojo') {
+   function SetColorRelleno($a)
+   {
+      if($a == 'rojo')
+      {
          $this->SetFillColor(253, 120, 120);
       }
-      if ($a == 'verde') {
+      else if($a == 'verde')
+      {
          $this->SetFillColor(120, 253, 165);
       }
-      if ($a == 'azul') {
+      else if($a == 'azul')
+      {
          $this->SetFillColor(120, 158, 253);
       }
-      if ($a == 'naranja') {
+      else if($a == 'naranja')
+      {
          $this->SetFillColor(255, 141, 0);
       }
-      if ($a == 'amarillo') {
+      else if($a == 'amarillo')
+      {
          $this->SetFillColor(255, 255, 0);
       }
-      if ($a == 'marron') {
+      else if($a == 'marron')
+      {
          $this->SetFillColor(100, 50, 0);
       }
-      if ($a == 'blanco') {
+      else if($a == 'blanco')
+      {
          $this->SetFillColor(245, 245, 245);
       }
+      else
+      {
+         $this->SetFillColor(192); // Por defecto Gris
+      }
+      
+      $this->color_relleno = $a;
    }
 
    //Cabecera de pagina
-   function Header() {
+   function Header()
+   {
       // Creamos el recuadro de la empresa
       if($this->es_factura)
+      {
          $this->RoundedRect(9, 6, 100, 28, 3.5, 'DF');
+      }
       else
          $this->RoundedRect(9, 6, 100, 28, 3.5, 'D');
 
       // Datos de la empresa
       $direccion = $this->fde_FS_CIFNIF . ": " . utf8_decode($this->fde_cifnif) . "\n" . $this->fde_direccion;
-      if ($this->fde_codpostal && $this->fde_ciudad) {
+      if($this->fde_codpostal && $this->fde_ciudad)
+      {
          $direccion .= "\n" . $this->fde_codpostal . ' - ' . $this->fde_ciudad;
-      } else {
-         if ($this->fde_codpostal) {
+      }
+      else
+      {
+         if($this->fde_codpostal)
+         {
             $direccion .= "\n" . $this->fde_codpostal;
          }
-         if ($this->fde_ciudad) {
+         if($this->fde_ciudad)
+         {
             $direccion .= "\n" . $this->fde_ciudad;
          }
       }
-      if ($this->fde_provincia) {
+      if($this->fde_provincia)
+      {
          $direccion .= ' (' . $this->fde_provincia . ')';
       }
-      if ($this->fde_telefono) {
+      if($this->fde_telefono)
+      {
          $direccion .= "\n" . $this->fde_telefono;
       }
-      if ($this->fde_fax) {
+      if($this->fde_fax)
+      {
          $direccion .= "\n" . $this->fde_fax;
       }
       $this->addSociete(utf8_decode($this->fde_nombre), utf8_decode($direccion), utf8_decode($this->fde_email), utf8_decode($this->fde_web));
 
-      $fsvar = new fs_var();
-      $Activa_QR = $fsvar->simple_get("f_detallada_QRCODE");
-      if($Activa_QR) {
+      if($this->impresion['f_detallada_QRCODE'])
+      {
          $cadena = 'BEGIN:VCARD' . "\n";
          $cadena .= 'VERSION:2.1' . "\n";
          $cadena .= 'ORG:' . $this->fde_nombre . "\n";
@@ -133,48 +164,53 @@ class PDF_MC_Table extends FPDF {
 
          $qrcode = new QRcode($cadena, 'L');
          $qrcode->disableBorder();
-         $background=array(255,255,255);
-         $color=array(0,0,0);
+         $background = array(255, 255, 255);
+         $color = array(0, 0, 0);
          $qrcode->displayFPDF($this, 86, 13, 20, $background, $color);
          unset($qrcode);
          $this->SetColorRelleno($this->color_rellono);
       }
 
       // Añado si es rectificativa la info sobre la factura
-      if($this->codigorect) {
-          $this->SetTextColor(255,0,0);
-          $this->SetXY(150, 88);
-          $this->SetFont('Arial', '', 12);
-          $this->RotatedText(109,92,'F. RECT.: ' . $this->codigorect,90);
-          $this->SetTextColor(0);
+      if($this->codigorect)
+      {
+         $this->SetTextColor(255, 0, 0);
+         $this->SetXY(150, 88);
+         $this->SetFont('Arial', '', 12);
+         $this->RotatedText(109, 92, 'F. RECT.: ' . $this->codigorect, 90);
+         $this->SetTextColor(0);
       }
 
       //Logotipo
       if($this->fdf_verlogotipo == '1')
       {
-         if( file_exists(FS_MYDOCS.'images/logo.png') )
+         if(file_exists(FS_MYDOCS . 'images/logo.png'))
          {
-            list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.png');
+            list($ancho, $alto) = getimagesize(FS_MYDOCS . 'images/logo.png');
             $factor_tamano_ancho = 45 / $alto;
             $factor_tamano_alto = 90 / $ancho;
             $total_ancho = $factor_tamano_ancho * $ancho;
             $total_alto = $factor_tamano_alto * $alto;
             if($total_alto > 45)
-               $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            {
+               $this->Image(FS_MYDOCS . 'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            }
             else
-               $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
+               $this->Image(FS_MYDOCS . 'images/logo.png', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
          }
-         else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
+         else if(file_exists(FS_MYDOCS . 'images/logo.jpg'))
          {
-            list($ancho, $alto) = getimagesize(FS_MYDOCS.'images/logo.jpg');
+            list($ancho, $alto) = getimagesize(FS_MYDOCS . 'images/logo.jpg');
             $factor_tamano_ancho = 45 / $alto;
             $factor_tamano_alto = 90 / $ancho;
             $total_ancho = $factor_tamano_ancho * $ancho;
             $total_alto = $factor_tamano_alto * $alto;
             if($total_alto > 45)
-               $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            {
+               $this->Image(FS_MYDOCS . 'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, $total_ancho, 45);
+            }
             else
-               $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
+               $this->Image(FS_MYDOCS . 'images/logo.jpg', $this->fdf_Xlogotipo, $this->fdf_Ylogotipo, 90, $total_alto);
          }
 
          $this->Ln(0);
@@ -187,13 +223,13 @@ class PDF_MC_Table extends FPDF {
          $this->SetAlpha(0.05);
 
          // draw png image
-         if( file_exists(FS_MYDOCS.'images/logo.png') )
+         if(file_exists(FS_MYDOCS . 'images/logo.png'))
          {
-            $this->Image(FS_MYDOCS.'images/logo.png', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
+            $this->Image(FS_MYDOCS . 'images/logo.png', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
          }
-         else if( file_exists(FS_MYDOCS.'images/logo.jpg') )
+         else if(file_exists(FS_MYDOCS . 'images/logo.jpg'))
          {
-            $this->Image(FS_MYDOCS.'images/logo.jpg', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
+            $this->Image(FS_MYDOCS . 'images/logo.jpg', $this->fdf_Xmarcaagua, $this->fdf_Ymarcaagua, 160);
          }
 
          // restore full opacity
@@ -216,19 +252,37 @@ class PDF_MC_Table extends FPDF {
       $cliente .= $this->fdf_direccion . "\n";
       $cliente .= $this->fdf_codpostal . " - ";
       $cliente .= $this->fdf_ciudad . " (" . $this->fdf_provincia . ")\n";
-      $cliente .= "Tlf: " . $this->fdc_telefono1;
-      if ($this->fdc_telefono2) {
-         $cliente .= " - " . $this->fdc_telefono2 . "\n";
-      } else {
+      
+      if($this->fdc_telefono1 OR $this->fdc_telefono2)
+      {
+         $cliente .= $this->idioma->telefono . ": ";
+         if($this->fdc_telefono1)
+         {
+            $cliente .= $this->fdc_telefono1;
+         }
+         
+         if($this->fdc_telefono2)
+         {
+            if($this->fdc_telefono1)
+            {
+               $cliente .= ' - ';
+            }
+            $cliente .= $this->fdc_telefono2;
+         }
+         
          $cliente .= "\n";
       }
-      if ($this->fdc_fax) {
-         $cliente .= "Fax: " . $this->fdc_fax . "\n";
+      
+      if($this->fdc_fax)
+      {
+         $cliente .= utf8_decode($this->idioma->fax) . ": " . $this->fdc_fax . "\n";
       }
-      if ($this->fdc_email) {
-         $cliente .= "Email: " . $this->fdc_email . "\n";
+      if($this->fdc_email)
+      {
+         $cliente .= utf8_decode($this->idioma->email) . ": " . $this->fdc_email . "\n";
       }
-	  if ($this->fdc_orden) {
+      if($this->fdc_orden)
+      {
          $cliente .= "N Pedido: " . $this->fdc_orden . "\n";
       }
 
@@ -236,7 +290,9 @@ class PDF_MC_Table extends FPDF {
 
       // Forma de Pago de la Factura
       if($this->es_factura)
+      {
          $this->addPago($this->fdf_epago);
+      }
       else
          $this->addExtras($this->fdf_contacto);
 
@@ -258,17 +314,23 @@ class PDF_MC_Table extends FPDF {
       $this->SetXY(10, 95);
       $this->SetFont("Arial", "B", 9);
 
-      $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
-                     && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
-      for ($i = 0; $i < count($this->datoscab); $i++) {
+      $imprime_albaran = $this->impresion['f_detallada_imprime_albaran'] && !$this->impresion['f_detallada_agrupa_albaranes'];
+      for($i = 0; $i < count($this->datoscab); $i++)
+      {
          if($imprime_albaran)
+         {
             $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
-         else {
-            if($i == 0){
-               $ancho = $this->widths[$i] + $this->widths[$i+1];
-               $this->Cell($ancho, 5, $this->datoscab[$i+1], 1, 0, 'C', 1);
+         }
+         else
+         {
+            if($i == 0)
+            {
+               $ancho = $this->widths[$i] + $this->widths[$i + 1];
+               $this->Cell($ancho, 5, $this->datoscab[$i + 1], 1, 0, 'C', 1);
                $i++;
-            } else {
+            }
+            else
+            {
                $this->Cell($this->widths[$i], 5, $this->datoscab[$i], 1, 0, 'C', 1);
             }
          }
@@ -281,104 +343,128 @@ class PDF_MC_Table extends FPDF {
       $aquiX = $this->GetX();
 
       if($this->hoja_actual != $this->hoja_nueva)
+      {
          $this->Footer();
-
+      }
    }
 
    //Pie de pagina
-   function Footer() {
+   function Footer()
+   {
       //Posicion: a 3 cm del final
       $this->SetY(-30);
       $this->SetLineWidth(0.1);
       $this->SetTextColor(0);
       $this->SetFont('Arial', '', 8);
-      if ($this->piepagina == true) {
+      if($this->piepagina == true)
+      {
          // Si existen Incluimos las Observaciones
-         if ($this->fdf_observaciones != '' && !$this->observaciones_nueva_hoja) {
+         if($this->fdf_observaciones != '' && !$this->observaciones_nueva_hoja)
+         {
             $this->addObservaciones($this->fdf_observaciones);
          }
 
-         if($this->es_factura){
+         if($this->es_factura)
+         {
             // Lineas de Impuestos
             $this->addLineasIva($this->fdf_lineasiva);
 
             // Total factura
-            $this->addTotal();            
-         } else{
+            $this->addTotal();
+         }
+         else
+         {
             // Total albaran
-            $this->addTotal();                        
+            $this->addTotal();
          }
 
-         if($this->observaciones_nueva_hoja) {
+         if($this->observaciones_nueva_hoja)
+         {
             $this->hoja_actual = $this->page;
             $this->hoja_nueva = $this->page + 1;
             $this->observaciones_nueva_hoja = false;
             $this->numero_lineas = 0;
             $this->AddPage();
          }
-      } else {
+      }
+      else
+      {
          // Neto por Pagina
-         $fsvar = new fs_var();
-         $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
-               && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
+         $imprime_albaran = $this->impresion['f_detallada_imprime_albaran'] && !$this->impresion['f_detallada_agrupa_albaranes'];
          $this->addNeto();
          $this->DibujaCuadro(count($this->datoscab), 155, $imprime_albaran);
       }
    }
 
-   function Row($data, $ultimo = '1', $haz_linea, $mostrar_cantidad, $mostrar_precio) {
+   function Row($data, $ultimo = '1', $haz_linea, $mostrar_cantidad, $mostrar_precio)
+   {
       $this->SetFont('Arial', '', 8);
 
       // Guardamos la posicion Actual
       $x = $this->GetX();
       $y = $this->GetY();
 
-      $fsvar = new fs_var();
-      if($this->es_factura) {
-         $agrupa_albaranes = $fsvar->simple_get("f_detallada_agrupa_albaranes");
-         $imprime_albaran = $fsvar->simple_get("f_detallada_imprime_albaran")
-                        && !$fsvar->simple_get("f_detallada_agrupa_albaranes");
+      if($this->es_factura)
+      {
+         $agrupa_albaranes = $this->impresion['f_detallada_agrupa_albaranes'];
+         $imprime_albaran = $this->impresion['f_detallada_imprime_albaran'] && !$this->impresion['f_detallada_agrupa_albaranes'];
          $imprime_IVA = true;
-      } else {
+      }
+      else
+      {
          $agrupa_albaranes = false;
          $imprime_albaran = false;
          $imprime_IVA = true;
       }
-      if($agrupa_albaranes && ($this->albaran_anterior != $data[0])) {
-        $y += 5;
-        if ($y > 250) { // Pagina completa
-          $this->numero_lineas = $this->lineaactual + $nb;
-          $this->AddPage($this->CurOrientation);
-          $this->lineaactual = 0;
-          $y = 105.6;
-        }
+      if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
+      {
+         $y += 5;
+         if($y > 250)
+         { // Pagina completa
+            $this->numero_lineas = $this->lineaactual + $nb;
+            $this->AddPage($this->CurOrientation);
+            $this->lineaactual = 0;
+            $y = 105.6;
+         }
       }
       // Imprimimos solo los campos numericos
-      for ($i = 0; $i < count($data); $i++) {
+      for($i = 0; $i < count($data); $i++)
+      {
          // La descripcion del articulo la trataremos la ultima. Aqui no.
-         if ($i != $ultimo) {
+         if($i != $ultimo)
+         {
             $w = $this->widths[$i];
-            if ($i == ($ultimo - 1)) {
+            if($i == ($ultimo - 1))
+            {
                $x1 = $x + $w;
                $x += $this->widths[$ultimo] + $w;
-            } else {
+            }
+            else
+            {
                $x += $w;
             }
             // Seleccionar Alineacion
             $a = isset($this->aligns[$i]) ? $this->aligns[$i] : 'L';
             // Seleccionar color
             $this->SetTextColor(0);
-            if (isset($this->colores[$i][0])) {
+            if(isset($this->colores[$i][0]))
+            {
                $this->SetTextColor($this->colores[$i][0], $this->colores[$i][1], $this->colores[$i][2]);
             }
-            if(!(!$imprime_albaran && ($i == 0))) {
+            if(!(!$imprime_albaran && ($i == 0)))
+            {
                // Escribimos el texto
-               if($i <= 2) {
-                  if($mostrar_cantidad){
+               if($i <= 2)
+               {
+                  if($mostrar_cantidad)
+                  {
                      $this->MultiCell($w, 5, $data[$i], 0, $a);
                   }
-               } else {
-                  if($mostrar_precio){
+               }
+               else
+               {
+                  if($mostrar_precio)
+                  {
                      $this->MultiCell($w, 5, $data[$i], 0, $a);
                   }
                }
@@ -394,19 +480,24 @@ class PDF_MC_Table extends FPDF {
       // Por último scribimos La descripcion del articulo
       $this->SetTextColor($this->colores[1][0], $this->colores[1][1], $this->colores[1][2]);
       $w = $this->widths[$ultimo];
-      if(!$imprime_albaran) {
+      if(!$imprime_albaran)
+      {
          $x1 = 10;
          $inicio = 1;
          $w += $this->widths[0];
-      } else {
+      }
+      else
+      {
          $inicio = 0;
       }
       $this->SetXY($x1, $y);
 
       $a = isset($this->aligns[$ultimo]) ? $this->aligns[$ultimo] : 'L';
       $suma_linea = 0;
-      if($mostrar_cantidad && $mostrar_precio){
-         if($agrupa_albaranes && ($this->albaran_anterior != $data[0])){
+      if($mostrar_cantidad && $mostrar_precio)
+      {
+         if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
+         {
             $this->SetFont('Arial', 'B', 8);
             $this->MultiCell($w, 5, $data[0], 0, 'C');
             $this->SetFont('Arial', '', 8);
@@ -414,19 +505,24 @@ class PDF_MC_Table extends FPDF {
             $suma_linea = 1;
          }
          $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
-      } else {
-         if($agrupa_albaranes && ($this->albaran_anterior != $data[0])){
+      }
+      else
+      {
+         if($agrupa_albaranes && ($this->albaran_anterior != $data[0]))
+         {
             $this->SetFont('Arial', 'B', 8);
             $this->MultiCell($w, 5, $data[0], 0, 'C');
             $this->SetFont('Arial', '', 8);
             $this->albaran_anterior = $data[0];
             $suma_linea = 1;
          }
-         $maquetar_negrita = $fsvar->simple_get("f_detallada_maquetar_negrita");
-         if($maquetar_negrita) {
+         if($this->impresion['f_detallada_maquetar_negrita'])
+         {
             $this->SetFont('Arial', 'B', 8);
-            $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo],'utf-8'), 0, $a);
-         } else {
+            $this->MultiCell($w, 5, mb_strtoupper($data[$ultimo], 'utf-8'), 0, $a);
+         }
+         else
+         {
             $this->SetFont('Arial', '', 8);
             $this->MultiCell($w, 5, $data[$ultimo], 0, $a);
          }
@@ -435,21 +531,28 @@ class PDF_MC_Table extends FPDF {
 
       // Calcular la altura MAXIMA de la fila e ir a la siguiente línea
       $nb = 0;
-      for ($i = $inicio; $i < count($data); $i++) {
+      for($i = $inicio; $i < count($data); $i++)
+      {
          $nb = max($nb, $this->NbLines($this->widths[$i], $data[$i]));
       }
       $nb += $suma_linea;
 
-      if (($this->lineaactual + $nb) > 31) { // Mas de una Pagina
+      if(($this->lineaactual + $nb) > 31)
+      { // Mas de una Pagina
          $nbp = intval(($this->lineaactual + $nb) / 31);
          $this->lineaactual = ($this->lineaactual + $nb) - ($nbp * 31);
-      } else {
-         if (($this->lineaactual + $nb) == 31) { // Pagina completa
-            $this->DibujaCuadro(count($this->datoscab),155,$imprime_albaran);
+      }
+      else
+      {
+         if(($this->lineaactual + $nb) == 31)
+         { // Pagina completa
+            $this->DibujaCuadro(count($this->datoscab), 155, $imprime_albaran);
             $this->numero_lineas = $this->lineaactual + $nb;
             $this->AddPage($this->CurOrientation);
             $this->lineaactual = 1;
-         } else {
+         }
+         else
+         {
             $this->lineaactual = $this->lineaactual + $nb; // Una sola Pagina
          }
       }
@@ -463,54 +566,69 @@ class PDF_MC_Table extends FPDF {
       $this->SetDrawColor(200, 200, 200);
       if($haz_linea)
       {
-         for ($i = 0; $i < count($this->datoscab); $i++) {
+         for($i = 0; $i < count($this->datoscab); $i++)
+         {
             $finX = $this->widths[$i] + $aquiX - 0.316;
             $this->Line($aquiX, $aquiY, $finX, $aquiY);
             $aquiX = $finX + 0.316;
          }
-      } else {
+      }
+      else
+      {
          $this->numero_lineas = $this->lineaactual;
-         $this->DibujaCuadro(count($this->datoscab),$this->lineaactual*5, $imprime_albaran);
+         $this->DibujaCuadro(count($this->datoscab), $this->lineaactual * 5, $imprime_albaran);
       }
       $this->SetDrawColor(0, 0, 0);
       $this->SetTextColor(0);
    }
 
-   function DibujaCuadro($columnas, $total_largo, $imprime_albaran) {
+   function DibujaCuadro($columnas, $total_largo, $imprime_albaran)
+   {
       $this->SetDrawColor(210, 210, 210);
       $aquiY = 100.6;
       $aquiX = 10.00125;
-      for ($i = 0; $i < $columnas; $i++) {
-         if(!$imprime_albaran && $i == 0){
+      for($i = 0; $i < $columnas; $i++)
+      {
+         if(!$imprime_albaran && $i == 0)
+         {
             $ancho = $this->widths[0] + $this->widths[1];
             $this->RoundedRect($aquiX, $aquiY, $ancho, $total_largo, 1, 'D');
             $aquiX += $ancho;
             $i++;
-         } else {
+         }
+         else
+         {
             $this->RoundedRect($aquiX, $aquiY, $this->widths[$i], $total_largo, 1, 'D');
             $aquiX += $this->widths[$i];
          }
       }
       $this->SetDrawColor(0, 0, 0);
    }
-   function NbLines($w, $txt) {
+
+   function NbLines($w, $txt)
+   {
       //Computes the number of lines a MultiCell of width w will take
       $cw = &$this->CurrentFont['cw'];
-      if ($w == 0)
+      if($w == 0)
+      {
          $w = $this->w - $this->rMargin - $this->x;
+      }
       $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
       $s = str_replace("\r", '', $txt);
       $nb = strlen($s);
-      if ($nb > 0 and $s[$nb - 1] == "\n")
+      if($nb > 0 and $s[$nb - 1] == "\n")
+      {
          $nb--;
+      }
       $sep = -1;
       $i = 0;
       $j = 0;
       $l = 0;
       $nl = 1;
-      while ($i < $nb) {
+      while($i < $nb) {
          $c = $s[$i];
-         if ($c == "\n") {
+         if($c == "\n")
+         {
             $i++;
             $sep = -1;
             $j = $i;
@@ -518,34 +636,48 @@ class PDF_MC_Table extends FPDF {
             $nl++;
             continue;
          }
-         if ($c == ' ')
+         if($c == ' ')
+         {
             $sep = $i;
-         $l+=$cw[$c];
-         if ($l > $wmax) {
-            if ($sep == -1) {
-               if ($i == $j)
+         }
+         $l += $cw[$c];
+         if($l > $wmax)
+         {
+            if($sep == -1)
+            {
+               if($i == $j)
+               {
                   $i++;
-            } else
+               }
+            }
+            else
                $i = $sep + 1;
             $sep = -1;
             $j = $i;
             $l = 0;
             $nl++;
-         } else
+         }
+         else
             $i++;
       }
       return $nl;
    }
 
-   function RoundedRect($x, $y, $w, $h, $r, $style = '') {
+   function RoundedRect($x, $y, $w, $h, $r, $style = '')
+   {
       $k = $this->k;
       $hp = $this->h;
-      if ($style == 'F')
+      if($style == 'F')
+      {
          $op = 'f';
-      elseif ($style == 'FD' or $style == 'DF')
+      }
+      else if($style == 'FD' or $style == 'DF')
+      {
          $op = 'B';
+      }
       else
          $op = 'S';
+      
       $MyArc = 4 / 3 * (sqrt(2) - 1);
       $this->_out(sprintf('%.2f %.2f m', ($x + $r) * $k, ($hp - $y) * $k));
       $xc = $x + $w - $r;
@@ -568,7 +700,8 @@ class PDF_MC_Table extends FPDF {
       $this->_out($op);
    }
 
-   function _Arc($x1, $y1, $x2, $y2, $x3, $y3) {
+   function _Arc($x1, $y1, $x2, $y2, $x3, $y3)
+   {
       $h = $this->h;
       $this->_out(sprintf('%.2f %.2f %.2f %.2f %.2f %.2f c ', $x1 * $this->k, ($h - $y1) * $this->k, $x2 * $this->k, ($h - $y2) * $this->k, $x3 * $this->k, ($h - $y3) * $this->k));
    }
@@ -586,30 +719,36 @@ class PDF_MC_Table extends FPDF {
    // bm:    blend mode, one of the following:
    //          Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn,
    //          HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
-   function SetAlpha($alpha, $bm = 'Normal') {
+   function SetAlpha($alpha, $bm = 'Normal')
+   {
       // set alpha for stroking (CA) and non-stroking (ca) operations
       $gs = $this->AddExtGState(array('ca' => $alpha, 'CA' => $alpha, 'BM' => '/' . $bm));
       $this->SetExtGState($gs);
    }
 
-   function AddExtGState($parms) {
+   function AddExtGState($parms)
+   {
       $n = count($this->extgstates) + 1;
       $this->extgstates[$n]['parms'] = $parms;
       return $n;
    }
 
-   function SetExtGState($gs) {
+   function SetExtGState($gs)
+   {
       $this->_out(sprintf('/GS%d gs', $gs));
    }
 
-   function _enddoc() {
-      if (!empty($this->extgstates) && $this->PDFVersion < '1.4')
+   function _enddoc()
+   {
+      if(!empty($this->extgstates) && $this->PDFVersion < '1.4')
          $this->PDFVersion = '1.4';
       parent::_enddoc();
    }
 
-   function _putextgstates() {
-      for ($i = 1; $i <= count($this->extgstates); $i++) {
+   function _putextgstates()
+   {
+      for($i = 1; $i <= count($this->extgstates); $i++)
+      {
          $this->_newobj();
          $this->extgstates[$i]['n'] = $this->n;
          $this->_out('<</Type /ExtGState');
@@ -622,45 +761,62 @@ class PDF_MC_Table extends FPDF {
       }
    }
 
-   function _putresourcedict() {
+   function _putresourcedict()
+   {
       parent::_putresourcedict();
       $this->_out('/ExtGState <<');
-      foreach ($this->extgstates as $k => $extgstate)
+      foreach($this->extgstates as $k => $extgstate)
+      {
          $this->_out('/GS' . $k . ' ' . $extgstate['n'] . ' 0 R');
+      }
       $this->_out('>>');
    }
 
-   function _putresources() {
+   function _putresources()
+   {
       $this->_putextgstates();
       parent::_putresources();
    }
 
    // END-class AlphaPDF
    // Girar Texto o Imagen
-   function RotatedText($x, $y, $txt, $angle) {
+   function RotatedText($x, $y, $txt, $angle)
+   {
       //Text rotated around its origin
       $this->Rotate($angle, $x, $y);
       $this->Text($x, $y, $txt);
       $this->Rotate(0);
    }
 
-   function RotatedImage($file, $x, $y, $w, $h, $angle) {
+   function RotatedImage($file, $x, $y, $w, $h, $angle)
+   {
       //Image rotated around its upper-left corner
       $this->Rotate($angle, $x, $y);
       $this->Image($file, $x, $y, $w, $h);
       $this->Rotate(0);
    }
 
-   function Rotate($angle, $x = -1, $y = -1) {
-      if ($x == -1)
+   function Rotate($angle, $x = -1, $y = -1)
+   {
+      if($x == -1)
+      {
          $x = $this->x;
-      if ($y == -1)
+      }
+      
+      if($y == -1)
+      {
          $y = $this->y;
-      if ($this->angle != 0)
+      }
+      
+      if($this->angle != 0)
+      {
          $this->_out('Q');
+      }
+      
       $this->angle = $angle;
-      if ($angle != 0) {
-         $angle*=M_PI / 180;
+      if($angle != 0)
+      {
+         $angle *= M_PI / 180;
          $c = cos($angle);
          $s = sin($angle);
          $cx = $x * $this->k;
@@ -669,8 +825,10 @@ class PDF_MC_Table extends FPDF {
       }
    }
 
-   function _endpage() {
-      if ($this->angle != 0) {
+   function _endpage()
+   {
+      if($this->angle != 0)
+      {
          $this->angle = 0;
          $this->_out('Q');
       }
@@ -679,16 +837,20 @@ class PDF_MC_Table extends FPDF {
 
    // END - Girar Texto o Imagen
    // Factura / albaran
-   function sizeOfText($texte, $largeur) {
+   function sizeOfText($texte, $largeur)
+   {
       $index = 0;
       $nb_lines = 0;
       $loop = TRUE;
-      while ($loop) {
+      while($loop) {
          $pos = strpos($texte, "\n");
-         if (!$pos) {
+         if(!$pos)
+         {
             $loop = FALSE;
             $ligne = $texte;
-         } else {
+         }
+         else
+         {
             $ligne = substr($texte, $index, $pos);
             $texte = substr($texte, $pos + 1);
          }
@@ -700,17 +862,23 @@ class PDF_MC_Table extends FPDF {
    }
 
    // Empresa
-   function addSociete($nom, $adresse, $email, $web) {
+   function addSociete($nom, $adresse, $email, $web)
+   {
       $x1 = 10;
       $y1 = 8;
       $this->SetXY($x1, $y1);
       // Nombre empresa > 43 caracteres reducimos tamaño de letra > 57, recort.
-      if(strlen($nom) > 43) {
-          $this->SetFont('Arial', 'B', 9);
-          if(strlen($nom) > 56 )
-              $nom = substr ($nom, 0, 54) . "...";
-      } else
-          $this->SetFont('Arial', 'B', 12);
+      if(strlen($nom) > 43)
+      {
+         $this->SetFont('Arial', 'B', 9);
+         if(strlen($nom) > 56)
+         {
+            $nom = substr($nom, 0, 54) . "...";
+         }
+      }
+      else
+         $this->SetFont('Arial', 'B', 12);
+      
       $this->SetTextColor(0);
       $length = $this->GetStringWidth($nom);
       $this->Cell($length, 4, $nom);
@@ -719,7 +887,8 @@ class PDF_MC_Table extends FPDF {
       $length = $this->GetStringWidth($adresse);
       $this->MultiCell($length, 4, $adresse);
 
-      if ($email != '') {
+      if($email != '')
+      {
          $this->SetXY($x1, $y1 + 73);
          $this->SetFont('Arial', '', 9);
          $this->Write(5, 'Email: ');
@@ -729,10 +898,11 @@ class PDF_MC_Table extends FPDF {
          $this->SetFont('');
       }
 
-      if ($web != '') {
+      if($web != '')
+      {
          $this->SetXY($x1, $y1 + 77);
          $this->SetFont('Arial', '', 9);
-         $this->Write(5, 'Web: ');
+         $this->Write(5, utf8_decode( mb_strtoupper($this->idioma->web) ) . ': ');
          $this->SetTextColor(0, 0, 255);
          $this->Write(5, $web, $web);
          $this->SetTextColor(0);
@@ -741,7 +911,8 @@ class PDF_MC_Table extends FPDF {
    }
 
    // Nombre y numero de la factura
-   function fact_dev($libelle, $num) {
+   function fact_dev($libelle, $num)
+   {
       $r1 = $this->w - 100;
       $r2 = $r1 + 90;
       $y1 = 6;
@@ -752,11 +923,13 @@ class PDF_MC_Table extends FPDF {
       $szfont = 15;
       $loop = 0;
 
-      while ($loop == 0) {
+      while($loop == 0) {
          $this->SetFont("Arial", "B", $szfont);
          $sz = $this->GetStringWidth($texte);
-         if (($r1 + $sz) > $r2)
+         if(($r1 + $sz) > $r2)
+         {
             $szfont --;
+         }
          else
             $loop ++;
       }
@@ -767,7 +940,8 @@ class PDF_MC_Table extends FPDF {
       $this->Cell($r2 - $r1 - 1, 5, $texte, 0, 0, "C");
    }
 
-   function addDate($date) {
+   function addDate($date)
+   {
       $r1 = $this->w - 80;
       $r2 = $r1 + 30;
       $y1 = 15;
@@ -777,13 +951,14 @@ class PDF_MC_Table extends FPDF {
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
       $this->SetFont("Arial", "B", 10);
-      $this->Cell(10, 3, "FECHA", 0, 0, "C");
+      $this->Cell(10, 3, utf8_decode( mb_strtoupper($this->idioma->fecha) ), 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $date, 0, 0, "C");
    }
 
-   function addClient($ref) {
+   function addClient($ref)
+   {
       $r1 = $this->w - 50;
       $r2 = $r1 + 40;
       $y1 = 15;
@@ -793,13 +968,14 @@ class PDF_MC_Table extends FPDF {
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
       $this->SetFont("Arial", "B", 10);
-      $this->Cell(10, 3, 'N' . chr(176) . ' de CLIENTE', 0, 0, "C");
+      $this->Cell(10, 3, utf8_decode( mb_strtoupper($this->idioma->num_cliente) ), 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $ref, 0, 0, "C");
    }
 
-   function addPageNumber($page) {
+   function addPageNumber($page)
+   {
       $r1 = $this->w - 100;
       $r2 = $r1 + 20;
       $y1 = 15;
@@ -809,7 +985,7 @@ class PDF_MC_Table extends FPDF {
       $this->Line($r1, $mid, $r2, $mid);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 3);
       $this->SetFont("Arial", "B", 10);
-      $this->Cell(10, 3, "PAGINA", 0, 0, "C");
+      $this->Cell(10, 3, utf8_decode( mb_strtoupper($this->idioma->pagina) ), 0, 0, "C");
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 3, $y1 + 9);
       $this->SetFont("Arial", "", 9);
       $this->Cell(10, 5, $page, 0, 0, "C");
@@ -820,14 +996,15 @@ class PDF_MC_Table extends FPDF {
     *                   del cliente.
     * @param type $adresse
     */
-   function addClientAdresse($empresa, $adresse) {
+   function addClientAdresse($empresa, $adresse)
+   {
       $this->RoundedRect(110, 32, 90, 36, 3.5, 'D');
       $this->Line(110, 38, 200, 38);
       $r1 = $this->w - 97;
       $this->SetFont("Arial", "B", 10);
-      $this->Cell(55, 23, 'CLIENTE', 0, 0, "C");
+      $this->Cell(55, 23, utf8_decode( mb_strtoupper($this->idioma->cliente) ), 0, 0, "C");
       $y1 = 38;
-      $this->SetXY($r1-2, $y1);
+      $this->SetXY($r1 - 2, $y1);
       $this->SetFont('Arial', 'B', 10);
       $this->Write(5, $empresa);
       $this->SetXY($r1, 43);
@@ -837,9 +1014,10 @@ class PDF_MC_Table extends FPDF {
    }
 
    // Forma de Pago
-   function addPago($mode) {
-   	  $numlineas = count($mode);
-	  // default
+   function addPago($mode)
+   {
+      $numlineas = count($mode);
+      // default
       $r1 = 110;
       $r2 = $r1 + 90;
       $y1 = 70;
@@ -847,33 +1025,36 @@ class PDF_MC_Table extends FPDF {
       $mid = $y1 + (($y2 - $y1) / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 2.5, 'D');
       $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
-      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);      
+      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);
       $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 4, "FORMA DE PAGO", 0, 0, "C");      
+      $this->Cell(10, 4, utf8_decode( mb_strtoupper($this->idioma->forma_pago) ), 0, 0, "C");
       $salto = 4;
       $just = 'L';
-      if ($numlineas < 3)
+      if($numlineas < 3)
       {
-      	$this->SetFont("Arial", "", 9);
-      	$this->SetXY($r1 + 3 , $y1 + 6);    
-      	$just = 'C';
+         $this->SetFont("Arial", "", 9);
+         $this->SetXY($r1 + 3, $y1 + 6);
+         $just = 'C';
       }
-      else 
+      else
       {
-      	$this->SetFont("Arial", "", 8);
-      	$this->SetXY($r1 + 3 , $y1 + 6);
+         $this->SetFont("Arial", "", 8);
+         $this->SetXY($r1 + 3, $y1 + 6);
       }
-      foreach ($mode as $lin)
-      	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
-
+      
+      foreach($mode as $lin)
+      {
+         $this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
+      }
    }
 
    /**
     * addExtras: Añadimos los datos extra del albarán
     * @param type $mode
     */
-   function addExtras($mode) {
-     // default
+   function addExtras($mode)
+   {
+      // default
       $r1 = 110;
       $r2 = $r1 + 90;
       $y1 = 70;
@@ -881,19 +1062,23 @@ class PDF_MC_Table extends FPDF {
       $mid = $y1 + (($y2 - $y1) / 2);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), ($y2 - $y1), 2.5, 'D');
       $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
-      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);      
+      $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);
       $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 4, "DATOS ALBARAN", 0, 0, "C");      
+      $this->Cell(10, 4, "DATOS ALBARAN", 0, 0, "C");
       $salto = 4;
       $just = 'L';
       $this->SetFont("Arial", "", 8);
-      $this->SetXY($r1 + 3 , $y1 + 6);
-      foreach ($mode as $lin)
-      	$this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
+      $this->SetXY($r1 + 3, $y1 + 6);
+      
+      foreach($mode as $lin)
+      {
+         $this->Cell($r2 - $r1 - 6, $salto, utf8_decode($lin), 0, 2, $just);
+      }
    }
 
    // Divisa
-   function addDivisa($divisa) {
+   function addDivisa($divisa)
+   {
       $r1 = 140;
       $r2 = $r1 + 30;
       $y1 = 80;
@@ -910,7 +1095,8 @@ class PDF_MC_Table extends FPDF {
    }
 
    // Pais
-   function addPais($pais) {
+   function addPais($pais)
+   {
       $r1 = 170;
       $r2 = $r1 + 30;
       $y1 = 80;
@@ -927,10 +1113,12 @@ class PDF_MC_Table extends FPDF {
    }
 
    // Incluir Observaciones	
-   function addObservaciones($observa) {
+   function addObservaciones($observa)
+   {
       $altura = $this->GetMultiCellHeight($this->w - 20, 4, $observa) + 14;
-      if($altura > 162){
-         while ($altura > 162) {
+      if($altura > 162)
+      {
+         while($altura > 162) {
             $lastEnterPosition = strrpos($observa, PHP_EOL);
             $observa = mb_substr($observa, 0, $lastEnterPosition);
             $altura = $this->GetMultiCellHeight($this->w - 20, 4, $observa) + 14;
@@ -938,49 +1126,59 @@ class PDF_MC_Table extends FPDF {
       }
       $posicionX = 112 + ($this->numero_lineas * 5);
       $total_uso = $posicionX + $altura;
-      if($total_uso > 275 && !$this->observaciones_nueva_hoja){
+      if($total_uso > 275 && !$this->observaciones_nueva_hoja)
+      {
          $this->observaciones_nueva_hoja = true;
-      } else {
-         if(($this->hoja_nueva > 0 && $this->hoja_nueva == $this->page) || ($this->hoja_nueva == 0) ) {
+      }
+      else
+      {
+         if(($this->hoja_nueva > 0 && $this->hoja_nueva == $this->page) || ($this->hoja_nueva == 0))
+         {
             $this->SetFont("Arial", "B", 8);
-            $this->Text(10, 109 +($this->numero_lineas * 5), "Observaciones: ");
+            $this->Text(10, 109 + ($this->numero_lineas * 5), "Observaciones: ");
             $this->SetFont("Arial", "I", 8);
-            $this->Line(10, 110 +($this->numero_lineas * 5), 200, 110 +($this->numero_lineas * 5));
-            $this->SetXY(10, 112 + ($this->numero_lineas * 5) );
+            $this->Line(10, 110 + ($this->numero_lineas * 5), 200, 110 + ($this->numero_lineas * 5));
+            $this->SetXY(10, 112 + ($this->numero_lineas * 5));
             $this->MultiCell($this->w - 20, 4, $observa);
          }
       }
    }
 
-function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
-    // Calculate MultiCell with automatic or explicit line breaks height
-    // $border is un-used, but I kept it in the parameters to keep the call
-    //   to this function consistent with MultiCell()
-    $cw = &$this->CurrentFont['cw'];
-    if($w==0)
-        $w = $this->w-$this->rMargin-$this->x;
-    $wmax = ($w-2*$this->cMargin)*1000/$this->FontSize;
-    $s = str_replace("\r",'',$txt);
-    $nb = strlen($s);
-    if($nb>0 && $s[$nb-1]=="\n")
-        $nb--;
-    $sep = -1;
-    $i = 0;
-    $j = 0;
-    $l = 0;
-    $ns = 0;
-    $height = 0;
-    while($i<$nb)
-    {
-        // Get next character
-        $c = $s[$i];
-        if($c=="\n")
-        {
+   function GetMultiCellHeight($w, $h, $txt, $border = null, $align = 'J')
+   {
+      // Calculate MultiCell with automatic or explicit line breaks height
+      // $border is un-used, but I kept it in the parameters to keep the call
+      //   to this function consistent with MultiCell()
+      $cw = &$this->CurrentFont['cw'];
+      if($w == 0)
+      {
+         $w = $this->w - $this->rMargin - $this->x;
+      }
+      
+      $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+      $s = str_replace("\r", '', $txt);
+      $nb = strlen($s);
+      if($nb > 0 && $s[$nb - 1] == "\n")
+      {
+         $nb--;
+      }
+      
+      $sep = -1;
+      $i = 0;
+      $j = 0;
+      $l = 0;
+      $ns = 0;
+      $height = 0;
+      while($i < $nb) {
+         // Get next character
+         $c = $s[$i];
+         if($c == "\n")
+         {
             // Explicit line break
-            if($this->ws>0)
+            if($this->ws > 0)
             {
-                $this->ws = 0;
-                $this->_out('0 Tw');
+               $this->ws = 0;
+               $this->_out('0 Tw');
             }
             //Increase Height
             $height += $h;
@@ -990,85 +1188,98 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
             $l = 0;
             $ns = 0;
             continue;
-        }
-        if($c==' ')
-        {
+         }
+         if($c == ' ')
+         {
             $sep = $i;
             $ls = $l;
             $ns++;
-        }
-        $l += $cw[$c];
-        if($l>$wmax)
-        {
+         }
+         $l += $cw[$c];
+         if($l > $wmax)
+         {
             // Automatic line break
-            if($sep==-1)
+            if($sep == -1)
             {
-                if($i==$j)
-                    $i++;
-                if($this->ws>0)
-                {
-                    $this->ws = 0;
-                    $this->_out('0 Tw');
-                }
-                //Increase Height
-                $height += $h;
+               if($i == $j)
+               {
+                  $i++;
+               }
+               
+               if($this->ws > 0)
+               {
+                  $this->ws = 0;
+                  $this->_out('0 Tw');
+               }
+               //Increase Height
+               $height += $h;
             }
             else
             {
-                if($align=='J')
-                {
-                    $this->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
-                    $this->_out(sprintf('%.3F Tw',$this->ws*$this->k));
-                }
-                //Increase Height
-                $height += $h;
-                $i = $sep+1;
+               if($align == 'J')
+               {
+                  $this->ws = ($ns > 1) ? ($wmax - $ls) / 1000 * $this->FontSize / ($ns - 1) : 0;
+                  $this->_out(sprintf('%.3F Tw', $this->ws * $this->k));
+               }
+               //Increase Height
+               $height += $h;
+               $i = $sep + 1;
             }
             $sep = -1;
             $j = $i;
             $l = 0;
             $ns = 0;
-        }
-        else
+         }
+         else
             $i++;
-    }
-    // Last chunk
-    if($this->ws>0)
-    {
-        $this->ws = 0;
-        $this->_out('0 Tw');
-    }
-    //Increase Height
-    $height += $h;
+      }
+      // Last chunk
+      if($this->ws > 0)
+      {
+         $this->ws = 0;
+         $this->_out('0 Tw');
+      }
+      //Increase Height
+      $height += $h;
 
-    return $height;
-  }
+      return $height;
+   }
 
    // Incluir Lineas de Iva
-   function addLineasIva($datos) {
+   function addLineasIva($datos)
+   {
       $r1 = 10;
       $y1 = $this->h - 30;
 
-      if ($datos) {
-         if (count($datos) > 4) {
+      if($datos)
+      {
+         if(count($datos) > 4)
+         {
             // Comentar o eliminar las siguientes 5 lineas para NO mostrar el error.
             $this->SetFont("Arial", "B", 10);
             $this->SetXY($r1, $y1 + 8);
             $this->Cell(8, 4, "ERROR: Localizadas " . count($datos) . " lineas de " . FS_IVA . "... ", 0, '', "L");
             $this->SetXY($r1, $y1 + 12);
             $this->Cell(8, 4, chr(161) . chr(161) . chr(161) . " Esta plantilla SOLO puede detallar CUATRO lineas de " . FS_IVA . " !!!", 0, '', "L");
-         } else {
-            for ($i = 1; $i <= count($datos); $i++) {
-               if ($i == 1) {
+         }
+         else
+         {
+            for($i = 1; $i <= count($datos); $i++)
+            {
+               if($i == 1)
+               {
                   $y2 = $y1 + 6;
                }
-               if ($i == 2) {
+               if($i == 2)
+               {
                   $y2 = $y1 + 9;
                }
-               if ($i == 3) {
+               if($i == 3)
+               {
                   $y2 = $y1 + 12;
                }
-               if ($i == 4) {
+               if($i == 4)
+               {
                   $y2 = $y1 + 15;
                }
                $this->SetFont("Arial", "B", 6);
@@ -1088,7 +1299,8 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       }
    }
 
-   function addNeto() {
+   function addNeto()
+   {
       $r1 = $this->w - 70;
       $r2 = $r1 + 60;
       $y1 = $this->h - 30;
@@ -1101,13 +1313,15 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       $this->Cell(30, 4, $this->fdf_divisa, 0, 0, "C");
       $this->SetFont("Arial", "B", 8);
       $this->SetXY($r1, $y1 + 7);
-      $this->Cell(15, 4, "NETO", 0, 0, "C");
+      $this->Cell(15, 4, utf8_decode( mb_strtoupper($this->idioma->neto) ), 0, 0, "C");
 
       // Total Neto de la pagina
       $this->SetFont("Arial", "", 9);
       $this->SetXY($r1 + 16, $y1 + 6.5);
       if(isset($this->neto))
+      {
          $this->Cell(43, 4, $this->neto, 0, 0, "C");
+      }
 
       // Suma y Sigue		
       $this->SetFont("Arial", "B", 6);
@@ -1115,8 +1329,10 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       $this->MultiCell(43, 3, '(SUMA y SIGUE)', 0, 'C');
    }
 
-   function addTotal() {
-      if($this->es_factura){
+   function addTotal()
+   {
+      if($this->es_factura)
+      {
          $this->SetFont("Arial", "B", 8);
          $r1 = 10;
          $r2 = $r1 + 125;
@@ -1133,15 +1349,15 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
          $this->Line($r1 + 83, $y1 + 4, $r1 + 83, $y2);
          $this->Line($r1 + 101, $y1, $r1 + 101, $y2);
          $this->SetXY($r1, $y1);
-         $this->Cell(26, 4, "NETO", 0, '', "C");
+         $this->Cell(26, 4, utf8_decode( mb_strtoupper($this->idioma->neto) ), 0, '', "C");
          $this->SetX($r1 + 26);
          $this->Cell(25, 4, FS_IVA, 0, '', "C");
          $this->SetX($r1 + 51);
-         $this->Cell(25, 4, "REC. EQUIV.", 0, '', "C");
+         $this->Cell(25, 4, utf8_decode( mb_strtoupper($this->idioma->rec_equiv) ), 0, '', "C");
          $this->SetX($r1 + 76);
-         $this->Cell(25, 4, FS_IRPF, 0, '', "C");
+         $this->Cell(25, 4, utf8_decode( mb_strtoupper($this->idioma->irpf) ), 0, '', "C");
          $this->SetX($r1 + 101);
-         $this->Cell(24, 4, "IMPORTES", 0, '', "C");
+         $this->Cell(24, 4, utf8_decode( mb_strtoupper($this->idioma->importes) ), 0, '', "C");
       }
 
       $r1 = $this->w - 70;
@@ -1155,9 +1371,11 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       $this->SetFont("Arial", "B", 8);
       $this->SetXY($r1 + 22, $y1);
       if($this->es_factura)
-        $this->Cell(30, 4, $this->fdf_divisa, 0, 0, "C");
+      {
+         $this->Cell(30, 4, $this->fdf_divisa, 0, 0, "C");
+      }
       else
-        $this->Cell(30, 4, $this->fdf_divisa . ' NETO', 0, 0, "C");
+         $this->Cell(30, 4, $this->fdf_divisa . ' ' . utf8_decode($this->idioma->neto), 0, 0, "C");
       $this->SetFont("Arial", "B", 8);
       $this->SetXY($r1, $y1 + 7);
       $this->Cell(15, 4, "TOTAL", 0, 0, "C");
@@ -1179,7 +1397,8 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
    //------    Máxima cifra soportada: 18 dígitos con 2 decimales
    //------    999,999,999,999,999,999.99
    // NOVECIENTOS NOVENTA Y NUEVE MIL NOVECIENTOS NOVENTA Y NUEVE con 99/100
-   function numtoletras($xcifra, $convert00decimal = true) {
+   function numtoletras($xcifra, $convert00decimal = true)
+   {
       $xarray = array(0 => "Cero",
           1 => "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE",
           "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISEIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE",
@@ -1192,12 +1411,17 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
       $xlength = strlen($xcifra);
       $xpos_punto = strpos($xcifra, ".");
       $xaux_int = $xcifra;
-      if ($convert00decimal)
+      if($convert00decimal)
+      {
          $xdecimales = "00";
+      }
       else
          $xdecimales = "";
-      if (!($xpos_punto === false)) {
-         if ($xpos_punto == 0) {
+      
+      if(!($xpos_punto === false))
+      {
+         if($xpos_punto == 0)
+         {
             $xcifra = "0" . $xcifra;
             $xpos_punto = strpos($xcifra, ".");
          }
@@ -1208,66 +1432,85 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
 
       $XAUX = str_pad($xaux_int, 18, " ", STR_PAD_LEFT); // ajusto la longitud de la cifra, para que sea divisible por centenas de miles (grupos de 6)
       $xcadena = "";
-      for ($xz = 0; $xz < 3; $xz++) {
+      for($xz = 0; $xz < 3; $xz++)
+      {
          $xaux = substr($XAUX, $xz * 6, 6);
          $xi = 0;
          $xlimite = 6; // inicializo el contador de centenas xi y establezco el límite a 6 dígitos en la parte entera
          $xexit = true; // bandera para controlar el ciclo del While
-         while ($xexit) {
-            if ($xi == $xlimite) { // si ya ha llegado al límite máximo de enteros
+         while($xexit) {
+            if($xi == $xlimite)
+            { // si ya ha llegado al límite máximo de enteros
                break; // termina el ciclo
             }
 
             $x3digitos = ($xlimite - $xi) * -1; // comienzo con los tres primeros digitos de la cifra, comenzando por la izquierda
             $xaux = substr($xaux, $x3digitos, abs($x3digitos)); // obtengo la centena (los tres dígitos)
-            for ($xy = 1; $xy < 4; $xy++) { // ciclo para revisar centenas, decenas y unidades, en ese orden
-               switch ($xy) {
+            for($xy = 1; $xy < 4; $xy++)
+            { // ciclo para revisar centenas, decenas y unidades, en ese orden
+               switch ($xy)
+               {
                   case 1: // checa las centenas
-                     if (substr($xaux, 0, 3) < 100) { // si el grupo de tres dígitos es menor a una centena ( < 99) no hace nada y pasa a revisar las decenas
-                     } else {
+                     if(substr($xaux, 0, 3) < 100)
+                     { // si el grupo de tres dígitos es menor a una centena ( < 99) no hace nada y pasa a revisar las decenas
+                     }
+                     else
+                     {
                         $key = (int) substr($xaux, 0, 3);
-                        if (TRUE === array_key_exists($key, $xarray)) {  // busco si la centena es número redondo (100, 200, 300, 400, etc..)
+                        if(TRUE === array_key_exists($key, $xarray))
+                        {  // busco si la centena es número redondo (100, 200, 300, 400, etc..)
                            $xseek = $xarray[$key];
                            $xsub = $this->subfijo($xaux); // devuelve el subfijo correspondiente (Millón, Millones, Mil o nada)
-                           if (substr($xaux, 0, 3) == 100)
+                           if(substr($xaux, 0, 3) == 100)
                               $xcadena = " " . $xcadena . " CIEN " . $xsub;
                            else
                               $xcadena = " " . $xcadena . " " . $xseek . " " . $xsub;
                            $xy = 3; // la centena fue redonda, entonces termino el ciclo del for y ya no reviso decenas ni unidades
                         }
-                        else { // entra aquí si la centena no es numero redondo (101, 253, 120, 980, etc.)
+                        else
+                        { // entra aquí si la centena no es numero redondo (101, 253, 120, 980, etc.)
                            $key = (int) substr($xaux, 0, 1) * 100;
                            $xseek = $xarray[$key]; // toma el primer caracter de la centena y lo multiplica por cien y lo busca en el arreglo (para que busque 100,200,300, etc)
                            $xcadena = " " . $xcadena . " " . $xseek;
                         } // ENDIF ($xseek)
                      } // ENDIF (substr($xaux, 0, 3) < 100)
                      break;
+                     
                   case 2: // Chequear las decenas (con la misma lógica que las centenas)
-                     if (substr($xaux, 1, 2) < 10) {
+                     if(substr($xaux, 1, 2) < 10)
+                     {
                         
-                     } else {
+                     }
+                     else
+                     {
                         $key = (int) substr($xaux, 1, 2);
-                        if (TRUE === array_key_exists($key, $xarray)) {
+                        if(TRUE === array_key_exists($key, $xarray))
+                        {
                            $xseek = $xarray[$key];
                            $xsub = $this->subfijo($xaux);
-                           if (substr($xaux, 1, 2) == 20)
+                           if(substr($xaux, 1, 2) == 20)
                               $xcadena = " " . $xcadena . " VEINTE " . $xsub;
                            else
                               $xcadena = " " . $xcadena . " " . $xseek . " " . $xsub;
                            $xy = 3;
-                        } else {
+                        } else
+                        {
                            $key = (int) substr($xaux, 1, 1) * 10;
                            $xseek = $xarray[$key];
-                           if (20 == substr($xaux, 1, 1) * 10)
+                           if(20 == substr($xaux, 1, 1) * 10)
                               $xcadena = " " . $xcadena . " " . $xseek;
                            else
                               $xcadena = " " . $xcadena . " " . $xseek . " Y ";
                         } // ENDIF ($xseek)
                      } // ENDIF (substr($xaux, 1, 2) < 10)
                      break;
+                     
                   case 3: // Chequear las unidades
-                     if (substr($xaux, 2, 1) < 1) { // si la unidad es cero, ya no hace nada
-                     } else {
+                     if(substr($xaux, 2, 1) < 1)
+                     { // si la unidad es cero, ya no hace nada
+                     }
+                     else
+                     {
                         $key = (int) substr($xaux, 2, 1);
                         $xseek = $xarray[$key]; // obtengo directamente el valor de la unidad (del uno al nueve)
                         $xsub = $this->subfijo($xaux);
@@ -1279,45 +1522,69 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
             $xi = $xi + 3;
          } // ENDDO
 
-         if (substr(trim($xcadena), -5, 5) == "ILLON") // si la cadena obtenida termina en MILLON o BILLON, entonces le agrega al final la conjuncion DE
-            $xcadena.= " DE";
+         if(substr(trim($xcadena), -5, 5) == "ILLON") // si la cadena obtenida termina en MILLON o BILLON, entonces le agrega al final la conjuncion DE
+         {
+            $xcadena .= " DE";
+         }
 
-         if (substr(trim($xcadena), -7, 7) == "ILLONES") // si la cadena obtenida en MILLONES o BILLONES, entoncea le agrega al final la conjuncion DE
-            $xcadena.= " DE";
+         if(substr(trim($xcadena), -7, 7) == "ILLONES") // si la cadena obtenida en MILLONES o BILLONES, entoncea le agrega al final la conjuncion DE
+         {
+            $xcadena .= " DE";
+         }
 
          // ----------- esta línea la puedes cambiar de acuerdo a tus necesidades o a tu país -------
-         if (trim($xaux) != "") {
-            switch ($xz) {
+         if(trim($xaux) != "")
+         {
+            switch ($xz)
+            {
                case 0:
-                  if (trim(substr($XAUX, $xz * 6, 6)) == "1")
-                     $xcadena.= "UN BILLON ";
+                  if(trim(substr($XAUX, $xz * 6, 6)) == "1")
+                  {
+                     $xcadena .= "UN BILLON ";
+                  }
                   else
-                     $xcadena.= " BILLONES ";
+                     $xcadena .= " BILLONES ";
                   break;
+                  
                case 1:
-                  if (trim(substr($XAUX, $xz * 6, 6)) == "1")
-                     $xcadena.= "UN MILLON ";
+                  if(trim(substr($XAUX, $xz * 6, 6)) == "1")
+                  {
+                     $xcadena .= "UN MILLON ";
+                  }
                   else
-                     $xcadena.= " MILLONES ";
+                     $xcadena .= " MILLONES ";
                   break;
+                  
                case 2:
                   if($xdecimales === "00")
+                  {
                      $xdecimales = "CERO";
-                  if ($xcifra < 1) {
-                     if ($convert00decimal)
+                  }
+                  
+                  if($xcifra < 1)
+                  {
+                     if($convert00decimal)
+                     {
                         $xcadena = "CERO con $xdecimales cent.";
+                     }
                      else
                         $xcadena = "CERO";
                   }
-                  if ($xcifra >= 1 && $xcifra < 2) {
-                     if ($convert00decimal)
+                  if($xcifra >= 1 && $xcifra < 2)
+                  {
+                     if($convert00decimal)
+                     {
                         $xcadena = "UNO con $xdecimales cent.";
+                     }
                      else
                         $xcadena = "UNO";
                   }
-                  if ($xcifra >= 2) {
-                     if ($convert00decimal)
-                        $xcadena.= " con $xdecimales cent.";
+                  if($xcifra >= 2)
+                  {
+                     if($convert00decimal)
+                     {
+                        $xcadena .= " con $xdecimales cent.";
+                     }
                   }
                   break;
             } // endswitch ($xz)
@@ -1334,26 +1601,32 @@ function GetMultiCellHeight($w, $h, $txt, $border=null, $align='J') {
 
       $xcadena = str_replace("UN MIL ", "MIL ", $xcadena); // quito el BUG de UN MIL
       if($xcifra_org < 0)
-        return trim("(Menos) " . $xcadena);
+      {
+         return trim("(Menos) " . $xcadena);
+      }
       else
-        return trim($xcadena);
+         return trim($xcadena);
    }
 
    // END FUNCTION
 
-   function subfijo($xx) { // esta función genera un subfijo para la cifra
+   function subfijo($xx)
+   { // esta función genera un subfijo para la cifra
       $xx = trim($xx);
       $xstrlen = strlen($xx);
-      if ($xstrlen == 1 || $xstrlen == 2 || $xstrlen == 3)
+      if($xstrlen == 1 || $xstrlen == 2 || $xstrlen == 3)
+      {
          $xsub = "";
+      }
+      
       //
-      if ($xstrlen == 4 || $xstrlen == 5 || $xstrlen == 6)
+      if($xstrlen == 4 || $xstrlen == 5 || $xstrlen == 6)
+      {
          $xsub = "MIL";
+      }
       //
       return $xsub;
    }
 
    // END FUNCTION	
 }
-
-?>
