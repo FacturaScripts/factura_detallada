@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Document   : margenes_imp_prov.xml
+    Document   : idiomas_fac_det.xml
     Description:
         Estructura de la tabla idiomas_fac_det.
 -->
@@ -40,9 +40,19 @@
       <defecto>'web'::character varying</defecto>
    </columna>
    <columna>
-      <nombre>factura_num</nombre>
+      <nombre>factura</nombre>
       <tipo>character varying(100)</tipo>
-      <defecto>'factura nº'::character varying</defecto>
+      <defecto>'factura'::character varying</defecto>
+   </columna>
+   <columna>
+      <nombre>albaran</nombre>
+      <tipo>character varying(100)</tipo>
+      <defecto>'albarán'::character varying</defecto>
+   </columna>
+   <columna>
+      <nombre>pedido</nombre>
+      <tipo>character varying(100)</tipo>
+      <defecto>'pedido'::character varying</defecto>
    </columna>
    <columna>
       <nombre>pagina</nombre>
@@ -128,6 +138,16 @@
       <nombre>total</nombre>
       <tipo>character varying(100)</tipo>
       <defecto>'total'::character varying</defecto>
+   </columna>
+   <columna>
+      <nombre>suma_sigue</nombre>
+      <tipo>character varying(100)</tipo>
+      <defecto>'suma y sigue'::character varying</defecto>
+   </columna>
+   <columna>
+      <nombre>observaciones</nombre>
+      <tipo>character varying(100)</tipo>
+      <defecto>'observaciones'::character varying</defecto>
    </columna>
    <restriccion>
       <nombre>idioma_fact_det_pkey</nombre>

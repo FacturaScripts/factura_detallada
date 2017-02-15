@@ -68,74 +68,8 @@
       <div class="row">
          <div class="col-sm-3">
             <div class="form-group">
-               Teléfono:
-               <input type="text" name="telefono" value="{$fsc->idioma->telefono}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Fax:
-               <input type="text" name="fax" value="{$fsc->idioma->fax}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Email:
-               <input type="text" name="email" value="{$fsc->idioma->email}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Web:
-               <input type="text" name="web" value="{$fsc->idioma->web}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Factura nº:
-               <input type="text" name="factura_num" value="{$fsc->idioma->factura_num}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Página:
-               <input type="text" name="pagina" value="{$fsc->idioma->pagina}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Fecha:
-               <input type="text" name="fecha" value="{$fsc->idioma->fecha}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Nº de cliente:
-               <input type="text" name="num_cliente" value="{$fsc->idioma->num_cliente}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Cliente:
-               <input type="text" name="cliente" value="{$fsc->idioma->cliente}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Forma de pago:
-               <input type="text" name="forma_pago" value="{$fsc->idioma->forma_pago}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Vencimiento:
-               <input type="text" name="vencimiento" value="{$fsc->idioma->vencimiento}" class="form-control" autocomplete="off"/>
-            </div>
-         </div>
-         <div class="col-sm-3">
-            <div class="form-group">
-               Descripción:
-               <input type="text" name="descripcion" value="{$fsc->idioma->descripcion}" class="form-control" autocomplete="off"/>
+               {#FS_ALBARAN#}:
+               <input type="text" name="albaran" value="{$fsc->idioma->albaran}" class="form-control" autocomplete="off"/>
             </div>
          </div>
          <div class="col-sm-3">
@@ -146,8 +80,14 @@
          </div>
          <div class="col-sm-3">
             <div class="form-group">
-               Precio:
-               <input type="text" name="precio" value="{$fsc->idioma->precio}" class="form-control" autocomplete="off"/>
+               Cliente:
+               <input type="text" name="cliente" value="{$fsc->idioma->cliente}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Descripción:
+               <input type="text" name="descripcion" value="{$fsc->idioma->descripcion}" class="form-control" autocomplete="off"/>
             </div>
          </div>
          <div class="col-sm-3">
@@ -158,8 +98,32 @@
          </div>
          <div class="col-sm-3">
             <div class="form-group">
-               IVA:
-               <input type="text" name="iva" value="{$fsc->idioma->iva}" class="form-control" autocomplete="off"/>
+               Email:
+               <input type="text" name="email" value="{$fsc->idioma->email}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Factura:
+               <input type="text" name="factura" value="{$fsc->idioma->factura}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Fax:
+               <input type="text" name="fax" value="{$fsc->idioma->fax}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Fecha:
+               <input type="text" name="fecha" value="{$fsc->idioma->fecha}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Forma de pago:
+               <input type="text" name="forma_pago" value="{$fsc->idioma->forma_pago}" class="form-control" autocomplete="off"/>
             </div>
          </div>
          <div class="col-sm-3">
@@ -176,8 +140,50 @@
          </div>
          <div class="col-sm-3">
             <div class="form-group">
+               {#FS_IVA#}:
+               <input type="text" name="iva" value="{$fsc->idioma->iva}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               {#FS_IRPF#}:
+               <input type="text" name="irpf" value="{$fsc->idioma->irpf}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
                Neto:
                <input type="text" name="neto" value="{$fsc->idioma->neto}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Nº de cliente:
+               <input type="text" name="num_cliente" value="{$fsc->idioma->num_cliente}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Observaciones:
+               <input type="text" name="observaciones" value="{$fsc->idioma->observaciones}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Página:
+               <input type="text" name="pagina" value="{$fsc->idioma->pagina}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               {#FS_PEDIDO#}:
+               <input type="text" name="pedido" value="{$fsc->idioma->pedido}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Precio:
+               <input type="text" name="precio" value="{$fsc->idioma->precio}" class="form-control" autocomplete="off"/>
             </div>
          </div>
          <div class="col-sm-3">
@@ -188,14 +194,32 @@
          </div>
          <div class="col-sm-3">
             <div class="form-group">
-               IRPF:
-               <input type="text" name="irpf" value="{$fsc->idioma->irpf}" class="form-control" autocomplete="off"/>
+               Suma y sigue:
+               <input type="text" name="suma_sigue" value="{$fsc->idioma->suma_sigue}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Teléfono:
+               <input type="text" name="telefono" value="{$fsc->idioma->telefono}" class="form-control" autocomplete="off"/>
             </div>
          </div>
          <div class="col-sm-3">
             <div class="form-group">
                Total:
                <input type="text" name="total" value="{$fsc->idioma->total}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Vencimiento:
+               <input type="text" name="vencimiento" value="{$fsc->idioma->vencimiento}" class="form-control" autocomplete="off"/>
+            </div>
+         </div>
+         <div class="col-sm-3">
+            <div class="form-group">
+               Web:
+               <input type="text" name="web" value="{$fsc->idioma->web}" class="form-control" autocomplete="off"/>
             </div>
          </div>
       </div>

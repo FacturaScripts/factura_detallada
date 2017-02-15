@@ -21,11 +21,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'plugins/factura_detallada/fpdf17/fs_fpdf.php';
+require_once __DIR__.'/../fpdf17/fs_fpdf.php';
 
-if(!defined('FPDF_FONTPATH'))
+if( !defined('FPDF_FONTPATH') )
 {
-   define('FPDF_FONTPATH', 'plugins/factura_detallada/fpdf17/font/');
+   define('FPDF_FONTPATH', __DIR__.'/../fpdf17/font/');
 }
 
 require_once 'extras/phpmailer/class.phpmailer.php';
@@ -140,6 +140,8 @@ class factura_detallada extends fs_controller
 
    public function generar_pdf($archivomail = FALSE, $archivodownload = FALSE)
    {
+      $this->template = FALSE;
+      
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
@@ -165,7 +167,7 @@ class factura_detallada extends fs_controller
          }
       }
       
-      $pdf_doc->SetTitle('Factura: ' . $this->factura->codigo . " " . $this->factura->numero2);
+      $pdf_doc->SetTitle( ucfirst($this->idioma->factura).': ' . $this->factura->codigo . " " . $this->factura->numero2);
       $pdf_doc->SetSubject('Factura del cliente: ' . $this->factura->nombrecliente);
       $pdf_doc->SetAuthor($this->empresa->nombre);
       $pdf_doc->SetCreator('FacturaSctipts V_' . $this->version());
@@ -192,14 +194,25 @@ class factura_detallada extends fs_controller
       $pdf_doc->fde_codpostal = $this->empresa->codpostal;
       $pdf_doc->fde_ciudad = $this->empresa->ciudad;
       $pdf_doc->fde_provincia = $this->empresa->provincia;
-      $pdf_doc->fde_telefono = ucfirst( $this->idioma->fix_html($this->idioma->telefono) ) . ': ' . $this->empresa->telefono;
-      $pdf_doc->fde_fax = ucfirst( $this->idioma->fix_html($this->idioma->fax) ) . ': ' . $this->empresa->fax;
+      
+      $pdf_doc->fde_telefono = '';
+      if($this->empresa->telefono)
+      {
+         $pdf_doc->fde_telefono = ucfirst( $this->idioma->fix_html($this->idioma->telefono) ) . ': ' . $this->empresa->telefono;
+      }
+      
+      $pdf_doc->fde_fax = '';
+      if($this->empresa->fax)
+      {
+         $pdf_doc->fde_fax = ucfirst( $this->idioma->fix_html($this->idioma->fax) ) . ': ' . $this->empresa->fax;
+      }
+      
       $pdf_doc->fde_email = $this->empresa->email;
       $pdf_doc->fde_web = $this->empresa->web;
       $pdf_doc->fde_piefactura = $this->empresa->pie_factura;
       
       /// Insertamos el Logo y Marca de Agua
-      if(file_exists(FS_MYDOCS . 'images/logo.png') OR file_exists(FS_MYDOCS . 'images/logo.jpg'))
+      if( file_exists(FS_MYDOCS . 'images/logo.png') OR file_exists(FS_MYDOCS . 'images/logo.jpg') )
       {
          $pdf_doc->fdf_verlogotipo = '1'; // 1/0 --> Mostrar Logotipo
          $pdf_doc->fdf_Xlogotipo = '15'; // Valor X para Logotipo
@@ -252,7 +265,7 @@ class factura_detallada extends fs_controller
       $edivisa = $divisa->get($this->factura->coddivisa);
       if($edivisa)
       {
-         $pdf_doc->fdf_divisa = $edivisa->descripcion;
+         $pdf_doc->fdf_divisa = utf8_decode($edivisa->descripcion);
       }
 
       // Pais de la Factura

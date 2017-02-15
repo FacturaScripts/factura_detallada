@@ -210,12 +210,13 @@ class opciones_factura_detallada extends fs_controller
             $this->idioma->nombre = $_POST['nombre'];
             $this->idioma->activo = isset($_POST['activo']);
             
+            $this->idioma->albaran = $_POST['albaran'];
             $this->idioma->cant = $_POST['cant'];
             $this->idioma->cliente = $_POST['cliente'];
             $this->idioma->descripcion = $_POST['descripcion'];
             $this->idioma->dto = $_POST['dto'];
             $this->idioma->email = $_POST['email'];
-            $this->idioma->factura_num = $_POST['factura_num'];
+            $this->idioma->factura = $_POST['factura'];
             $this->idioma->fax = $_POST['fax'];
             $this->idioma->fecha = $_POST['fecha'];
             $this->idioma->forma_pago = $_POST['forma_pago'];
@@ -225,9 +226,12 @@ class opciones_factura_detallada extends fs_controller
             $this->idioma->iva = $_POST['iva'];
             $this->idioma->neto = $_POST['neto'];
             $this->idioma->num_cliente = $_POST['num_cliente'];
+            $this->idioma->observaciones = $_POST['observaciones'];
             $this->idioma->pagina = $_POST['pagina'];
+            $this->idioma->pedido = $_POST['pedido'];
             $this->idioma->precio = $_POST['precio'];
             $this->idioma->rec_equiv = $_POST['rec_equiv'];
+            $this->idioma->suma_sigue = $_POST['suma_sigue'];
             $this->idioma->telefono = $_POST['telefono'];
             $this->idioma->total = $_POST['total'];
             $this->idioma->vencimiento = $_POST['vencimiento'];

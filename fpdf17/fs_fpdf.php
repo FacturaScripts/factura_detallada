@@ -20,29 +20,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'plugins/factura_detallada/fpdf17/fpdf.php';
-require_once 'plugins/factura_detallada/qrcode/qrcode.class.php';
+require_once __DIR__.'/fpdf.php';
+require_once __DIR__.'/../qrcode/qrcode.class.php';
 
 class PDF_MC_Table extends FPDF
 {
-   var $albaran_anterior;
-   var $aligns;
-   var $angle = 0;
-   var $codigorect;
-   var $colores;
-   var $color_relleno;
-   var $datoscab;
-   var $es_factura = true;
-   var $extgstates = array();
-   var $hoja_actual = 0;
-   var $hoja_nueva = 0;
-   var $idioma;
-   var $impresion;
-   var $lineaactual = 0;
-   var $numero_lineas = 0;
-   var $observaciones_nueva_hoja = false;
-   var $piepagina = false;
-   var $widths;
+   public $albaran_anterior;
+   public $aligns;
+   public $angle = 0;
+   public $codigorect;
+   public $colores;
+   public $color_relleno;
+   public $datoscab;
+   public $es_factura = true;
+   public $extgstates = array();
+   public $fdc_orden = '';
+   public $fdf_tipodocumento = 'FACTURA';
+   public $hoja_actual = 0;
+   public $hoja_nueva = 0;
+   public $idioma;
+   public $impresion;
+   public $lineaactual = 0;
+   public $numero_lineas = 0;
+   public $observaciones_nueva_hoja = false;
+   public $piepagina = false;
+   public $widths;
 
    function Setdatoscab($v)
    {
@@ -166,9 +168,9 @@ class PDF_MC_Table extends FPDF
          $qrcode->disableBorder();
          $background = array(255, 255, 255);
          $color = array(0, 0, 0);
-         $qrcode->displayFPDF($this, 86, 13, 20, $background, $color);
+         $qrcode->displayFPDF($this, 85, 10, 20, $background, $color);
          unset($qrcode);
-         $this->SetColorRelleno($this->color_rellono);
+         $this->SetColorRelleno($this->color_relleno);
       }
 
       // Añado si es rectificativa la info sobre la factura
@@ -294,7 +296,7 @@ class PDF_MC_Table extends FPDF
       }
       if($this->fdc_orden)
       {
-         $cliente .= "N Pedido: " . $this->fdc_orden . "\n";
+         $cliente .= utf8_decode( ucfirst($this->idioma->pedido) ).": " . $this->fdc_orden . "\n";
       }
 
       $this->addClientAdresse(utf8_decode($nombrecliente), utf8_decode($cliente));
@@ -319,7 +321,9 @@ class PDF_MC_Table extends FPDF
       $this->SetLineWidth(0.1);
       $this->SetTextColor(0);
       if($this->es_factura)
+      {
          $this->Cell(0, 4, utf8_decode($this->fde_piefactura), 0, 0, "C");
+      }
 
       // Cabecera Titulos Columnas
       $this->SetXY(10, 95);
@@ -922,21 +926,32 @@ class PDF_MC_Table extends FPDF
    }
 
    // Nombre y numero de la factura
-   function fact_dev($libelle, $num)
+   function fact_dev($tipo, $num)
    {
       $r1 = $this->w - 100;
       $r2 = $r1 + 90;
       $y1 = 6;
       $y2 = $y1 + 2;
       $mid = ($r1 + $r2 ) / 2;
-
-      $texte = $libelle . ' N' . chr(176) . ': ' . $num;
+      
+      if($tipo == 'FACTURA')
+      {
+         $texto = utf8_decode( mb_strtoupper($this->idioma->factura) ). ' N' . chr(176) . ': ' . $num;
+      }
+      else if($tipo == 'ALBARAN')
+      {
+         $texto = utf8_decode( mb_strtoupper($this->idioma->albaran) ). ' N' . chr(176) . ': ' . $num;
+      }
+      else
+      {
+         $texto = $tipo. ' N' . chr(176) . ': ' . $num;
+      }
+      
       $szfont = 15;
       $loop = 0;
-
       while($loop == 0) {
          $this->SetFont("Arial", "B", $szfont);
-         $sz = $this->GetStringWidth($texte);
+         $sz = $this->GetStringWidth($texto);
          if(($r1 + $sz) > $r2)
          {
             $szfont --;
@@ -948,7 +963,7 @@ class PDF_MC_Table extends FPDF
       $this->SetLineWidth(0.1);
       $this->RoundedRect($r1, $y1, ($r2 - $r1), $y2, 2.5, 'DF');
       $this->SetXY($r1 + 1, $y1 + 2);
-      $this->Cell($r2 - $r1 - 1, 5, $texte, 0, 0, "C");
+      $this->Cell($r2 - $r1 - 1, 5, $texto, 0, 0, "C");
    }
 
    function addDate($date)
@@ -1075,7 +1090,7 @@ class PDF_MC_Table extends FPDF
       $this->Line($r1, $y1 + 5, $r2, $y1 + 5);
       $this->SetXY($r1 + ($r2 - $r1) / 2 - 5, $y1 + 1);
       $this->SetFont("Arial", "B", 9);
-      $this->Cell(10, 4, "DATOS ALBARAN", 0, 0, "C");
+      $this->Cell(10, 4, utf8_decode( mb_strtoupper($this->idioma->albaran) ), 0, 0, "C");
       $salto = 4;
       $just = 'L';
       $this->SetFont("Arial", "", 8);
@@ -1146,7 +1161,7 @@ class PDF_MC_Table extends FPDF
          if(($this->hoja_nueva > 0 && $this->hoja_nueva == $this->page) || ($this->hoja_nueva == 0))
          {
             $this->SetFont("Arial", "B", 8);
-            $this->Text(10, 109 + ($this->numero_lineas * 5), "Observaciones: ");
+            $this->Text(10, 109 + ($this->numero_lineas * 5), utf8_decode( ucfirst($this->idioma->observaciones) ).": ");
             $this->SetFont("Arial", "I", 8);
             $this->Line(10, 110 + ($this->numero_lineas * 5), 200, 110 + ($this->numero_lineas * 5));
             $this->SetXY(10, 112 + ($this->numero_lineas * 5));
@@ -1337,7 +1352,7 @@ class PDF_MC_Table extends FPDF
       // Suma y Sigue		
       $this->SetFont("Arial", "B", 6);
       $this->SetXY($r1 + 16, $y1 + 13);
-      $this->MultiCell(43, 3, '(SUMA y SIGUE)', 0, 'C');
+      $this->MultiCell(43, 3, '('. utf8_decode( mb_strtoupper($this->idioma->suma_sigue) ).')', 0, 'C');
    }
 
    function addTotal()
@@ -1362,7 +1377,7 @@ class PDF_MC_Table extends FPDF
          $this->SetXY($r1, $y1);
          $this->Cell(26, 4, utf8_decode( mb_strtoupper($this->idioma->neto) ), 0, '', "C");
          $this->SetX($r1 + 26);
-         $this->Cell(25, 4, FS_IVA, 0, '', "C");
+         $this->Cell(25, 4, utf8_decode( mb_strtoupper($this->idioma->iva) ), 0, '', "C");
          $this->SetX($r1 + 51);
          $this->Cell(25, 4, utf8_decode( mb_strtoupper($this->idioma->rec_equiv) ), 0, '', "C");
          $this->SetX($r1 + 76);

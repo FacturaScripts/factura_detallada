@@ -35,7 +35,9 @@ class idioma_fac_det extends fs_model
    public $fax;
    public $email;
    public $web;
-   public $factura_num;
+   public $factura;
+   public $albaran;
+   public $pedido;
    public $pagina;
    public $fecha;
    public $num_cliente;
@@ -53,6 +55,8 @@ class idioma_fac_det extends fs_model
    public $rec_equiv;
    public $irpf;
    public $total;
+   public $suma_sigue;
+   public $observaciones;
    
    public function __construct($e = FALSE)
    {
@@ -67,7 +71,9 @@ class idioma_fac_det extends fs_model
          $this->fax = $e['fax'];
          $this->email = $e['email'];
          $this->web = $e['web'];
-         $this->factura_num = $e['factura_num'];
+         $this->factura = $e['factura'];
+         $this->albaran = $e['albaran'];
+         $this->pedido = $e['pedido'];
          $this->pagina = $e['pagina'];
          $this->fecha = $e['fecha'];
          $this->num_cliente = $e['num_cliente'];
@@ -85,6 +91,8 @@ class idioma_fac_det extends fs_model
          $this->rec_equiv = $e['rec_equiv'];
          $this->irpf = $e['irpf'];
          $this->total = $e['total'];
+         $this->suma_sigue = $e['suma_sigue'];
+         $this->observaciones = $e['observaciones'];
       }
       else
       {
@@ -96,7 +104,9 @@ class idioma_fac_det extends fs_model
          $this->fax = 'fax';
          $this->email = 'email';
          $this->web = 'web';
-         $this->factura_num = 'factura nº';
+         $this->factura = 'factura';
+         $this->albaran = 'albarán';
+         $this->pedido = 'pedido';
          $this->pagina = 'página';
          $this->fecha = 'fecha';
          $this->num_cliente = 'nº de cliente';
@@ -114,6 +124,8 @@ class idioma_fac_det extends fs_model
          $this->rec_equiv = 'rec. equiv.';
          $this->irpf = 'irpf';
          $this->total = 'total';
+         $this->suma_sigue = 'suma y sigue';
+         $this->observaciones = 'observaciones';
       }
    }
    
@@ -154,12 +166,13 @@ class idioma_fac_det extends fs_model
       $this->codidioma = $this->no_html($this->codidioma);
       $this->nombre = $this->no_html($this->nombre);
       
+      $this->albaran = $this->no_html($this->albaran);
       $this->cant = $this->no_html($this->cant);
       $this->cliente = $this->no_html($this->cliente);
       $this->descripcion = $this->no_html($this->descripcion);
       $this->dto = $this->no_html($this->dto);
       $this->email = $this->no_html($this->email);
-      $this->factura_num = $this->no_html($this->factura_num);
+      $this->factura = $this->no_html($this->factura);
       $this->fax = $this->no_html($this->fax);
       $this->fecha = $this->no_html($this->fecha);
       $this->forma_pago = $this->no_html($this->forma_pago);
@@ -169,9 +182,12 @@ class idioma_fac_det extends fs_model
       $this->iva = $this->no_html($this->iva);
       $this->neto = $this->no_html($this->neto);
       $this->num_cliente = $this->no_html($this->num_cliente);
+      $this->observaciones = $this->no_html($this->observaciones);
       $this->pagina = $this->no_html($this->pagina);
+      $this->pedido = $this->no_html($this->pedido);
       $this->precio = $this->no_html($this->precio);
       $this->rec_equiv = $this->no_html($this->rec_equiv);
+      $this->suma_sigue = $this->no_html($this->suma_sigue);
       $this->telefono = $this->no_html($this->telefono);
       $this->total = $this->no_html($this->total);
       $this->vencimiento = $this->no_html($this->vencimiento);
@@ -181,12 +197,13 @@ class idioma_fac_det extends fs_model
       {
          $sql = "UPDATE idiomas_fac_det SET nombre = ".$this->var2str($this->nombre)
                  .", activo = ".$this->var2str($this->activo)
+                 .", albaran = ".$this->var2str($this->albaran)
                  .", cant = ".$this->var2str($this->cant)
                  .", cliente = ".$this->var2str($this->cliente)
                  .", descripcion = ".$this->var2str($this->descripcion)
                  .", dto = ".$this->var2str($this->dto)
                  .", email = ".$this->var2str($this->email)
-                 .", factura_num = ".$this->var2str($this->factura_num)
+                 .", factura = ".$this->var2str($this->factura)
                  .", fax = ".$this->var2str($this->fax)
                  .", fecha = ".$this->var2str($this->fecha)
                  .", forma_pago = ".$this->var2str($this->forma_pago)
@@ -196,9 +213,12 @@ class idioma_fac_det extends fs_model
                  .", iva = ".$this->var2str($this->iva)
                  .", neto = ".$this->var2str($this->neto)
                  .", num_cliente = ".$this->var2str($this->num_cliente)
+                 .", observaciones = ".$this->var2str($this->observaciones)
                  .", pagina = ".$this->var2str($this->pagina)
+                 .", pedido = ".$this->var2str($this->pedido)
                  .", precio = ".$this->var2str($this->precio)
                  .", rec_equiv = ".$this->var2str($this->rec_equiv)
+                 .", suma_sigue = ".$this->var2str($this->suma_sigue)
                  .", telefono = ".$this->var2str($this->telefono)
                  .", total = ".$this->var2str($this->total)
                  .", vencimiento = ".$this->var2str($this->vencimiento)
@@ -207,18 +227,20 @@ class idioma_fac_det extends fs_model
       }
       else
       {
-         $sql = "INSERT INTO idiomas_fac_det (codidioma,activo,nombre,cant,cliente,descripcion"
-                 . ",dto,email,factura_num,fax,fecha,forma_pago,importe,importes,irpf,iva,neto"
-                 . ",num_cliente,pagina,precio,rec_equiv,telefono,total,vencimiento,web) VALUES "
+         $sql = "INSERT INTO idiomas_fac_det (codidioma,activo,albaran,nombre,cant,cliente"
+                 . ",descripcion,dto,email,factura,fax,fecha,forma_pago,importe,importes,irpf,iva"
+                 . ",neto,num_cliente,,observaciones,pagina,pedido,precio,rec_equiv,suma_sigue,telefono"
+                 . ",total,vencimiento,web) VALUES "
                  . "(".$this->var2str($this->codidioma)
                  . ",".$this->var2str($this->activo)
+                 . ",".$this->var2str($this->albaran)
                  . ",".$this->var2str($this->nombre)
                  . ",".$this->var2str($this->cant)
                  . ",".$this->var2str($this->cliente)
                  . ",".$this->var2str($this->descripcion)
                  . ",".$this->var2str($this->dto)
                  . ",".$this->var2str($this->email)
-                 . ",".$this->var2str($this->factura_num)
+                 . ",".$this->var2str($this->factura)
                  . ",".$this->var2str($this->fax)
                  . ",".$this->var2str($this->fecha)
                  . ",".$this->var2str($this->forma_pago)
@@ -228,9 +250,12 @@ class idioma_fac_det extends fs_model
                  . ",".$this->var2str($this->iva)
                  . ",".$this->var2str($this->neto)
                  . ",".$this->var2str($this->num_cliente)
+                 . ",".$this->var2str($this->observaciones)
                  . ",".$this->var2str($this->pagina)
+                 . ",".$this->var2str($this->pedido)
                  . ",".$this->var2str($this->precio)
                  . ",".$this->var2str($this->rec_equiv)
+                 . ",".$this->var2str($this->suma_sigue)
                  . ",".$this->var2str($this->telefono)
                  . ",".$this->var2str($this->total)
                  . ",".$this->var2str($this->vencimiento)
