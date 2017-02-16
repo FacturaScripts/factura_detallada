@@ -1,10 +1,10 @@
 Añade un nuevo formato de impresión de facturas/albaranes de venta:
 <ul>
    <li>Puedes elegir el color de la factura para adaptarlo mejor a tu imagen corporativa (en las opciones del plugin).</li>
-   <li>Pudes añadir traducciones de ciertos términos para imprimir en varios idiomas.</li>
+   <li>Puedes añadir traducciones de ciertos términos para imprimir en varios idiomas.</li>
    <li>Opción para esconder la columna de albarán.</li>
-   <li>Opción para agrupar los albaranes en la linea de descripcion.</li>
+   <li>Opción para agrupar los albaranes en la linea de descripción.</li>
    <li>Opción para determinar si queremos o no imprimir las observaciones de los productos.</li>
-   <li>Sólo es posible incluir un máximo de 4 lineas de IVA en la impresion de la factura.</li>
-   <li>El Logo de la empresa debe de ser de un tamaño minimo aconsejado de 800 X 800 pixeles y se utilizará tambien como marca de agua en el fondo del documento.</li>
+   <li>Sólo es posible incluir un máximo de 4 lineas de IVA en la impresión de la factura.</li>
+   <li>El Logo de la empresa debe de ser de un tamaño mínimo aconsejado de 800 X 800 pixeles y se utilizará también como marca de agua en el fondo del documento.</li>
 </ul>
