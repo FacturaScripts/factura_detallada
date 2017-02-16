@@ -229,7 +229,7 @@ class idioma_fac_det extends fs_model
       {
          $sql = "INSERT INTO idiomas_fac_det (codidioma,activo,albaran,nombre,cant,cliente"
                  . ",descripcion,dto,email,factura,fax,fecha,forma_pago,importe,importes,irpf,iva"
-                 . ",neto,num_cliente,,observaciones,pagina,pedido,precio,rec_equiv,suma_sigue,telefono"
+                 . ",neto,num_cliente,observaciones,pagina,pedido,precio,rec_equiv,suma_sigue,telefono"
                  . ",total,vencimiento,web) VALUES "
                  . "(".$this->var2str($this->codidioma)
                  . ",".$this->var2str($this->activo)
