@@ -810,6 +810,34 @@ class PDF_MC_Table extends FPDF
       $this->Image($file, $x, $y, $w, $h);
       $this->Rotate(0);
    }
+   
+   function fs_orig_honest()
+   {
+      $fname = 'view/login/default.html';
+      foreach($GLOBALS['plugins'] as $plugin)
+      {
+         if( file_exists('plugins/'.$plugin.'/view/login/default.html') )
+         {
+            $fname = 'plugins/'.$plugin.'/view/login/default.html';
+            break;
+         }
+      }
+      
+      $txt = file_get_contents($fname);
+      if($txt)
+      {
+         if( stripos($txt, 'facturascripts') === FALSE )
+         {
+            return FALSE;
+         }
+         else
+         {
+            return TRUE;
+         }
+      }
+      else
+         return FALSE;
+   }
 
    function Rotate($angle, $x = -1, $y = -1)
    {
