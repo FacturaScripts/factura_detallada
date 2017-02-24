@@ -103,10 +103,12 @@ class factura_detallada extends fs_controller
 
          if(isset($_POST['email']))
          {
-            $this->enviar_email('factura', $_REQUEST['tipo']);
+            $this->enviar_email();
          }
          else
          {
+            $this->template = FALSE;
+            
             $filename = 'factura_' . $this->factura->codigo . '.pdf';
             $this->generar_pdf(FALSE, $filename);
          }
@@ -140,8 +142,6 @@ class factura_detallada extends fs_controller
 
    public function generar_pdf($archivomail = FALSE, $archivodownload = FALSE)
    {
-      $this->template = FALSE;
-      
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
@@ -550,21 +550,21 @@ class factura_detallada extends fs_controller
       $fsext2->delete();
    }
 
-   private function enviar_email($doc, $tipo = 'detallada')
+   private function enviar_email()
    {
       if($this->empresa->can_send_mail())
       {
-         if($_POST['email'] != $this->cliente->email AND isset($_POST['guardar']))
+         if($this->cliente AND isset($_POST['guardar']))
          {
-            $this->cliente->email = $_POST['email'];
-            $this->cliente->save();
+            if($_POST['email'] != $this->cliente->email)
+            {
+               $this->cliente->email = $_POST['email'];
+               $this->cliente->save();
+            }
          }
-
-         if($doc == 'factura')
-         {
-            $filename = 'factura_' . $this->factura->codigo . '.pdf';
-            $this->generar_pdf($filename);
-         }
+         
+         $filename = 'factura_' . $this->factura->codigo . '.pdf';
+         $this->generar_pdf($filename);
 
          if(file_exists('tmp/' . FS_TMP_NAME . 'enviar/' . $filename))
          {
@@ -585,10 +585,7 @@ class factura_detallada extends fs_controller
                }
             }
 
-            if($doc == 'factura')
-            {
-               $mail->Subject = $this->empresa->nombre . ': Su factura ' . $this->factura->codigo;
-            }
+            $mail->Subject = $this->empresa->nombre . ': Su factura ' . $this->factura->codigo;
             $mail->AltBody = $_POST['mensaje'];
             $mail->msgHTML(nl2br($_POST['mensaje']));
             $mail->isHTML(TRUE);
@@ -606,11 +603,8 @@ class factura_detallada extends fs_controller
                   $this->new_message('Mensaje enviado correctamente.');
 
                   /// nos guardamos la fecha de envío
-                  if($doc == 'factura')
-                  {
-                     $this->factura->femail = $this->today();
-                     $this->factura->save();
-                  }
+                  $this->factura->femail = $this->today();
+                  $this->factura->save();
                }
                else
                   $this->new_error_msg("Error al enviar el email: " . $mail->ErrorInfo);
