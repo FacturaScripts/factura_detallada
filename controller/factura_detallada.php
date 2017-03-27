@@ -145,7 +145,7 @@ class factura_detallada extends fs_controller
       ///// INICIO - Factura Detallada
       /// Creamos el PDF y escribimos sus metadatos
       $pdf_doc = new PDF_MC_Table('P', 'mm', 'A4');
-      define('EEURO', chr(128));
+      if (!defined('EEURO')) define('EEURO', chr(128));
       $pdf_doc->idioma = $this->idioma;
       $pdf_doc->impresion = $this->impresion;
       
