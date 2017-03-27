@@ -5,10 +5,15 @@
    $(document).ready(function () {
       $("#b_delete_idioma").click(function (event) {
          event.preventDefault();
-         if( confirm("¿Realmente desea eliminar este idioma?") )
-         {
-            window.location.href = '{$fsc->url()}&delete_idioma={$fsc->idioma->codidioma}';
-         }
+         bootbox.confirm({
+            message: '¿Realmente desea eliminar este idioma?',
+            title: '<b>Atención</b>',
+            callback: function(result) {
+               if (result) {
+                  window.location.href = '{$fsc->url()}&delete_idioma={$fsc->idioma->codidioma}';
+               }
+            }
+         });
       });
    });
 </script>
