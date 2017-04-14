@@ -322,7 +322,7 @@ class PDF_MC_Table extends FPDF
       $this->SetTextColor(0);
       if($this->es_factura)
       {
-         $this->Cell(0, 4, utf8_decode($this->fde_piefactura), 0, 0, "C");
+         $this->MultiCell(0, 3, utf8_decode($this->fde_piefactura), 0, "J");
       }
 
       // Cabecera Titulos Columnas
