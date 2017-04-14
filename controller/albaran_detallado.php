@@ -61,6 +61,9 @@ class albaran_detallado extends fs_controller
                   'print_alb' => '0',
                   'print_formapago' => '1',
                   'f_detallada_color' => 'azul',
+                  'f_detallada_color_r' => '190',
+                  'f_detallada_color_g' => '0',
+                  'f_detallada_color_b' => '0',                  
                   'f_detallada_print_may_min' => FALSE,
                   'f_detallada_QRCODE' => FALSE,
                   'f_detallada_observaciones_producto' => FALSE,
@@ -182,7 +185,7 @@ class albaran_detallado extends fs_controller
       $pdf_doc->codserie = $this->albaran->codserie;
       
       // Definimos el color de relleno (gris, rojo, verde, azul)
-      $pdf_doc->SetColorRelleno($this->impresion['f_detallada_color']);
+      $pdf_doc->SetColorRelleno($this->impresion['f_detallada_color'], $this->impresion['f_detallada_color_r'], $this->impresion['f_detallada_color_g'], $this->impresion['f_detallada_color_b']);
 
       /// Definimos todos los datos de la cabecera del albaran
       /// Datos de la empresa

@@ -75,7 +75,7 @@ class PDF_MC_Table extends FPDF
       }
    }
 
-   function SetColorRelleno($a)
+   function SetColorRelleno($a, $r = '192', $g = null, $b = null)
    {
       if($a == 'rojo')
       {
@@ -105,6 +105,10 @@ class PDF_MC_Table extends FPDF
       {
          $this->SetFillColor(245, 245, 245);
       }
+      else if($a == 'personalizado')
+      {
+         $this->SetFillColor($r, $g, $b);
+      }      
       else
       {
          $this->SetFillColor(192); // Por defecto Gris

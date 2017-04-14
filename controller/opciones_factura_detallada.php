@@ -51,13 +51,16 @@ class opciones_factura_detallada extends fs_controller
       else
       {
          $this->check_menu();
-         $this->colores = array("gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
+         $this->colores = array("personalizado", "gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
          
          /// cargamos la configuración
          $fsvar = new fs_var();
          $this->factura_detallada_setup = $fsvar->array_get(
             array(
                'f_detallada_color' => 'azul',
+               'f_detallada_color_r' => '192',
+               'f_detallada_color_g' => '0',
+               'f_detallada_color_b' => '0',
                'f_detallada_print_may_min' => FALSE,
                'f_detallada_QRCODE' => FALSE,
                'f_detallada_observaciones_producto' => FALSE,
@@ -73,6 +76,9 @@ class opciones_factura_detallada extends fs_controller
          if( isset($_POST['factura_detallada_setup']) )
          {
             $this->factura_detallada_setup['f_detallada_color'] = $_POST['color'];
+            $this->factura_detallada_setup['f_detallada_color_r'] = $_POST['color_r'];
+            $this->factura_detallada_setup['f_detallada_color_g'] = $_POST['color_g'];
+            $this->factura_detallada_setup['f_detallada_color_b'] = $_POST['color_b'];
             $this->factura_detallada_setup['f_detallada_print_may_min'] = isset($_POST['print_may_min']);
             $this->factura_detallada_setup['f_detallada_QRCODE'] = isset($_POST['QRCODE']);
             $this->factura_detallada_setup['f_detallada_observaciones_producto'] = isset($_POST['observaciones_producto']);
