@@ -75,7 +75,7 @@ class PDF_MC_Table extends FPDF
       }
    }
 
-   function SetColorRelleno($a)
+   function SetColorRelleno($a, $r = '192', $g = null, $b = null)
    {
       if($a == 'rojo')
       {
@@ -105,6 +105,10 @@ class PDF_MC_Table extends FPDF
       {
          $this->SetFillColor(245, 245, 245);
       }
+      else if($a == 'personalizado')
+      {
+         $this->SetFillColor($r, $g, $b);
+      }      
       else
       {
          $this->SetFillColor(192); // Por defecto Gris
@@ -322,7 +326,7 @@ class PDF_MC_Table extends FPDF
       $this->SetTextColor(0);
       if($this->es_factura)
       {
-         $this->Cell(0, 4, utf8_decode($this->fde_piefactura), 0, 0, "C");
+         $this->MultiCell(0, 3, utf8_decode($this->fde_piefactura), 0, "J");
       }
 
       // Cabecera Titulos Columnas
