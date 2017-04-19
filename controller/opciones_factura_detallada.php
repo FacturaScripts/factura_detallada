@@ -51,7 +51,17 @@ class opciones_factura_detallada extends fs_controller
       else
       {
          $this->check_menu();
-         $this->colores = array("personalizado", "gris", "rojo", "verde", "azul","naranja","amarillo","marron", "blanco");
+         $this->colores = array(
+             'amarillo' => "amarillo",
+             'azul' => "azul",
+             'blanco' => "blanco",
+             'gris' => "gris",
+             'marron' => "marrón",
+             'naranja' => "naranja",
+             'personalizado' => "personalizado (RGB)",
+             'rojo' => "rojo",
+             'verde' => "verde"
+         );
          
          /// cargamos la configuración
          $fsvar = new fs_var();
@@ -76,9 +86,14 @@ class opciones_factura_detallada extends fs_controller
          if( isset($_POST['factura_detallada_setup']) )
          {
             $this->factura_detallada_setup['f_detallada_color'] = $_POST['color'];
-            $this->factura_detallada_setup['f_detallada_color_r'] = $_POST['color_r'];
-            $this->factura_detallada_setup['f_detallada_color_g'] = $_POST['color_g'];
-            $this->factura_detallada_setup['f_detallada_color_b'] = $_POST['color_b'];
+            
+            if( isset($_POST['color_r']) )
+            {
+               $this->factura_detallada_setup['f_detallada_color_r'] = $_POST['color_r'];
+               $this->factura_detallada_setup['f_detallada_color_g'] = $_POST['color_g'];
+               $this->factura_detallada_setup['f_detallada_color_b'] = $_POST['color_b'];
+            }
+            
             $this->factura_detallada_setup['f_detallada_print_may_min'] = isset($_POST['print_may_min']);
             $this->factura_detallada_setup['f_detallada_QRCODE'] = isset($_POST['QRCODE']);
             $this->factura_detallada_setup['f_detallada_observaciones_producto'] = isset($_POST['observaciones_producto']);
@@ -100,6 +115,10 @@ class opciones_factura_detallada extends fs_controller
          else if( isset($_GET['delete_idioma']) )
          {
             $this->eliminar_idioma();
+         }
+         else
+         {
+            $this->share_extension();
          }
       }
    }
