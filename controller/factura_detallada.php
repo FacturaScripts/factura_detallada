@@ -293,7 +293,7 @@ class factura_detallada extends fs_controller
                      utf8_decode( mb_strtoupper($this->idioma->importe) ),
                  )
          );
-         $pdf_doc->SetWidths(array(16, 102, 10, 20, 10, 10, 22));
+         $pdf_doc->SetWidths(array(16, 102, 10, 20, 12, 12, 22));
          $pdf_doc->SetAligns(array('C', 'L', 'R', 'R', 'R', 'R', 'R'));
          $pdf_doc->SetColors(array('6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109', '6|47|109'));
       }
@@ -426,8 +426,8 @@ class factura_detallada extends fs_controller
                    '1' => utf8_decode($linea_nueva),
                    '2' => utf8_decode($lineas[$i]->cantidad),
                    '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
-                   '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
-                   '5' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
+                   '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 1) . "%"),
+                   '5' => utf8_decode($this->show_numero($lineas[$i]->iva, 1) . "%"),
                    '6' => $this->ckeckEuro($lineas[$i]->total_iva())
                );
             }
@@ -458,7 +458,7 @@ class factura_detallada extends fs_controller
                    '1' => utf8_decode($linea_nueva),
                    '2' => utf8_decode($lineas[$i]->cantidad),
                    '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
-                   '4' => utf8_decode($this->show_numero($lineas[$i]->iva, 0) . " %"),
+                   '4' => utf8_decode($this->show_numero($lineas[$i]->iva, 1) . "%"),
                    '5' => $this->ckeckEuro($lineas[$i]->total_iva())
                );
             }

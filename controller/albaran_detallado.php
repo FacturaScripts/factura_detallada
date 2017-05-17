@@ -387,7 +387,7 @@ class albaran_detallado extends fs_controller
                    '1' => utf8_decode($linea_nueva),
                    '2' => utf8_decode($lineas[$i]->cantidad),
                    '3' => $this->ckeckEuro($lineas[$i]->pvpunitario),
-                   '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 0) . " %"),
+                   '4' => utf8_decode($this->show_numero($lineas[$i]->dtopor, 1) . " %"),
                    '5' => $this->ckeckEuro($lineas[$i]->pvptotal)
                );
             }
