@@ -390,7 +390,7 @@ class factura_detallada extends fs_controller
                $albaran_cliente = new albaran_cliente();
                $albaran = $albaran_cliente->get_by_codigo($lineas[$i]->albaran_codigo());
                $codigo_albaran = mb_strtoupper(FS_ALBARAN, 'utf-8') . ": " . $lineas[$i]->albaran_codigo();
-               $codigo_albaran .= " - ";
+               $codigo_albaran .= " = ";
                $añade = $this->ckeckEuro($albaran->neto);
             }
             else
