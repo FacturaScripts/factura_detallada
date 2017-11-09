@@ -335,6 +335,7 @@ class factura_detallada extends fs_controller
                 }
 
                 $codigo_albaran = '';
+                $añade = '';
                 if ($this->impresion['f_detallada_agrupa_albaranes']) {
                     $albaran_cliente = new albaran_cliente();
                     $albaran = $albaran_cliente->get_by_codigo($lineas[$i]->albaran_codigo());
@@ -345,7 +346,7 @@ class factura_detallada extends fs_controller
                     }
                 } else {
                     $codigo_albaran = substr($lineas[$i]->albaran_codigo(), 5, strlen($lineas[$i]->albaran_codigo()) - 5);
-                    $añade = "";
+                    $añade = '';
                 }
 
                 if ($this->impresion['print_dto']) {
