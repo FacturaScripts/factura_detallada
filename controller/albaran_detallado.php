@@ -84,7 +84,9 @@ class albaran_detallado extends fs_controller
             $cliente = new cliente();
             $this->cliente = $cliente->get($this->albaran->codcliente);
 
-            if (isset($_POST['email'])) {
+            if (!$this->cliente) {
+                $this->new_error_msg('Cliente no encontrado.');
+            } else if (isset($_POST['email'])) {
                 $this->enviar_email('albaran', $_REQUEST['tipo']);
             } else {
                 $filename = 'albaran_' . $this->albaran->codigo . '.pdf';

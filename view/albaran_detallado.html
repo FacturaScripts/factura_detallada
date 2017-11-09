@@ -1,9 +1,9 @@
 {include="header"}
 
-{if="$fsc->factura"}
+{if="$fsc->albaran"}
 <script type="text/javascript">
     function recargar() {
-        window.location.href = '{$fsc->factura->url()}';
+        window.location.href = '{$fsc->albaran->url()}';
     }
     $(document).ready(function () {
         setTimeout(recargar, 2000);
@@ -13,7 +13,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
-            <a href="{$fsc->factura->url()}" class="btn btn-sm btn-default">
+            <a href="{$fsc->albaran->url()}" class="btn btn-sm btn-default">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp; Volver
             </a>
         </div>

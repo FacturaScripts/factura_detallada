@@ -86,7 +86,9 @@ class factura_detallada extends fs_controller
             $cliente = new cliente();
             $this->cliente = $cliente->get($this->factura->codcliente);
 
-            if (isset($_POST['email'])) {
+            if (!$this->cliente) {
+                $this->new_error_msg('Cliente no encontrado.');
+            } else if (isset($_POST['email'])) {
                 $this->enviar_email();
             } else {
                 $this->template = FALSE;
@@ -332,6 +334,7 @@ class factura_detallada extends fs_controller
                     $descripcion_retocada = mb_strtoupper($this->idioma->fix_html($lineas[$i]->descripcion), 'utf-8') . trim($observa);
                 }
 
+                $codigo_albaran = '';
                 if ($this->impresion['f_detallada_agrupa_albaranes']) {
                     $albaran_cliente = new albaran_cliente();
                     $albaran = $albaran_cliente->get_by_codigo($lineas[$i]->albaran_codigo());
